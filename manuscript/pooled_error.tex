@@ -499,12 +499,12 @@ This is despite the presence of differences in the number of cells per plate or 
 
 The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
 Recall that the counts for cells on the same plate are conditionally independent. 
-Cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
-The conditional variance of the count sum is likely to approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
+Cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a single plate.
+The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
 This means that the count sum for each plate will have near-identical mean-variance relationships, as described above for the pseudo-counts.
 In these particular simulations, the variable term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
-Any differences in these relationships are quantitatively negligible and do not affect model performance, 
-    which suggests that quantile adjustment prior to summation is unnecessary.
+Any differences in these relationships between plates are quantitatively negligible, especially in the presence of large values for $\mbox{var}(\delta_{ik})$.
+These results indicate that plate-specific relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
 
 \begin{figure}[tbp]
 \begin{center}
@@ -523,6 +523,8 @@ Any differences in these relationships are quantitatively negligible and do not 
 }
 \label{fig:complexplate}
 \end{figure}
+
+% Probably slightly more conservative than previous QL figure because n=2 here for each group, whereas n=3 before.
 
 \section{Summation results in reduced DE detection in real data}
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
@@ -639,7 +641,10 @@ Figure~\ref{fig:realdata} shows the top set of DE genes from summation, all of w
 DE genes driven by a few outliers tend to be less significant.
 This is because the conditional variance of the count sum increases with fewer contributing cells, 
     which increases the total variance and decreases the relative significance of DE.
-Technical noise and heterogeneity will no longer average out when the sum consists of very few cells.
+Technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
+
+% Number of outlier cells to which this applies depends on the plate effect.
+% If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
 
 \begin{figure}[bt]
     \begin{center}
