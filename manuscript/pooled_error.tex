@@ -158,8 +158,9 @@ This was used directly to fit the GLM for each gene, and DE testing was performe
 For voom, counts were converted to log-CPMs and precision weights were computed from a fitted mean-variance trend.
 Log-CPMs and weights for each gene were used to fit a linear model.
 Variances were stabilized by EB shrinkage, and genes were tested for DE between conditions using a moderated $t$-test.
-This analysis was also repeated after using the duplicateCorrelation function to estimate the correlation between cells on the same plate.
-The consensus correlation was incorporated into the variance estimation by blocking on the plate of origin during fitting of the linear model.
+This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
+For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
+The consensus correlation across all genes was incorporated into the linear model by blocking on the plate of origin.
 DE testing was then repeated on this refitted model.
 
 For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
@@ -217,28 +218,30 @@ This is equally applicable to the false discovery rate (FDR), given that control
 \label{fig:platefail}
 \end{figure}
 
-Loss of type I error control is caused by correlations between cells on the same plate.
-Most DE analysis methods assume that replicate samples (i.e., cells) are independent.
-This is not the case when a plate effect is present -- all cells on the same plate will be positively correlated, as expression is modified by the same plate effect.
-These correlations reduce the amount of information in the data set, as cells on the same plate are effectively redundant.
-However, most methods do not consider the correlations and will overstate the amount of information for variance estimation.
-This results in overconfident inferences and liberalness.
+Loss of type I error control is caused by hidden dependencies between cells on the same plate.
+Most DE analysis methods assume that replicate samples (i.e., cells) are independent, given the conditions specified in the one-way layout.
+This is not the case when a plate effect is present in the data but is ignored during statistical modelling.
+Counts will associate with the plate of origin for each cell rather than with the condition of that cell.
+These dependencies between counts for all cells on the same plate are present because the mean expression in those cells is modified by the same plate effect.
+This reduces the amount of information in the data set as cells on the same plate are effectively redundant.
+Assuming independence will overstate the amount of information for variance estimation, resulting in overconfident inferences and liberalness.
 
 The problem can also be described in terms of the residual degrees of freedom (d.f.) that are available to estimate the variance.
 The simulation uses an experimental design with $6 \times 50 =  300$ cells and two coefficients in a one-way layout.
 If all cells were truly independent -- as is assumed by most methods -- this design would provide 298 residual d.f. 
-At the other extreme, consider the scenario where all cells on a plate are completely correlated.
-This means that there are only six independent samples (one cell per plate, as all other cells on each plate are redundant) and only four residual d.f.
-This is substantially smaller than the 298 d.f.\ expected by each method, which is problematic.
+At the other extreme, consider the scenario where all cells on a plate are identical, i.e., there is no technical noise or heterogeneity between cells.
+This means that there are only six independent samples (one cell per plate, as all other cells on that plate are redundant) and only four residual d.f.
+This is substantially smaller than the 298 d.f.\ expected by the various methods, resulting in an underestimation of the uncertainty of the variance estimates.
 For example, the use of edgeR with the LRT assumes that sufficient residual d.f.\ are present to estimate the dispersion for each gene separately,
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
 
-It is worth pointing out that the voom with correlations method explicitly accounts for the intra-plate correlations between cells.
+It is worth pointing out that voom with correlations will explicitly account for the dependencies between cells.
 This method exhibits the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}),
     i.e., the observed type I error rate is closest to the specified threshold.
 Nonetheless, voom with correlations is still liberal.
 This is attributable to the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
+Another contributing factor is the low number of plates, which may result in biased estimates for the consensus correlation.
 
 \subsection{Alternative analysis strategies are unpalatable}
 Simply ignoring the plate effects results in unacceptable loss of control.
