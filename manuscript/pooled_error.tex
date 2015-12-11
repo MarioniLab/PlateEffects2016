@@ -22,12 +22,12 @@
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
 RNA is isolated from individual cells and reverse-transcribed into cDNA fragments that are sequenced using massively parallel technologies \cite{stegle2015computational}.
-Mapping of the sequence reads to a reference genome allows quantification of gene expression in each cell, based on the number of reads counted into each gene.
-The count data can then be analyzed to identify cell subtypes by clustering on the gene expression profiles;
+Mapping of the sequence reads to a reference genome allows quantification of gene expression in each cell, based on the number of reads assigned to each gene.
+The count data can then be analyzed to identify cell subtypes by clustering of the gene expression profiles;
     to identify highly variable genes contributing to cell-to-cell heterogeneity;
     and to identify differentially expressed (DE) genes between groups of cells.
 The ability to assay expression profiles for individual cells provides scRNA-seq studies with biological resolution that cannot be matched by bulk RNA-seq experiments on cell populations.
-This comes at the cost of high technical noise, due to the difficulties in sequencing low RNA quantities.
+This comes at the cost of high technical noise, due to difficulties in sequencing low input RNA quantities.
 
 Most existing scRNA-seq protocols are based either on microwell plates \cite{picelli2014full} or microfluidics systems like the Fluidigm C1 \cite{pollen2014low}.
 In the former, cells are placed into individual wells, typically with automated approaches such as fluorescently activated cell sorting (FACS).
@@ -48,19 +48,19 @@ However, this design can result in a ``plate effect'' where uncontrollable exper
 These variables can be technical in origin, such as differences in library preparation or sequencing between plates; 
     or biological, due to inherent variability in gene expression between the replicate populations on different plate.
 
-One common analysis of scRNA-seq data involves identifying DE genes between groups of cells.
+One common analysis applied to scRNA-seq data involves identifying DE genes between groups of cells.
 This does not strictly require single-cell resolution, and is more conventionally performed with bulk data.
-Nonetheless, there are some benefits to using single-cell data, especially for situations involving rare cells and quality control.
-It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk RNA-seq data exclusively for this purpose.
-The DE analysis itself is performed using software packages such as edgeR \cite{robinson2010edgeR} and DESeq \cite{anders2010differential}, which were designed for bulk data;
-    or with methods such as monocle \cite{trapnell2014dynamics}, which were designed explicitly for single-cell data.
+Nonetheless, there are some benefits to using single-cell data here.
+Rare cells are more easily sequenced with single-cell protocols, and irrelevant cells from contaminating populations can be screened out before analysis.
+It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk data exclusively for this purpose.
+The DE analysis itself is typically performed using software packages such as edgeR \cite{robinson2010edgeR} and DESeq \cite{anders2010differential}, which were designed for bulk data;
+    or with methods such as monocle \cite{trapnell2014dynamics} and SCDE \cite{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
 Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more biological conditions of interest.
 
 The presence of plate effects complicates the parametrization of the experimental design for the DE analysis.
 Such effects are obviously undesirable as they result from uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
-However, they cannot be easily removed during the statistical modelling.
-This is because the plate effect is confounded by the conditions of interest.
+However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the conditions of interest \cite{hicks2015widespread}.
 At the most extreme, consider a situation involving one plate for each condition.
 Changes in gene expression due to the plate effect will be indistinguishable from genuine DE between conditions.
 This problem is still present with two or three plates per condition, where plate-to-plate variability may explain some or all of the apparent DE between conditions.
@@ -70,9 +70,9 @@ This may not be statistically rigorous as the variability across plates and cell
 This article demonstrates that plate effects must be handled properly to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
 This was caused by the presence of correlations between cells on each plate during variance estimation.
-To avoid detection of spurious DE, a summation approach was proposed whereby counts for all cells on each plate were summed prior to analysis.
+To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to downstream analysis.
 This restored control of type I error across a range of simulation scenarios, without compromising DE detection power.
-Similar effects were observed in real data where summation resulted in substantial changes to the number and ranking of genes in the DE list.
+Similar effects were observed in real data where summation resulted in substantial changes in the number and ranking of DE genes.
 
 \section{Plate effects result in false positives in a DE analysis}
 
