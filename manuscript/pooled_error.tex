@@ -304,7 +304,7 @@ Firstly, the counts for each gene are summed across all cells within each plate.
 These count sums are then supplied to the DE analysis software, where the plates themselves are treated as replicate samples for each condition.
 Dependencies between samples are no longer present when counts are considered for plates instead of cells.
 This is because the plate effect is assumed to be independent between plates. 
-Similarly, the count for each cell is conditionally independent in each plate and will not introduce dependencies between plates.
+Similarly, counts for cells within each plate are conditionally independent and will not introduce dependencies between plates.
 Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ of the experimental design.
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with methods designed for bulk data.
@@ -413,8 +413,8 @@ As $\delta_{ik}$ is independent of the other parameters, the total variance of $
 \end{align*}
 where $E(s_{ik})=N_k\mu_{il}$. 
 In this expression, the $\mbox{var}(\delta_{ik})$ and $E(\delta_{ik}^2)$ terms are constant.
-The $\varphi_{ik}$ term is also unlikely to be proportional to $N_k$, due to conditional independence between cells 
-    -- the number of cells on each plate should have no effect on the sampling distribution of the counts in each cell.
+The $\varphi_{ik}$ term is also unlikely to be proportional to $N_k$, due to conditional independence between cells on the same plate 
+    -- the number of cells on a plate should have no effect on the sampling of counts for those cells.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across $k$ when $N_k$ differs between plates.
 Plate-specific differences in library size lead to similar complications, by altering the distribution of each $s_{ik} |\delta_{ik}$.
 
