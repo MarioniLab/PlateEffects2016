@@ -90,7 +90,7 @@ More precisely, the observed read count for gene $i$ in cell $j$ in plate $k$ of
 where $\delta_{ik}$ is the plate-specific effect for this gene.
 $X_{ik}$ is some random variable such that 
 \[
-    E(X_{ik}) = \delta_{ik}\mu_{il}
+    E(X_{ik}) = \lambda_{ik} = \delta_{ik}\mu_{il}
 \]
 where $\mu_{il}$ is the expected read count for condition $l$. 
 Any references to the conditional distribution, variance or mean will refer to the corresponding attributes of $X_{ik}$.
@@ -123,14 +123,14 @@ Let the count for each gene in each cell follow a negative binomial (NB) distrib
 In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{il}$ and a dispersion of $\varphi_{ik}$.
 The size of $\varphi_{ik}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
 The plate effects themselves are sampled from a log-normal distribution, i.e., $Z = \ln \mathcal{N}(\nicefrac{-\sigma^2}{2}, \sigma^2)$.
-This parametrization ensures that $E(Y)=1$, as originally defined.
+This parametrization ensures that $E(Z)=1$, as originally defined.
 
 Simulated data was generated for 10000 genes across two conditions, each consisting of 3 replicate plates with 50 cells in each plate.
 The expected read count for each condition was set to $\mu_{il}=\mu_{i0}$, where $\log \mu_{i0}$ was sampled from a uniform distribution over the interval (3, 8).
 This captures the spread of abundances for different genes in real data. 
 For each gene $i$, the NB dispersion was defined according to the mean, i.e., 
 \[
-    \varphi_{ik} = \frac{1}{2} + \frac{100}{\mu_{i0}\delta_{ik}} 
+    \varphi_{ik} = \frac{1}{2} + \frac{100}{\lambda_{ik}} 
 \]
 to represent the decreasing mean-dispersion trend observed in real data.
 Large values of $\varphi_{ik}$ are also consistent with high technical and biological variability in scRNA-seq counts.
@@ -204,8 +204,8 @@ This is equally applicable to the false discovery rate (FDR), given that control
 
 \begin{figure}[tbp]
 \begin{center}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{failsim_with_raw.pdf}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{failsim_without_raw.pdf}
+\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 5mm,clip]{failsim_with_raw.pdf}
+\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 5mm,clip]{failsim_without_raw.pdf}
 \end{center}
 \caption{
     Observed type I error rates for each method on simulated data, in the presence (left) or absence (right) of a plate effect.
@@ -331,10 +331,11 @@ This is true regardless of whether those conditions contain replicate cells or r
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
 This can be demonstrated with a simulation involving genes that have genuine DE between conditions.
-DE was introduced for 1000 randomly selected genes by setting $\mu_{il_1} = 3\mu_{il_2}$ for conditions $l_1$ and $l_2$, i.e., a 3-fold increase in expression in the first condition.
-This was repeated for a separate set of 1000 genes by setting $\mu_{il_2} = 3\mu_{il_1}$.
+DE was introduced for 1000 randomly selected genes by setting $\mu_{il_1} = 3\mu_{i0}$ for condition $l_1$ i.e., a 3-fold increase in expression in the first condition.
+This was repeated for a separate set of 1000 genes by setting $\mu_{il_2} = 3\mu_{i0}$ for condition $l_2$.
 The balanced addition of DE genes ensures that composition biases \cite{robinson2010scaling} are not introduced between samples.
-Simulated data was then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$), as previously described
+Values of $\lambda_{ik}$ and $\varphi_{ik}$ were defined based on $\mu_{il_1}$ and $\mu_{il_2}$ for each gene $i$ in each plate.
+Simulated data was then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$), as previously described.
 Analyses with DESeq2, limma and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
 For each method, the ROC curve obtained with the analysis on summed counts is near-identical to that obtained with single-cell counts (Figure~\ref{fig:roc}).
@@ -402,7 +403,9 @@ As $\delta_{ik}$ is independent of the other parameters, the total variance of $
                        &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{ik}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
 \end{align*}
 where $E(s_{ik})=N_k\mu_{il}$. 
-The $\mbox{var}(\delta_{ik})$ and $E(\delta_{ik}^2)$ terms are constant, as is the $\varphi_{ik}$ term.
+In this expression, the $\mbox{var}(\delta_{ik})$ and $E(\delta_{ik}^2)$ terms are constant.
+The $\varphi_{ik}$ term is also unlikely to be proportional to $N_k$, due to conditional independence between cells 
+    -- the number of cells on each plate should have no effect on the sampling distribution of the counts in each cell.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across $k$ when $N_k$ differs between plates.
 Plate-specific differences in library size lead to similar complications, by altering the distribution of each $s_{ik} |\delta_{ik}$.
 
@@ -442,8 +445,9 @@ This is usually the case given that low-quality plates with very few cells would
 \subsection{Direct and quantile-adjusted summation control type I error rates}
 The performances of direct and quantile-adjusted summation were evaluated with more complex simulations involving different numbers of cells and library sizes per plate.
 Simulated data was generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
-Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\delta_{ik}\theta_{j}\mu_{ik}$.
+Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ik}$.
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
+The NB dispersion $\varphi_{ij}$ of the conditional distribution was defined as described for $\varphi_{ik}$ after replacing $\lambda_{ik}$ with $\lambda_{ij}$.
 The experimental design was also changed such that only two plates were present for each condition.
 
 To assess the effect of different cell numbers, data was simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition.
