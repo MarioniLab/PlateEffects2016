@@ -407,10 +407,11 @@ The conditional variance is then
     \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{ik}}{N_k}\rho_{ik}^2 \;.
 \]
 As $\delta_{ik}$ is independent of the other parameters, the total variance of $s_{ik}$ can be written as
-\begin{align*}
+\begin{align}
     \mbox{var}(s_{ik}) &= (N_k\mu_{il})^2\mbox{var}(\delta_{ik}) + N_k\mu_{il} + \varphi_{ik} N_k\mu_{il}^2 E(\delta_{ik}^2) \\
                        &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{ik}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
-\end{align*}
+    \label{eqn:meanvar}
+\end{align}
 where $E(s_{ik})=N_k\mu_{il}$. 
 In this expression, the $\mbox{var}(\delta_{ik})$ and $E(\delta_{ik}^2)$ terms are constant.
 The $\varphi_{ik}$ term is also unlikely to be proportional to $N_k$, due to conditional independence between cells on the same plate 
@@ -459,14 +460,28 @@ The $\theta_{j}$ term represents the relative library size for each cell $j$ and
 The NB dispersion $\varphi_{ij}$ of the conditional distribution was defined as described for $\varphi_{ik}$ after replacing $\lambda_{ik}$ with $\lambda_{ij}$.
 The experimental design was also changed such that only two plates were present for each condition.
 
-To assess the effect of different cell numbers, data were simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition.
-Library sizes were kept constant for all cells in this simulation scenario.
-To assess the effect of library size, the number of cells per plate was kept constant at 50.
+To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition (Figure~\ref{fig:compsim}).
+Library sizes were kept constant for all cells in this scenario.
+To assess the effect of library size, the number of cells per plate was set to 50.
 Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one condition (all plates in the other condition were unchanged);
     $\theta_j=10$ for 10 cells; and $\theta_j=20$ for 5 cells.
-In all cases, library sizes are only modified for a fraction of cells on a subset of plates. 
-This subtlety is necessary because the mean-variance relationship will be preserved between plates if there is a consistent increase in the library size for all cells on a plate, 
+In all cases, library sizes were only modified for a fraction of cells and in a subset of plates.
+This subtlety is necessary because the mean-variance relationship will be the same between plates if there is a consistent increase in the library size for all cells on a plate, 
     or if there is an increase in the library size for the same proportion of cells on all plates.
+
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=\textwidth]{quantile_schematic.pdf}
+    \end{center}
+    \caption{
+        Simulation scenarios with different number of cells per plate and different library sizes per cell.
+        Each scenario is represented by two plates where the set-up for each plate is used for all plates in condition $g_1$ or $g_2$.
+        Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
+        The library size of each cell is indicated by the colour of the well.
+    }
+    \label{fig:compsim}
+\end{figure}
+
 
 The use of two plates in each condition also allows the simulated data set to be permuted.
 Specifically, plates can be swapped between conditions such that each condition contains replicate plates with differing numbers of cells (in the first scenario)
@@ -478,31 +493,31 @@ Direct and quantile-adjusted summation were applied on the simulated data by sum
 The resulting (pseudo-)count sums were tested for DE between conditions, using the QL framework in edgeR as a representative of the bulk analysis methods.
 The observed type I error rate was calculated, and the average rate was computed across 10 simulation iterations.
 This was repeated for each scenario described above, before and after swapping replicate plates between conditions.
-As a control, the analyses were also performed on simulated data without a plate effect, i.e. $\sigma^2=0$.
-
-Both strategies are able to control the type I error close to the specified threshold (Figure~\ref{fig:complexplate}).
+Both strategies are able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
 This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
+
 The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
-When counts are summed across many cells, cell-specific technical noise and biological heterogeneity average out through the law of large numbers.
-The conditional variance of the count sum approaches the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
+Recall that the counts for cells on the same plate are conditionally independent. 
+Cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
+The conditional variance of the count sum is likely to approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
 This means that the count sum for each plate will have near-identical mean-variance relationships, as described above for the pseudo-counts.
-Any differences in these relationships are quantitatively negligible and do not affect model performance.
-The only improvement is observed for extreme differences in library size (scenario 4), where quantile adjustment provides more accurate error control than direct summation.
-In general, these results suggest that quantile adjustment prior to summation is unnecessary except in pathological cases.
+In these particular simulations, the variable term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
+Any differences in these relationships are quantitatively negligible and do not affect model performance, 
+    which suggests that quantile adjustment prior to summation is unnecessary.
 
 \begin{figure}[tbp]
 \begin{center}
 \includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_with.pdf}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_without.pdf}
+%\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_without.pdf} % Doesn't really add any value; didn't put up control before either, so why do it now?
 \end{center}
 \caption{
-    Observed type I error rates for each method on simulated data, with direct summation (black circles) and summation of quantile-adjusted pseudo-counts (grey diamonds). 
-    Simulations were performed in the presence (left) or absence (right) of a plate effect, for a number of scenarios
-        -- differing numbers of cells per plate (1);
+    Observed type I error rates for QL edgeR on simulated data with a plate effect, 
+        applied on counts from direct summation (black circles) or summation of quantile-adjusted pseudo-counts (grey diamonds). 
+    Simulations were performed for a number of scenarios, including differing numbers of cells per plate (1);
         small (2), moderate (3) or large differences (4) in library size within plates;
-        as well as the corresponding scenarios where plates were swapped between conditions.
-    Error rates are shown on a log scale and represent the average across 10 simulation iterations.
+        as well as the corresponding scenarios where replicate plates were swapped between conditions.
+    Error rates are shown on a log scale and represent the average of 10 simulation iterations.
     Each error bar represents the standard error of the corresponding log-average rate.
     The threshold of 0.01 is represented by the red dotted line.
 }
