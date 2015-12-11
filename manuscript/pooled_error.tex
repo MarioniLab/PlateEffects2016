@@ -499,11 +499,11 @@ This is despite the presence of differences in the number of cells per plate or 
 
 The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
 Recall that the counts for cells on the same plate are conditionally independent. 
-Cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a single plate.
+This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
 The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
 This means that the count sum for each plate will have near-identical mean-variance relationships, as described above for the pseudo-counts.
 In these particular simulations, the variable term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
-Any differences in these relationships between plates are quantitatively negligible, especially in the presence of large values for $\mbox{var}(\delta_{ik})$.
+Any differences in these relationships between plates will be quantitatively negligible, especially for large $\mbox{var}(\delta_{ik})$.
 These results indicate that plate-specific relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
 
 \begin{figure}[tbp]
