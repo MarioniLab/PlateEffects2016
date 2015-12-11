@@ -676,7 +676,7 @@ Summation prior to DE analyses also affects the biological conclusions for real 
     by decreasing the size of the DE lists and by changing the ranking of DE genes.
 
 It is possible to resolve plate effects at the single-cell level with careful experimental design.
-In particular, cells should be arranged such that each plate contains cells from multiple conditions.
+Ideally, cells should be arranged onto plates such that each plate contains cells from multiple conditions.
 DE comparisons can then be performed within plates such that any plate effect cancels out between conditions on the same plate.
 For such experimental designs, summation has fewer benefits.
 This is because the biological condition is no longer confounded by the plate of origin.
@@ -687,15 +687,16 @@ This avoids any loss of type I error due to hidden correlations between cells on
 Nonetheless, summation can still be applied to all cells of the same condition on each plate.
 This increases the count sizes and decreases technical noise for greater compatibility with existing analysis methods like edgeR.
 It also reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells ($>$ 100).
-Power is unaffected by summation as the nature of the DE comparison (i.e., between condition averages) remains unchanged.
+Power is preserved upon summation as the nature of the DE comparison (i.e., between condition averages) remains unchanged.
 More generally, including several different conditions on a single plate may not always be logistically feasible, and designs with one condition per plate are often more practical.
 In such cases, the best way to handle plate effects is to simply increase the number of plates.
-This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation.
+This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and experimental resources.
+The choice of the number of plates is analogous to that of replicates in bulk RNA-seq, so about 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
 
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
 Methods like size factor and TMM normalization are based on ratios between counts in different cells,
-    but will be compromised for noisy data that contains many zero and near-zero counts.
+    but will be compromised for noisy data that contain many zero and near-zero counts.
 Summation reduces the incidence of such counts so that these normalization methods can be properly applied.
 Specifically, normalization of the summed counts will remove plate-specific differences that affect each gene in the same manner, 
     e.g., differences in capture efficiency or sequencing depth between plates.
