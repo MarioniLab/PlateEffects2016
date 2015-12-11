@@ -299,8 +299,10 @@ Model fitting was also more time-consuming, taking several hours to run for a si
 A simple solution presents itself for restoring error control in the presence of plate effects.
 Firstly, the counts for each gene are summed across all cells within each plate.
 These count sums are then supplied to the DE analysis software, where the plates themselves are treated as replicate samples for each condition.
-This ensures that the analysis does not overestimate the residual d.f.\ of the design.
-Correlations between samples are no longer present when plates are considered instead of cells, given that the plate effect is assumed to be independent between plates.
+Dependencies between samples are no longer present when counts are considered for plates instead of cells.
+This is because the plate effect is assumed to be independent between plates. 
+Similarly, the count for each cell is conditionally independent in each plate and will not introduce dependencies between plates.
+Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ of the experimental design.
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with methods designed for bulk data.
 
@@ -336,9 +338,9 @@ This can be demonstrated with a simulation involving genes that have genuine DE 
 DE was introduced for 1000 randomly selected genes by setting $\mu_{il_1} = 3\mu_{i0}$ for condition $l_1$ i.e., a 3-fold increase in expression in the first condition.
 This was repeated for a separate set of 1000 genes by setting $\mu_{il_2} = 3\mu_{i0}$ for condition $l_2$.
 The balanced addition of DE genes ensures that composition biases \cite{robinson2010scaling} are not introduced between samples.
-Values of $\lambda_{ik}$ and $\varphi_{ik}$ were defined based on $\mu_{il_1}$ and $\mu_{il_2}$ for each gene $i$ in each plate.
-Simulated data was then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$), as previously described.
-Analyses with DESeq2, limma and voom were performed on the single-cell and summed counts.
+Values of $\lambda_{ik}$ and $\varphi_{ik}$ were defined as previously described, based on the $\mu_{il_1}$ and $\mu_{il_2}$ for each gene in each plate.
+Simulated data was then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
+Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
 For each method, the ROC curve obtained with the analysis on summed counts is near-identical to that obtained with single-cell counts (Figure~\ref{fig:roc}).
 This indicates that detection power is not affected by summation.
@@ -361,14 +363,14 @@ After all, it seems to contradict the purpose of a scRNA-seq study.
 Why would one bother to sequence the transcriptome of individual cells, only to add the counts together during the analysis?
 The use of summed counts is equivalent to performing bulk sequencing on the pooled population, which would be technically easier to undertake and analyze.
 In fact, this apparent contradiction is relevant to all DE analyses of scRNA-seq data where average expression levels are compared between pre-defined groups of cells.
-Such averages could be obtained directly with bulk sequencing of the groups, rather than of single cells.
+Such averages could be obtained directly with bulk sequencing of the groups, rather than of the individual cells.
 
 The resolution of this contradiction is based on the ability of single-cell approaches to characterize and define the groups prior to the DE analysis.
-Rare cells can be profiled in scRNA-seq that cannot be obtained in sufficient numbers for bulk sequencing.
+Purified populations of rare cells can be profiled by scRNA-seq if they cannot be obtained in sufficient numbers for bulk sequencing.
 Low quality libraries or contaminating cells can be identified and removed from each group to avoid interfering expression patterns.
-Groups can also be empirically identified based on gene expression patterns (though this requires some care to maintain statistical rigour in the subsequent DE analysis).
-Obviously, it is not mandatory to use the summed counts exclusively 
--- single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
+Groups can also be empirically identified based on gene expression patterns, though this requires some care to avoid circularity in the subsequent DE analysis.
+Obviously, it is not mandatory to use the summed counts exclusively. 
+The single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
