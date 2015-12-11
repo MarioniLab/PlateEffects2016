@@ -125,7 +125,7 @@ The size of $\varphi_{ik}$ determines the variance of the conditional distributi
 The plate effects themselves are sampled from a log-normal distribution, i.e., $Z = \ln \mathcal{N}(\nicefrac{-\sigma^2}{2}, \sigma^2)$.
 This parametrization ensures that $E(Z)=1$, as originally defined.
 
-Simulated data was generated for 10000 genes across two conditions, each consisting of 3 replicate plates with 50 cells in each plate.
+Simulated data were generated for 10000 genes across two conditions, each consisting of 3 replicate plates with 50 cells in each plate.
 The expected read count for each condition was set to $\mu_{il}=\mu_{i0}$, where $\log \mu_{i0}$ was sampled from a uniform distribution over the interval (3, 8).
 This captures the spread of abundances for different genes in real data. 
 For each gene $i$, the NB dispersion was defined according to the mean, i.e., 
@@ -342,7 +342,7 @@ DE was introduced for 1000 randomly selected genes by setting $\mu_{il_1} = 3\mu
 This was repeated for a separate set of 1000 genes by setting $\mu_{il_2} = 3\mu_{i0}$ for condition $l_2$.
 The balanced addition of DE genes ensures that composition biases \cite{robinson2010scaling} are not introduced between samples.
 Values of $\lambda_{ik}$ and $\varphi_{ik}$ were defined as previously described, based on the $\mu_{il_1}$ and $\mu_{il_2}$ for each gene in each plate.
-Simulated data was then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
+Simulated data were then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
 Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
 For each method, the ROC curve obtained with the analysis on summed counts is near-identical to that obtained with single-cell counts (Figure~\ref{fig:roc}).
@@ -453,13 +453,13 @@ This is usually the case given that low-quality plates with very few cells would
 
 \subsection{Direct and quantile-adjusted summation control type I error rates}
 The performances of direct and quantile-adjusted summation were evaluated with more complex simulations involving different numbers of cells and library sizes per plate.
-Simulated data was generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
+Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
 Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ik}$.
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
 The NB dispersion $\varphi_{ij}$ of the conditional distribution was defined as described for $\varphi_{ik}$ after replacing $\lambda_{ik}$ with $\lambda_{ij}$.
 The experimental design was also changed such that only two plates were present for each condition.
 
-To assess the effect of different cell numbers, data was simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition.
+To assess the effect of different cell numbers, data were simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition.
 Library sizes were kept constant for all cells in this simulation scenario.
 To assess the effect of library size, the number of cells per plate was kept constant at 50.
 Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one condition (all plates in the other condition were unchanged);
@@ -517,11 +517,11 @@ The first study examines mouse embryonic stem cells (mESCs) cultured under three
 The second study examines gastrulation in the early mouse embryo at various development stages \cite{scialdone2015single},
     where all cells on each plate originate from the same stage.
 
-For the first study, count data was obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}. 
+For the first study, count data were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}. 
 This data set contains multiple chips across several batches for each serum condition.
 Counts were only taken from the two batches where all three serum conditions were represented.
 To account for the batch effect, the experimental design was parametrized as an additive model with serum-specific expression terms and batch-specific blocking factors.
-For the second study, data was obtained from \url{http://www.ebi.ac.uk/antonio/some-silly-pun}.
+For the second study, data were obtained from \url{http://www.ebi.ac.uk/antonio/some-silly-pun}.
 Counts were taken from a subset of cells in the primitive streak (PS) and neural plate (NP) stages.
 This subset contains all cells used in Figure X in \cite{scialdone2015single}, and was originally selected by clustering on the single-cell expression profiles 
     -- this is slightly conservative as cells with DE are less likely to be included in that cluster.
