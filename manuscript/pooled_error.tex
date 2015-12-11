@@ -243,10 +243,10 @@ Nonetheless, voom with correlations is still liberal.
 This is attributable to the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
 Another contributing factor is the low number of plates, which may result in biased estimates for the consensus correlation.
 
-\subsection{Alternative analysis strategies are unpalatable}
+\subsection{Alternative analysis strategies are problematic}
 Simply ignoring the plate effects results in unacceptable loss of control.
 However, the obvious alternatives are not without their own difficulties.
-One approach would be to introduce blocking factors for the plates into the model.
+One natural approach would be to introduce blocking factors for the plates.
 In a log-link model similar to that used in edgeR and DESeq, this is equivalent to setting
 \[
     \beta_{ij} = \beta_{il} + \beta_{ik} + o_{ij}
@@ -254,8 +254,7 @@ In a log-link model similar to that used in edgeR and DESeq, this is equivalent 
 where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{il}$ is the average log-expression for condition $l$, 
     $\beta_{ik}$ is the plate effect for plate $k$ and $o_{ij}$ is a normalization offset.
 The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between $k$, thus eliminating the plate effect.
-However, $\beta_{ik}$ will also absorb differences in $\mu_{il}$ between conditions.
-This will eliminate genuine DE and reduce detection power.
+However, $\beta_{ik}$ will also absorb differences in $\mu_{il}$ between conditions, which can eliminate genuine DE and reduce detection power.
 The same problem is observed for methods like ComBat \cite{johnson2007adjusting} when they are applied to remove confounding plate effects prior to a DE analysis.
 In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
 This cannot be resolved without altering the interpretation of $\beta_{il}$ such that it no longer represents the condition average.
@@ -284,15 +283,15 @@ Indeed, application of this approach in the previous simulation (by modifying th
     results in an observed type I error rate of 0.55 at a specified threshold of 0.01.
 
 The most sophisticated approach uses a mixed model with fixed effects for the conditions and random effects for the plates.
-This accounts for plate-to-plate variability while considering the correlations between cells on each plate.
+This accounts for plate-to-plate variability while considering the dependencies between cells on each plate.
 However, mixed models are difficult to implement and are not supported by most existing methods for analyzing genomic data, e.g., edgeR.
-One can instead use general statistical methods for mixed modelling such as those in the lme4 package \cite{bates2015fitting}.
+Using voom with correlations is analogous to fitting a mixed model with information sharing across genes \cite{smyth2005limma}, 
+    but fails to maintain type I error control in the simuations.
+Alternatively, one could use general statistical methods for mixed modelling such as those in the lme4 package \cite{bates2015fitting}.
 To test this approach, the glmer.nb function in lme4 v1.1-10 was used to fit a NB generalized linear mixed model to the simulated counts for each gene.
-This still was not able to control type I error rate, yielding an observed rate of 0.032 at a threshold of 0.01.
-Model fitting was also more time-consuming, taking several hours to run for a single simulation iteration compared to several minutes for edgeR.
-Furthermore, the amount of information for estimating the variability of the plate random effect is determined by the number of plates, not the number of cells.
-In data sets with few plates, little information is available for each gene -- this reduces the stability of the variance estimates and the power to detect DE.
-This is not an issue for genomics methods like edgeR that share information across genes.
+This was unable to control type I error rate, yielding an observed rate of 0.032 at a threshold of 0.01.
+Loss of control is likely caused by inaccurate estimates of the variance of the random effect for low numbers of plates.
+Model fitting was also more time-consuming, taking several hours to run for a single simulation iteration compared to several minutes for edgeR or voom.
 
 \section{Improved performance with summation across cells in each plate}
 
