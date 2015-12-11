@@ -388,14 +388,16 @@ This is statistically convenient as it substantially simplifies the modelling pr
 However, more realistic data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 In such scenarios, the count sum for each plate will not be identically distributed.
 The most obvious difference is that in the magnitude of the count sum between different plates, 
-    but this can be easily corrected by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
-The greater problem is that the count sum for each plate will not follow the same mean-variance relationship.
-This will compromise the accuracy of most parametric models.
+    but this can be overcome by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
+The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
+Briefly, the variance of a random variable can be expressed as a function of its mean.
+Most parametric models assume that this function is the same for all observations of a given gene.
+Differences in the function between plates may compromise model accuracy for the count sums.
 
 To illustrate, consider the NB-based simulation framework described in the previous section.
-Denote the count sum for gene $i$ in plate $k$ as $s_{ik}$.
+Let $s_{ik}$ be the count sum for gene $i$ in plate $k$.
 Denote the conditional mean of $s_{ik}$ as $E(s_{ik}|\delta_{ik})=N_k \delta_{ik}\mu_{il} = \rho_{ik}$, where $N_k$ is the number of cells in plate $k$.
-The sum of independently and identically NB-distributed random variables is itself NB-distributed, 
+The sum of independently and identically NB-distributed random variables is itself NB-distributed \cite{robinson2008small}, 
     such that $s_{ik} |\delta_{ik} \sim \mbox{NB}(\rho_{ik}, \nicefrac{\varphi_{ik}}{N_k})$.
 The conditional variance is then
 \[
@@ -415,8 +417,8 @@ Plate-specific differences in library size lead to similar complications, by alt
 
 Data sets with observation-specific mean-variance relationships are not typically considered in most analysis pipelines.
 For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene.
-This defines an identical mean-variance relationship for all counts of the gene, which reduces the accuracy of the model when the relationship varies across counts.
-Model inaccuracy is particularly problematic when the variance is consistently underestimated across all plates in a condition.
+This defines an identical mean-variance relationship for all counts of the gene, which may not be accurate when the relationship varies across observations.
+Model inaccuracy is particularly problematic when the variance is consistently underestimated for all plates in a particular condition.
 Such cases will result in loss of error control and detection of spurious DE between conditions.
 This may affect the performance of the summation strategy when the numbers of cells and library sizes vary between or within plates.
 
