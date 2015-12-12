@@ -97,6 +97,23 @@ A hurdle model was fitted to the log-counts using the biological group as the fa
 The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 DE genes between groups were identified using the LRT.
 
+\section{Implementing the quantile adjustment method}
+The quantile adjustment method models the conditional distribution of each count as a NB distribution.
+All cells within a single plate are defined as a separate group in a one-way layout.
+For each gene, means are estimated for all cells by fitting a GLM to the counts for that gene.
+The mean for each cell accounts for its library size as well as any gene- and plate-specific effects.
+A gene-specific NB dispersion is also estimated using standard methods, e.g., with the Cox-Reid adjusted profile likelihood in edgeR \cite{mccarthy2012differential}.
+The count for each cell is now modelled by a NB distribution with the estimated mean and dispersion.
+The percentile corresponding to each count is computed, and the matching quantile for a Poisson distribution with the same mean is identified \cite{robinson2008small}.
+This quantile is Poisson-distributed and is used as the pseudo-count for each cell.
+
+This method depends on stable estimation of the mean for each cell and the dispersion for each gene.
+The latter should not be an issue as there should be sufficient residual d.f. across all cells to obtain a precise dispersion estimate.
+Note that the previously mentioned problems with residual d.f. overestimation are not applicable here.
+Correlations induced by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
+For the means, stable estimation can be ensured by having sufficient cells per plate.
+This is usually the case given that low-quality plates with very few cells would be removed.
+
 \section{Summation and plate-specific mean variance relationships}
 The robustness of direct summation to differences in the number of size of cells per plate can be explained by examining the mean-variance relationship of the simulated data.
 Consider the notation where $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$, representing the conditional mean for gene $i$ in cell $j$ with some library size modifier $\theta_j$.
@@ -122,6 +139,9 @@ This is because
 for positive values of $\theta_j$ and $\mu_{ig}$, such that the quotient of the latter to the former will always decrease for an increasing number of cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion.
 Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
+
+% If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
+% Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
 
 %%% FIGURES %%%
 
