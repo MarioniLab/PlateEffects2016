@@ -382,7 +382,7 @@ All of these advantages are lost when RNA sequencing is performed at the populat
 
 Note that summation across cells in scRNA-seq data is not without precedent.
 Jaitin \textit{et al.} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering \cite{jaitin2014massively}.
-Klein \textit{et al.} also pool single-cell counts within each condition prior to a DE analysis between conditions,
+Klein \textit{et al.} also pool single-cell counts within each group prior to performing a DE analysis between groups,
     to assess the technical reproducibility of their experimental protocol \cite{klein2015droplet}.
 However, the use of summation to restore type I error control in the presence of plate effects has not yet been addressed in the literature.
 
@@ -403,31 +403,29 @@ Differences in the function between plates may compromise model accuracy for the
 
 To illustrate, consider the NB-based simulation framework described in the previous section.
 Let $s_{ik}$ be the count sum for gene $i$ in plate $k$.
-Denote the conditional mean of $s_{ik}$ as $E(s_{ik}|\delta_{ik})=N_k \delta_{ik}\mu_{il} = \rho_{ik}$, where $N_k$ is the number of cells in plate $k$.
+Denote the conditional mean of $s_{ik}$ as $E(s_{ik}|\delta_{ik})=N_k \delta_{ik}\mu_{ig} = \rho_{ik}$, where $N_k$ is the number of cells in plate $k$.
 The sum of independently and identically NB-distributed random variables is itself NB-distributed \cite{robinson2008small}, 
-    such that $s_{ik} |\delta_{ik} \sim \mbox{NB}(\rho_{ik}, \nicefrac{\varphi_{ik}}{N_k})$.
+    such that $s_{ik} |\delta_{ik} \sim \mbox{NB}(\rho_{ik}, \nicefrac{\varphi_{i}}{N_k})$.
 The conditional variance is then
 \[
-    \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{ik}}{N_k}\rho_{ik}^2 \;.
+    \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{i}}{N_k}\rho_{ik}^2 \;.
 \]
 As $\delta_{ik}$ is independent of the other parameters, the total variance of $s_{ik}$ can be written as
 \begin{align}
-    \mbox{var}(s_{ik}) &= (N_k\mu_{il})^2\mbox{var}(\delta_{ik}) + N_k\mu_{il} + \varphi_{ik} N_k\mu_{il}^2 E(\delta_{ik}^2) \\
-                       &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{ik}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
+    \mbox{var}(s_{ik}) &= (N_k\mu_{ig})^2\mbox{var}(\delta_{ik}) + N_k\mu_{ig} + \varphi_{i} N_k\mu_{ig}^2 E(\delta_{ik}^2) \nonumber \\ 
+                       &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{i}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
     \label{eqn:meanvar}
 \end{align}
-where $E(s_{ik})=N_k\mu_{il}$. 
-In this expression, the $\mbox{var}(\delta_{ik})$ and $E(\delta_{ik}^2)$ terms are constant.
-The $\varphi_{ik}$ term is also unlikely to be proportional to $N_k$, due to conditional independence between cells on the same plate 
-    -- the number of cells on a plate should have no effect on the sampling of counts for those cells.
+where $E(s_{ik})=N_k\mu_{ig}$. 
+Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across $k$ when $N_k$ differs between plates.
 Plate-specific differences in library size lead to similar complications, by altering the distribution of each $s_{ik} |\delta_{ik}$.
 
 Data sets with observation-specific mean-variance relationships are not typically considered in most analysis pipelines.
 For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene.
 This defines an identical mean-variance relationship for all counts of the gene, which may not be accurate when the relationship varies across observations.
-Model inaccuracy is particularly problematic when the variance is consistently underestimated for all plates in a particular condition.
-Such cases will result in loss of error control and detection of spurious DE between conditions.
+Model inaccuracy is particularly problematic when the variance is consistently underestimated for all plates in a particular group.
+Such cases will result in loss of error control and the detection of spurious DE between groups.
 This may affect the performance of the summation strategy when the numbers of cells and library sizes vary between or within plates.
 
 \subsection{Preserving the mean-variance relationship with quantile adjustment}
@@ -459,15 +457,14 @@ This is usually the case given that low-quality plates with very few cells would
 \subsection{Direct and quantile-adjusted summation control type I error rates}
 The performances of direct and quantile-adjusted summation were evaluated with more complex simulations involving different numbers of cells and library sizes per plate.
 Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
-Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ik}$.
+Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$.
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
-The NB dispersion $\varphi_{ij}$ of the conditional distribution was defined as described for $\varphi_{ik}$ after replacing $\lambda_{ik}$ with $\lambda_{ij}$.
-The experimental design was also changed such that only two plates were present for each condition.
+The experimental design was also changed such that only two plates were present for each biological group.
 
-To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one condition and 100 cells in all plates of the other condition (Figure~\ref{fig:compsim}).
-Library sizes were kept constant for all cells in this scenario.
-To assess the effect of library size, the number of cells per plate was set to 50.
-Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one condition (all plates in the other condition were unchanged);
+To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Figure~\ref{fig:compsim}).
+Library sizes were kept constant for all cells in this simulation scenario.
+To assess the effect of library size, the number of cells per plate was kep constant at 50.
+Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one group (all plates in the other group were unchanged);
     $\theta_j=10$ for 10 cells; and $\theta_j=20$ for 5 cells.
 In all cases, library sizes were only modified for a fraction of cells and in a subset of plates.
 This subtlety is necessary because the mean-variance relationship will be the same between plates if there is a consistent increase in the library size for all cells on a plate, 
@@ -479,7 +476,7 @@ This subtlety is necessary because the mean-variance relationship will be the sa
     \end{center}
     \caption{
         Simulation scenarios with different number of cells per plate and different library sizes per cell.
-        Each scenario is represented by two plates where the set-up for each plate is used for all plates in condition $g_1$ or $g_2$.
+        Each scenario is represented by two plates where the set-up for each plate is used for all plates in group $g_1$ or $g_2$.
         Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
         The library size of each cell is indicated by the colour of the well.
     }
@@ -487,16 +484,16 @@ This subtlety is necessary because the mean-variance relationship will be the sa
 \end{figure}
 
 
-The use of two plates in each condition also allows the simulated data set to be permuted.
-Specifically, plates can be swapped between conditions such that each condition contains replicate plates with differing numbers of cells (in the first scenario)
+The use of two plates in each group also allows the simulated data set to be permuted.
+Specifically, plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
     or cells with different library sizes (in the other scenarios).
-This swapping procedure generates scenarios where differences between plates occur within conditions, 
-    complementing the original simulations where the differences only occur between plates in different conditions.
+This swapping procedure generates simulation scenarios where differences are present between plates in the same group, 
+    complementing the original scenarios where the differences are only present between plates in different groups.
 
 Direct and quantile-adjusted summation were applied on the simulated data by summing the counts or pseudo-counts for all cells in each plate.
-The resulting (pseudo-)count sums were tested for DE between conditions, using the QL framework in edgeR as a representative of the bulk analysis methods.
+The resulting (pseudo-)count sums were tested for DE between groups, using the QL framework in edgeR as a representative of the bulk analysis methods.
 The observed type I error rate was calculated, and the average rate was computed across 10 simulation iterations.
-This was repeated for each scenario described above, before and after swapping replicate plates between conditions.
+This was repeated for each scenario described above, before and after swapping replicate plates between groups.
 Both strategies are able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
 This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
@@ -520,7 +517,7 @@ These results indicate that plate-specific relationships will not affect model p
         applied on counts from direct summation (black circles) or summation of quantile-adjusted pseudo-counts (grey diamonds). 
     Simulations were performed for a number of scenarios, including differing numbers of cells per plate (1);
         small (2), moderate (3) or large differences (4) in library size within plates;
-        as well as the corresponding scenarios where replicate plates were swapped between conditions.
+        as well as the corresponding scenarios where replicate plates were swapped between groups.
     Error rates are shown on a log scale and represent the average of 10 simulation iterations.
     Each error bar represents the standard error of the corresponding log-average rate.
     The threshold of 0.01 is represented by the red dotted line.
