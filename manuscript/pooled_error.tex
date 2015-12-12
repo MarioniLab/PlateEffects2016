@@ -145,21 +145,21 @@ DE analyses of the simulated data were performed using edgeR v3.12.0, DESeq2 v1.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 model counts with NB distributions, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 monocle and MAST are explicitly designed for analyzing scRNA-seq data and operate on pre-processed expression values.
-In all methods, the experimental design was parametrized as a one-way layout with two conditions.
-All cells within each condition were treated as replicate samples -- the plate of origin within each condition was ignored.
+In all methods, the experimental design was parametrized as a one-way layout with two groups.
+All cells within each group were treated as replicate samples -- the plate of origin within each group was ignored.
 
 For edgeR, analyses were performed with and without empirical Bayes (EB) shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
     and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \cite{mccarthy2012differential}.
 The GLM deviance was used to estimate the quasi-likelihood (QL) dispersion for each gene, 
     which was stabilized by robust EB shrinkage towards another mean-dispersion trend \cite{lund2012detecting}.
-DE testing between conditions was performed using the QL F-test.
+DE testing between groups was performed using the QL F-test.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing was performed using the likelihood ratio test (LRT).
 
 For voom, counts were converted to log-CPMs and precision weights were computed from a fitted mean-variance trend.
 Log-CPMs and weights for each gene were used to fit a linear model.
-Variances were stabilized by EB shrinkage, and genes were tested for DE between conditions using a moderated $t$-test.
+Variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
 For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
 The consensus correlation across all genes was incorporated into the linear model by blocking on the plate of origin.
@@ -168,7 +168,7 @@ DE testing was then repeated on this refitted model.
 For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
 The estimated dispersion was used to fit a GLM to the counts for each gene.
-Finally, DE testing was performed between conditions using the Wald test.
+Finally, DE testing was performed between groups using the Wald test.
 
 For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \cite{robinson2010scaling}.
 For DESeq2, normalization was performed using size factors.
@@ -176,16 +176,16 @@ This step is not strictly necessary in this simulation, given that library-speci
 Nonetheless, normalization is included as part of the standard analysis.
 
 For monocle, counts were transformed into CPM values that were considered to be roughly log-normal.
-These were used for DE testing between conditions with the LRT in the differentialGeneTest function.
+These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
 For MAST, counts were log-transformed after adding a prior count of 1.
 All libraries were of the same size, and all genes were of the same length, 
     so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \cite{finak2015mast}.
-A hurdle model was fitted to the log-counts using the biological condition as the factor of interest and the number of non-zero counts in each library as a covariate.
+A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as a covariate.
 The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
-DE genes between conditions were identified using the LRT.
+DE genes between groups were identified using the LRT.
 
-In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{il}$ is constant for both conditions.
+In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for both biological groups.
 Any rejections of the null represent type I errors, i.e., false positives.
 For a specified type I error rate $\alpha = 0.01$, the observed error rate was defined as the proportion of all genes with a $p$-value below $\alpha$.
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
@@ -255,40 +255,40 @@ However, the obvious alternatives are not without their own difficulties.
 One natural approach would be to introduce blocking factors for the plates.
 In a log-link model similar to that used in edgeR and DESeq, this is equivalent to setting
 \[
-    \beta_{ij} = \beta_{il} + \beta_{ik} + o_{ij}
+    \beta_{ij} = \beta_{ig} + \beta_{ik} + o_{ij}
 \]
-where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{il}$ is the average log-expression for condition $l$, 
+where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{ig}$ is the average log-expression for group $g$, 
     $\beta_{ik}$ is the plate effect for plate $k$ and $o_{ij}$ is a normalization offset.
 The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between $k$, thus eliminating the plate effect.
-However, $\beta_{ik}$ will also absorb differences in $\mu_{il}$ between conditions, which can eliminate genuine DE and reduce detection power.
+However, $\beta_{ik}$ will also absorb differences in $\mu_{ig}$ between groups, which can eliminate genuine DE and reduce detection power.
 The same problem is observed for methods like ComBat \cite{johnson2007adjusting} when they are applied to remove confounding plate effects prior to a DE analysis.
 In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
-This cannot be resolved without altering the interpretation of $\beta_{il}$ such that it no longer represents the condition average.
-For example, one could set $\beta_{ik}=0$ for the first plate in each condition, 
-    but $\beta_{il}$ would then represent the log-expression of that first plate alone rather than the average of all plates for $l$.
-As such, it would not be sensible to treat differences in $\beta_{il}$ as DE between conditions.
+This cannot be resolved without altering the interpretation of $\beta_{ig}$ such that it no longer represents the group average.
+For example, one could set $\beta_{ik}=0$ for the first plate in each group, 
+    but $\beta_{ig}$ would then represent the log-expression of that first plate alone rather than the average of all plates for $g$.
+As such, it would no longer be sensible to interpret differences in $\beta_{ig}$ as DE between groups.
 
-A more elegant model involves orthogonal plate and condition terms.
-For a simple experimental design involving two plates in two conditions ($k=1,2$ for $l=1$, $k=3,4$ for $l=2$), this can be parametrized as
+A more elegant model involves orthogonal plate and group terms.
+For a simple experimental design involving two plates in two groups ($k=1,2$ for $g=1$, $k=3,4$ for $g=2$), this can be parametrized as
 \[
-    \beta_{ij} = \beta_{il} + 
+    \beta_{ij} = \beta_{ig} + 
     \begin{cases} 
-        \beta_{il0} & \mbox{if $k$ is odd} \\
-        - \beta_{il0} & \mbox{if $k$ is even}
+        \beta_{ig0} & \mbox{if $k$ is odd} \\
+        - \beta_{ig0} & \mbox{if $k$ is even}
     \end{cases}
     + o_{ij}
 \]
-where $\beta_{il0}$ represents the plate-specific residual around the mean log-expression $\beta_{il}$ for each condition.
-Differences in $\mu_{il}$ between conditions will be detected as differences in $\beta_{il}$, 
-    while differences in $\delta_{ik}$ within conditions will be captured by $\beta_{il0}$ and removed.
-The problem with this setup is that the variability of the plate effect is absorbed by $\beta_{il0}$.
+where $\beta_{ig0}$ represents the plate-specific residual around the mean log-expression $\beta_{ig}$ for each group.
+Differences in $\mu_{ig}$ between groups will be detected as differences in $\beta_{ig}$, 
+    while differences in $\delta_{ik}$ within groups will be captured by $\beta_{ig0}$ and removed.
+The problem with this setup is that the variability of the plate effect is absorbed by $\beta_{ig0}$.
 This means that it is not incorporated into the variance estimate within the DE analysis, which only considers the conditional variance of the counts within each plate.
 If one were to generate new data for the same experimental design, one would expect a different set of values for the plate effects.
 Failure to account for the variability of $\delta_{ik}$ across plates will compromise the reproducibility of the results.
 Indeed, application of this approach in the previous simulation (by modifying the design matrix appropriately and applying QL edgeR)
     results in an observed type I error rate of 0.55 at a specified threshold of 0.01.
 
-The most sophisticated approach uses a mixed model with fixed effects for the conditions and random effects for the plates.
+The most sophisticated approach uses a mixed model with fixed effects for the groups and random effects for the plates.
 This accounts for plate-to-plate variability while considering the dependencies between cells on each plate.
 However, mixed models are difficult to implement and are not supported by most existing methods for analyzing genomic data, e.g., edgeR.
 Using voom with correlations is analogous to fitting a mixed model with information sharing across genes \cite{smyth2005limma}, 
