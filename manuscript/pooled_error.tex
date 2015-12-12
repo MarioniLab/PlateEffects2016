@@ -35,18 +35,18 @@ The entire plate is processed to generate sequencing libraries for all cells at 
 In the latter, individual cells are captured in separate reaction chambers within the C1 chip 
     (for simplicity, each chip will be treated as being equivalent to a plate in the following text).
 All cells on each chip are then simultaneously processed into libraries.
-Each plate or chip can only handle a limited number of cells, so data is usually generated for multiple plates across several biological conditions. 
-All cells on each plate typically come from the same population (e.g., culture, embryo, animal) of a single biological condition.
-Multiple plates are used for cells from replicate populations of the same condition.
+Each plate or chip can only handle a limited number of cells, so data is usually generated for multiple plates across several biological groups. 
+All cells on each plate typically come from the same population (e.g., culture, embryo, animal) of a single biological group.
+If replicate populations are present in a group, one plate is used for each population.
 
 The experimental design described above is motivated largely by practicality.
-It is logistically simpler to track and process cells when each plate corresponds to one population of one condition, compared to partitioning the plate into separate conditions.
+It is logistically simpler to track and process cells when each plate corresponds to one population of one biological group, compared to partitioning the plate into different groups.
 For example, FACS is typically performed such that all cells on a plate are derived from the same gates, i.e., from the same subpopulation.
 In the C1, cells are captured randomly into reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
-Ambiguity in determining the condition for each cell is avoided by only using cells from the same condition on each chip.
+Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
 However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect for all cells on each plate but a variable effect across different plates. 
-These variables can be technical in origin, such as differences in library preparation or sequencing between plates; 
-    or biological, due to inherent variability in gene expression between the replicate populations on different plate.
+These variables can be technical in origin, such as differences in library preparation or sequencing efficiency between plates; 
+    or biological, due to inherent variability in gene expression across replicate populations on different plates.
 
 One common analysis applied to scRNA-seq data involves identifying DE genes between groups of cells.
 This does not strictly require single-cell resolution, and is more conventionally performed with bulk data.
@@ -55,15 +55,15 @@ Rare cells are more easily sequenced with single-cell protocols, and irrelevant 
 It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk data exclusively for this purpose.
 The DE analysis itself is typically performed using software packages such as edgeR \cite{robinson2010edgeR} and DESeq \cite{anders2010differential}, which were designed for bulk data;
     or with methods such as monocle \cite{trapnell2014dynamics} and SCDE \cite{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
-Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more biological conditions of interest.
+Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more biological groups of interest.
 
 The presence of plate effects complicates the parametrization of the experimental design for the DE analysis.
 Such effects are obviously undesirable as they result from uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
-However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the conditions of interest \cite{hicks2015widespread}.
-At the most extreme, consider a situation involving one plate for each condition.
-Changes in gene expression due to the plate effect will be indistinguishable from genuine DE between conditions.
-This problem is still present with two or three plates per condition, where plate-to-plate variability may explain some or all of the apparent DE between conditions.
+However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the groups of interest \cite{hicks2015widespread}.
+At the most extreme, consider a situation involving one plate for each group.
+Changes in gene expression due to the plate effect will be indistinguishable from genuine DE between groups.
+This problem is still present in data sets with two or three plates per group, where plate-to-plate variability may explain some or all of the apparent DE between groups.
 In lieu of a sensible method to remove plate effects, most studies have simply ignored them and treated cells from different plates as direct replicates \cite{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
 This may not be statistically rigorous as the variability across plates and cells will not be modelled properly.
 
