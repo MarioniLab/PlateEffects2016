@@ -498,15 +498,6 @@ Both strategies are able to control the type I error close to the specified thre
 This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
 
-The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
-Recall that the counts for cells on the same plate are conditionally independent. 
-This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
-The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
-This means that the count sum for each plate will have near-identical mean-variance relationships, as described above for the pseudo-counts.
-In these particular simulations, the plate-specific term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
-Any differences in these relationships between plates will be quantitatively negligible, especially for large $\mbox{var}(\delta_{ik})$.
-These results indicate that plate-specific relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
-
 \begin{figure}[tbp]
 \begin{center}
 \includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_with.pdf}
@@ -526,6 +517,31 @@ These results indicate that plate-specific relationships will not affect model p
 \end{figure}
 
 % Probably slightly more conservative than previous QL figure because n=2 here for each group, whereas n=3 before.
+
+The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
+Recall that the counts for cells on the same plate are conditionally independent. 
+This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
+The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
+This means that the count sums across all plates will have near-identical mean-variance relationships, as described above for the pseudo-counts.
+Indeed, the similarity to the results for pseudo-count summation suggests that any plate-specific differences in the relationships will not affect model performance after direct summation.
+
+This can be explained more precisely by examining the the mean-variance relationship of Equation~\ref{eqn:meanvar} for the simulated data.
+The plate-specific term in the relationship is inversely proportional to the number of cells $N_k$.
+For a large value of $\mbox{var}(\delta_{ik})$, the plate-specific contribution to the variance will approach zero as $N_k$ increases. 
+This is also true if the cells on the plate have different library sizes.
+Consider the previous notation where $\lambda_{ij}$ represents the conditional mean for cell $j$.
+The conditional variance becomes
+\[
+    \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{N_k} \lambda_{ij}  + \varphi_{i} \sum_{N_k} \lambda_{ij}^2 \;,
+\]
+such that the total variance of the count sum across all plates can be written as 
+\begin{align*}
+    \mbox{var}(s_{ik}) &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{E(s_{ik})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \\
+                       &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{ (\sum_{N_k} \theta_j\mu_{ig})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \;. 
+\end{align*}
+Again, the relative contribution of the plate-specific term will approach zero as $N_k$ increases (for positive values of $\theta_j$ and $\mu_{ig}$).
+Summation will be similarly robust to plate- or even cell-specific values for the dispersion of the NB distribution.
+This suggests that quantile adjustment prior to summation is unnecessary.
 
 \section{Summation results in reduced DE detection in real data}
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
