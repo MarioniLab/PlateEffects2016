@@ -223,8 +223,8 @@ While the counts for cells on the same plate are independent, this is conditiona
 The use of a one-way layout ignores the plate of origin and assumes that all cells in the same group have the same mean.
 Under this model, the counts for cells on the same plate are no longer independent.
 The count for one cell will provide information about the count for another cell on the same plate,
-    due to the shared scaling of the mean for both counts from the plate effect
-(In contrast, if the plate of origin were to be modelled, counts would be conditionally independent as any extra information would be redundant with the specified plate structure.)
+    due to the shared scaling of the mean for both counts from the plate effect.
+(In contrast, conditional independence is preserved under this interpretation, as no extra information is provided when the plate effect on the mean is already known.)
 Most DE analysis methods assume that replicate samples (i.e., cells) are independent, given only the groupings in the one-way layout.
 If this is not true, the amount of information in the data set is reduced as cells on the same plate are effectively redundant.
 Methods that assume independence will overstate the amount of information for variance estimation, resulting in overconfident inferences and liberalness.
