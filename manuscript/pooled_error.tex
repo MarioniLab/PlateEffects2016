@@ -13,6 +13,13 @@
 \renewcommand{\bottomfraction}{0.8} % max fraction of floats at bottom
 \renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
 
+% Supplementary sections
+\newcommand{\suppimplementation}{1i}
+
+% Supplementary figures
+\newcommand{\suppcompsim}{S1}
+\newcommand{\suppexpprof}{S2}
+
 \title{Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data}
 \author{Aaron Lun}
 
@@ -145,45 +152,13 @@ DE analyses of the simulated data were performed using edgeR v3.12.0, DESeq2 v1.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 model counts with NB distributions, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 monocle and MAST are explicitly designed for analyzing scRNA-seq data and operate on pre-processed expression values.
+
+Each method was applied on the simulated data to test for DE between groups. 
 In all methods, the experimental design was parametrized as a one-way layout with two groups.
-All cells within each group were treated as replicate samples -- the plate of origin within each group was ignored.
-
-For edgeR, analyses were performed with and without empirical Bayes (EB) shrinkage.
-In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
-    and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \cite{mccarthy2012differential}.
-The GLM deviance was used to estimate the quasi-likelihood (QL) dispersion for each gene, 
-    which was stabilized by robust EB shrinkage towards another mean-dispersion trend \cite{lund2012detecting}.
-DE testing between groups was performed using the QL F-test.
-In the second analysis, the NB dispersion was estimated for each gene individually.
-This was used directly to fit the GLM for each gene, and DE testing was performed using the likelihood ratio test (LRT).
-
-For voom, counts were converted to log-CPMs and precision weights were computed from a fitted mean-variance trend.
-Log-CPMs and weights for each gene were used to fit a linear model.
-Variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
-This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
-For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
-The consensus correlation across all genes was incorporated into the linear model by blocking on the plate of origin.
-DE testing was then repeated on this refitted model.
-
-For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
-A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
-The estimated dispersion was used to fit a GLM to the counts for each gene.
-Finally, DE testing was performed between groups using the Wald test.
-
-For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \cite{robinson2010scaling}.
-For DESeq2, normalization was performed using size factors.
-This step is not strictly necessary in this simulation, given that library-specific biases have not been introduced and all cells have the same library size.
-Nonetheless, normalization is included as part of the standard analysis.
-
-For monocle, counts were transformed into CPM values that were considered to be roughly log-normal.
-These were used for DE testing between groups with the LRT in the differentialGeneTest function.
-
-For MAST, counts were log-transformed after adding a prior count of 1.
-All libraries were of the same size, and all genes were of the same length, 
-    so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \cite{finak2015mast}.
-A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as a covariate.
-The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
-DE genes between groups were identified using the LRT.
+All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
+edgeR was run twice, using either the likelihood ratio test (LRT) \cite{mccarthy2012differential} or the quasi-likelihood (QL) framework \cite{lund2012detecting}.
+Similarly, voom was run once with the one-way layout, and again after estimating the correlations induced by the plate effect.
+The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
 In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for both biological groups.
 Any rejections of the null represent type I errors, i.e., false positives.
@@ -461,28 +436,14 @@ Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribu
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
 The experimental design was also changed such that only two plates were present for each biological group.
 
-To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Figure~\ref{fig:compsim}).
-Library sizes were kept constant for all cells in this simulation scenario.
+To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Supplementary Figure~\suppcompsim{}).
+Library sizes were kept constant for all cells in this scenario.
 To assess the effect of library size, the number of cells per plate was kep constant at 50.
 Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one group (all plates in the other group were unchanged);
     $\theta_j=10$ for 10 cells; and $\theta_j=20$ for 5 cells.
 In all cases, library sizes were only modified for a fraction of cells and in a subset of plates.
 This subtlety is necessary because the mean-variance relationship will be the same between plates if there is a consistent increase in the library size for all cells on a plate, 
     or if there is an increase in the library size for the same proportion of cells on all plates.
-
-\begin{figure}[tb]
-    \begin{center}
-        \includegraphics[width=\textwidth]{quantile_schematic.pdf}
-    \end{center}
-    \caption{
-        Simulation scenarios with different number of cells per plate and different library sizes per cell.
-        Each scenario is represented by two plates where the set-up for each plate is used for all plates in group $g_1$ or $g_2$.
-        Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
-        The library size of each cell is indicated by the colour of the well.
-    }
-    \label{fig:compsim}
-\end{figure}
-
 
 The use of two plates in each group also allows the simulated data set to be permuted.
 Specifically, plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
@@ -651,10 +612,10 @@ Top genes were defined as those with the smallest 20, 200, or 2000 $p$-values in
 \end{table}
 
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
-One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would no longer be penalized by a large cell-to-cell variance estimate.
+One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
 This would not be appropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
-Figure~\ref{fig:realdata} shows the top set of DE genes from summation, all of which exhibit robust differences between groups.
+The top set of DE genes from summation all exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}).
 DE genes driven by a few outliers tend to be less significant.
 This is because the conditional variance of the count sum increases with fewer contributing cells, 
     which increases the total variance and decreases the relative significance of DE.
@@ -662,25 +623,6 @@ Technical noise and heterogeneity will not average out if the sum is dominated b
 
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
-
-\begin{figure}[bt]
-    \begin{center}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}
-    \end{center}
-\caption{
-    Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, 
-        for the top genes detected by QL edgeR on summed counts.
-    Each plot contains the expression profile for one gene, where the $y$-axis represents the log-CPMs.
-    Each point represents a cell in the serum (black) or a2i/2i conditions (grey).
-    A prior of 0.25 was added to each count to avoid undefined log-CPMs from zeroes.
-    For simplicity, only cells in one batch are shown for both contrasts.
-}
-\label{fig:realdata}
-\end{figure}
-
-% The second kolod comparison is the only one with decent DE for all methods,
-% which is why it's being used here.
 
 \section{Conclusions}
 Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.

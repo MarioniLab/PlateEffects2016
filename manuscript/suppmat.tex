@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[labelfont=bf]{caption}
+\usepackage{color}
+\usepackage{xcite}
+
+\renewcommand{\textfraction}{1.0}
+\renewcommand{\floatpagefraction}{.9}
+\newcommand\revised[1]{\textcolor{red}{#1}}
+
+\makeatletter 
+\renewcommand{\thefigure}{S\@arabic\c@figure} 
+\renewcommand{\thetable}{S\@arabic\c@table} 
+
+\externalcitedocument{pooled_error}
+
+\usepackage{url}
+\urlstyle{same}
+
+\begin{document}
+
+\begin{titlepage}
+\vspace*{3cm}
+\begin{center}
+
+\textsc{\Large Supplementary Materials For}
+
+\vspace{1.5cm}
+{\LARGE
+Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data
+\par}
+
+\vspace{0.75cm}
+\large
+by
+
+\vspace{0.75cm}
+Aaron T. L. Lun$^{1}$ and John C. Marioni$^{1,2}$
+
+\vspace{1cm}
+\begin{minipage}{0.9\textwidth}
+\begin{flushleft} 
+$^1$Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom \\[6pt]
+$^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom \\[6pt]
+\end{flushleft}
+\end{minipage}
+
+\vspace{1.5cm}
+{\large 8 December 2015}
+
+\vspace*{\fill}
+\end{center}
+\end{titlepage}
+
+%\onehalfspacing
+
+\section{Details on the implementation of the DE analysis methods}
+For edgeR, analyses were performed with and without empirical Bayes (EB) shrinkage.
+In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
+    and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \cite{mccarthy2012differential}.
+The GLM deviance was used to estimate the quasi-likelihood (QL) dispersion for each gene, 
+    which was stabilized by robust EB shrinkage towards another mean-dispersion trend \cite{lund2012detecting}.
+DE testing between groups was performed using the QL F-test.
+In the second analysis, the NB dispersion was estimated for each gene individually.
+This was used directly to fit the GLM for each gene, and DE testing was performed using the likelihood ratio test (LRT).
+
+For voom, counts were converted to log-CPMs and precision weights were computed from a fitted mean-variance trend.
+Log-CPMs and weights for each gene were used to fit a linear model.
+Variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
+This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
+For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
+The consensus correlation across all genes was incorporated into the linear model by blocking on the plate of origin.
+DE testing was then repeated on this refitted model.
+
+For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
+A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
+The estimated dispersion was used to fit a GLM to the counts for each gene.
+Finally, DE testing was performed between groups using the Wald test.
+
+For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \cite{robinson2010scaling}.
+For DESeq2, normalization was performed using size factors.
+This step is not strictly necessary in this simulation, given that library-specific biases have not been introduced and all cells have the same library size.
+Nonetheless, normalization is included as part of the standard analysis.
+
+For monocle, counts were transformed into CPM values that were considered to be roughly log-normal.
+These were used for DE testing between groups with the LRT in the differentialGeneTest function.
+
+For MAST, counts were log-transformed after adding a prior count of 1.
+All libraries were of the same size, and all genes were of the same length, 
+    so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \cite{finak2015mast}.
+A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as a covariate.
+The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
+DE genes between groups were identified using the LRT.
+
+\begin{figure}[tb]
+    \begin{center}
+        \includegraphics[width=\textwidth]{quantile_schematic.pdf}
+    \end{center}
+    \caption{
+        Simulation scenarios with different number of cells per plate and different library sizes per cell.
+        Each scenario is represented by two plates where the set-up for each plate is used for all plates in group $g_1$ or $g_2$.
+        Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
+        The library size of each cell is indicated by the colour of the well.
+    }
+    \label{fig:compsim}
+\end{figure}
+
+\begin{figure}[bt]
+    \begin{center}
+        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
+        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}
+    \end{center}
+\caption{
+    Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, 
+        for the top genes detected by QL edgeR on summed counts.
+    Each plot contains the expression profile for one gene, where the $y$-axis represents the log-CPMs.
+    Each point represents a cell in the serum (black) or a2i/2i conditions (grey).
+    A prior of 0.25 was added to each count to avoid undefined log-CPMs from zeroes.
+    For simplicity, only cells in one batch are shown for both contrasts.
+}
+\label{fig:realdata}
+\end{figure}
+
+% The second kolod comparison is the only one with decent DE for all methods,
+% which is why it's being used here.
+
+
+ 
+\end{document}
