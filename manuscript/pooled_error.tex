@@ -69,8 +69,8 @@ This may not be statistically rigorous as the variability across plates and cell
 
 This article demonstrates that plate effects must be handled properly to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
-This was caused by the presence of correlations between cells on each plate during variance estimation.
-To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to downstream analysis.
+This was caused by dependencies between cells on the same plate, which compromised inferences from the fitted model.
+To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
 This restored control of type I error across a range of simulation scenarios, without compromising DE detection power.
 Similar effects were observed in real data where summation resulted in substantial changes in the number and ranking of DE genes.
 
@@ -227,14 +227,15 @@ The count for one cell will provide information about the count for another cell
 (In contrast, conditional independence is preserved under this interpretation, as no extra information is provided when the plate effect on the mean is already known.)
 Most DE analysis methods assume that replicate samples (i.e., cells) are independent, given only the groupings in the one-way layout.
 If this is not true, the amount of information in the data set is reduced as cells on the same plate are effectively redundant.
-Methods that assume independence will overstate the amount of information for variance estimation, resulting in overconfident inferences and liberalness.
+Methods that assume independence will overstate the information available to estimate model parameters such as the group-specific coefficients, the variance or the NB dispersion.
+This results in overconfident inferences and liberalness during hypothesis testing.
 
-The problem can also be described in terms of the residual degrees of freedom (d.f.) that are available to estimate the variance.
+The problem can also be described in terms of the residual degrees of freedom (d.f.) that are available in the fitted model.
 The simulation uses an experimental design with $6 \times 50 =  300$ cells and two coefficients in a one-way layout.
 If all cells were truly independent -- as is assumed by most methods -- this design would provide 298 residual d.f. 
 At the other extreme, consider the scenario where all cells on a plate are identical, i.e., there is no technical noise or heterogeneity between cells.
 This means that there are only six independent samples (one cell per plate, as all other cells on that plate are redundant) and only four residual d.f.
-This is substantially smaller than the 298 d.f.\ expected by the various methods, resulting in an underestimation of the uncertainty of the variance estimates.
+This is substantially smaller than the 298 d.f.\ expected by the various methods, resulting in an underestimation of the uncertainty of various parameter estimates.
 For example, the use of edgeR with the LRT assumes that sufficient residual d.f.\ are present to estimate the dispersion for each gene separately,
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
