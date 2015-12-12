@@ -120,20 +120,22 @@ However, it is not clear whether statistical rigor is maintained when plate effe
 \subsection{Simulating plate effects to evaluate analysis methods}
 A simple simulation is used to test the performance of the analysis when plate effects are ignored.
 Let the count for each gene in each cell follow a negative binomial (NB) distribution, conditional on the plate effect.
-In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{il}$ and a dispersion of $\varphi_{ik}$.
-The size of $\varphi_{ik}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
+In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{ig}$ and a dispersion of $\varphi_{i}$.
+The size of $\varphi_{i}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
+(A constant value for the dispersion is used across all plates for each gene, to fulfill the distributional assumptions of methods like edgeR and DESeq
+    -- this provides a favourable situation for such methods to operate.)
 The plate effects themselves are sampled from a log-normal distribution, i.e., $Z = \ln \mathcal{N}(\nicefrac{-\sigma^2}{2}, \sigma^2)$.
 This parametrization ensures that $E(Z)=1$, as originally defined.
 
-Simulated data were generated for 10000 genes across two conditions, each consisting of 3 replicate plates with 50 cells in each plate.
-The expected read count for each condition was set to $\mu_{il}=\mu_{i0}$, where $\log \mu_{i0}$ was sampled from a uniform distribution over the interval (3, 8).
+Simulated data were generated for 10000 genes across two groups, each consisting of 3 replicate plates with 50 cells in each plate.
+The expected read count for each group was set to $\mu_{ig}=\mu_{i0}$, where $\log \mu_{i0}$ was sampled from a uniform distribution over the interval (3, 8).
 This captures the spread of abundances for different genes in real data. 
 For each gene $i$, the NB dispersion was defined according to the mean, i.e., 
 \[
-    \varphi_{ik} = \frac{1}{2} + \frac{100}{\lambda_{ik}} 
+    \varphi_{i} = \frac{1}{2} + \frac{100}{\mu_{i0}} 
 \]
 to represent the decreasing mean-dispersion trend observed in real data.
-Large values of $\varphi_{ik}$ are also consistent with high technical and biological variability in scRNA-seq counts.
+Large values of $\varphi_{i}$ are also consistent with high technical and biological variability in scRNA-seq counts.
 Finally, $\sigma^2$ was set to a value of 0.5 to represent a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
 
