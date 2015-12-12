@@ -77,39 +77,39 @@ Similar effects were observed in real data where summation resulted in substanti
 \section{Plate effects result in false positives in a DE analysis}
 
 \subsection{Description of the experimental design and analysis strategies}
-Consider an experimental design consisting of multiple biological conditions of interest.
-Each condition consists of cells sorted onto multiple plates, where all cells on a single plate correspond to a single condition.
+Consider an experimental design consisting of multiple biological groups of interest.
+Each group consists of cells sorted onto multiple plates, where all cells on each plate come from an independent population of a single group.
 As previously mentioned, this is not an uncommon setup due to the logistics of the experimental protocol, e.g., cell sorting onto a plate with FACS, cell capture with the C1.
 Further assume that a plate effect exists in the data set, whereby the expression of each gene in all cells of a given plate is modified in a gene- and plate-specific manner.
 Consideration of gene specificity in the plate effects is motivated by biological variability across cell populations, 
-    given that all cells on each plate are often derived from a separate population.
-More precisely, the observed read count for gene $i$ in cell $j$ in plate $k$ of condition $l$ is distributed as 
+    given that all cells on each plate are derived from a separate population.
+The observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ is distributed as 
 \[
     y_{ij} | \delta_{ik}  \sim X_{ik}
 \]
 where $\delta_{ik}$ is the plate-specific effect for this gene.
 $X_{ik}$ is some random variable such that 
 \[
-    E(X_{ik}) = \lambda_{ik} = \delta_{ik}\mu_{il}
+    E(X_{ik}) = \lambda_{ik} = \delta_{ik}\mu_{ig}
 \]
-where $\mu_{il}$ is the expected read count for condition $l$. 
+where $\mu_{ig}$ is the expected read count for group $g$. 
 Any references to the conditional distribution, variance or mean will refer to the corresponding attributes of $X_{ik}$.
 %In other words, the conditional distribution of $y_{ij}$ given $\delta_{ik}$ is defined as $X_{ik}$.
 The plate effect $\delta_{ik}$ is sampled from some independent distribution $Z$ where $E(Z) = 1$.
 This ensures that $E(y_{ij}) = \mu_{il}$, consistent with the definition of $\mu_{il}$.
 
-One aim of the data analysis for this experiment is to identify DE genes between conditions.
+One aim of the data analysis for this experiment is to identify DE genes between groups.
 However, this is complicated by the presence of the plate effects.
 These effects cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \cite{anders2010differential,robinson2010scaling}.
 This is because the plate effect varies for each gene, whereas the scaling factor for normalization of each cell is constant across genes.
-The plate effects are also confounded by the biological condition, as previously described.
-A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{il}$, based solely on the counts for a single plate.
+The plate effects are also confounded by the biological group, as previously described.
+A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{ig}$, based solely on the counts for a single plate.
 Any attempt to remove the former will affect detection of genuine DE in the latter.
-Even with multiple plates, this problem is still present as stochastic increases in $\delta_{ik}$ for all $k$ in $l$ can explain part or all of the observed DE.
+Even with multiple plates, this problem is still present as stochastic increases in $\delta_{ik}$ for all $k$ in $g$ can explain part or all of the observed DE.
 
 A common strategy ignores the plate effects and treats the cells from different plates as direct replicates.
 The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as that of $\delta_{ik}$ between plates.
-Methods can then be applied to detect DE between conditions, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., monocle).
+Methods can then be applied to detect DE between groups, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., monocle).
 This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \cite{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
 However, it is not clear whether statistical rigor is maintained when plate effects are unaccounted for.
 
