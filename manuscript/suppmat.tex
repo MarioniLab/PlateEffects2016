@@ -4,10 +4,14 @@
 \usepackage[labelfont=bf]{caption}
 \usepackage{color}
 \usepackage{xcite}
+\usepackage{amsmath}
 
 \renewcommand{\textfraction}{1.0}
 \renewcommand{\floatpagefraction}{.9}
 \newcommand\revised[1]{\textcolor{red}{#1}}
+\renewcommand{\topfraction}{0.9}    % max fraction of floats at top
+\renewcommand{\bottomfraction}{0.8} % max fraction of floats at bottom
+\renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
 
 \makeatletter 
 \renewcommand{\thefigure}{S\@arabic\c@figure} 
@@ -93,7 +97,35 @@ A hurdle model was fitted to the log-counts using the biological group as the fa
 The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 DE genes between groups were identified using the LRT.
 
-\begin{figure}[tb]
+\section{Summation and plate-specific mean variance relationships}
+The robustness of direct summation to differences in the number of size of cells per plate can be explained by examining the mean-variance relationship of the simulated data.
+Consider the notation where $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$, representing the conditional mean for gene $i$ in cell $j$ with some library size modifier $\theta_j$.
+Assume that the count for each cell is sampled from a NB distribution with mean $\lambda_{ij}$ and dispersion $\varphi_i$, as described in the simulation design.
+The conditional variance of the count sum $s_{ik}$ for plate $k$ with $N_k$ cells is then
+\[
+    \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{N_k} \lambda_{ij}  + \varphi_{i} \sum_{N_k} \lambda_{ij}^2 \;.
+\]
+Given that $E(s_{ik}) = \sum_{N_k} \theta_j\mu_{ig}$, the variance of the count sum can be calculated from decomposition as
+\begin{align*}
+    \mbox{var}(s_{ik}) 
+    &= \mbox{var}\left(\delta_{ik}\sum_{N_k} \theta_{j}\mu_{ig}\right) + E\left(\delta_{ik}\sum_{N_k}  \theta_{j}\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_{N_k}\theta_{j}^2\mu_{ig}^2\right)\\
+    &= \left(\sum_{N_k} \theta_{j}\mu_{ig}\right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_{N_k}  \theta_{j}\mu_{ig}\right) + \left( \varphi_i \sum_{N_k} \theta_j^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
+    &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{ (\sum_{N_k} \theta_j\mu_{ig})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \;. 
+\end{align*}
+Recall that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
+This means that only the third term is involved in defining the plate-specific aspect of the mean-variance relationship.
+For any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term will approach zero as $N_k$ increases.
+This is because 
+\[
+ \left(\sum_{N_k}\theta_j\mu_{ig} \right)^2 > \sum_{N_k} \theta_j^2\mu_{ig}^2
+\]
+for positive values of $\theta_j$ and $\mu_{ig}$, such that the quotient of the latter to the former will always decrease for an increasing number of cells.
+Summation will be similarly robust to plate-specific values for the NB dispersion.
+Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
+
+%%% FIGURES %%%
+
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\textwidth]{quantile_schematic.pdf}
     \end{center}
@@ -106,7 +138,7 @@ DE genes between groups were identified using the LRT.
     \label{fig:compsim}
 \end{figure}
 
-\begin{figure}[bt]
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
         \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}

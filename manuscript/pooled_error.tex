@@ -14,7 +14,8 @@
 \renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
 
 % Supplementary sections
-\newcommand{\suppimplementation}{1i}
+\newcommand{\suppimplementation}{1}
+\newcommand{\suppmeanvar}{2}
 
 % Supplementary figures
 \newcommand{\suppcompsim}{S1}
@@ -386,11 +387,10 @@ The conditional variance is then
     \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{i}}{N_k}\rho_{ik}^2 \;.
 \]
 As $\delta_{ik}$ is independent of the other parameters, the total variance of $s_{ik}$ can be written as
-\begin{align}
+\begin{align*}
     \mbox{var}(s_{ik}) &= (N_k\mu_{ig})^2\mbox{var}(\delta_{ik}) + N_k\mu_{ig} + \varphi_{i} N_k\mu_{ig}^2 E(\delta_{ik}^2) \nonumber \\ 
                        &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{i}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
-    \label{eqn:meanvar}
-\end{align}
+\end{align*}
 where $E(s_{ik})=N_k\mu_{ig}$. 
 Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across $k$ when $N_k$ differs between plates.
@@ -484,25 +484,9 @@ Recall that the counts for cells on the same plate are conditionally independent
 This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
 The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
 This means that the count sums across all plates will have near-identical mean-variance relationships, as described above for the pseudo-counts.
-Indeed, the similarity to the results for pseudo-count summation suggests that any plate-specific differences in the relationships will not affect model performance after direct summation.
-
-This can be explained more precisely by examining the the mean-variance relationship of Equation~\ref{eqn:meanvar} for the simulated data.
-The plate-specific term in the relationship is inversely proportional to the number of cells $N_k$.
-For a large value of $\mbox{var}(\delta_{ik})$, the plate-specific contribution to the variance will approach zero as $N_k$ increases. 
-This is also true if the cells on the plate have different library sizes.
-Consider the previous notation where $\lambda_{ij}$ represents the conditional mean for cell $j$.
-The conditional variance becomes
-\[
-    \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{N_k} \lambda_{ij}  + \varphi_{i} \sum_{N_k} \lambda_{ij}^2 \;,
-\]
-such that the total variance of the count sum across all plates can be written as 
-\begin{align*}
-    \mbox{var}(s_{ik}) &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{E(s_{ik})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \\
-                       &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{ (\sum_{N_k} \theta_j\mu_{ig})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \;. 
-\end{align*}
-Again, the relative contribution of the plate-specific term will approach zero as $N_k$ increases (for positive values of $\theta_j$ and $\mu_{ig}$).
-Summation will be similarly robust to plate- or even cell-specific values for the dispersion of the NB distribution.
-This suggests that quantile adjustment prior to summation is unnecessary.
+Indeed, the results for direct summation in Figure~\ref{fig:complexplate} are highly similar to those for pseudo-count summation.
+This suggests that any plate-specific differences in the mean-variance relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
+A more mathematical explanation of this behaviour can be found in Section~\suppmeanvar{} of the Supplementary Materials.
 
 \section{Summation results in reduced DE detection in real data}
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
