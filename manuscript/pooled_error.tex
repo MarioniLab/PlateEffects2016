@@ -304,7 +304,7 @@ Model fitting was also more time-consuming, taking several hours to run for a si
 \subsection{Error control can be restored by summing over cells}
 A simple solution presents itself for restoring error control in the presence of plate effects.
 Firstly, the counts for each gene are summed across all cells within each plate.
-These count sums are then supplied to the DE analysis software, where the plates themselves are treated as replicate samples for each condition.
+These count sums are then supplied to the DE analysis software, where the plates themselves are treated as replicate samples for each biological group.
 Dependencies between samples are no longer present when counts are considered for plates instead of cells.
 This is because the plate effect is assumed to be independent between plates. 
 Similarly, counts for cells within each plate are conditionally independent and will not introduce dependencies between plates.
@@ -323,7 +323,7 @@ The other methods are not used here, for various reasons -- voom with correlatio
 
 \begin{figure}[tbp]
 \begin{center}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{failsim_with_sum.pdf}
+\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 15mm,clip]{failsim_with_sum.pdf}
 \end{center}
 \caption{
     Observed type I error rate for each method after summation in simulations with a plate effect.
@@ -335,16 +335,17 @@ The other methods are not used here, for various reasons -- voom with correlatio
 
 \subsection{Summation does not compromise DE detection power}
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
-In a DE analysis, the average expression of each gene is compared between two or more conditions.
-This is true regardless of whether those conditions contain replicate cells or replicate plates 
-    (scenarios involving differing numbers/sizes of cells per plate will be considered in the next section).
+In a DE analysis, the average expression of each gene is compared between two or more groups.
+This is true regardless of whether those groups contain replicate cells or replicate plates. 
+(Scenarios involving differing numbers or sizes of cells per plate will be considered in the next section.)
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
-This can be demonstrated with a simulation involving genes that have genuine DE between conditions.
-DE was introduced for 1000 randomly selected genes by setting $\mu_{il_1} = 3\mu_{i0}$ for condition $l_1$ i.e., a 3-fold increase in expression in the first condition.
-This was repeated for a separate set of 1000 genes by setting $\mu_{il_2} = 3\mu_{i0}$ for condition $l_2$.
+This can be demonstrated with a simulation involving genes with genuine DE between groups.
+DE was introduced for 1000 randomly selected genes by setting $\mu_{ig_1} = 3\mu_{i0}$ for group $g_1$ i.e., a 3-fold increase in expression in the first group.
+This was repeated for a separate set of 1000 genes by setting $\mu_{ig_2} = 3\mu_{i0}$ for group $g_2$.
 The balanced addition of DE genes ensures that composition biases \cite{robinson2010scaling} are not introduced between samples.
-Values of $\lambda_{ik}$ and $\varphi_{ik}$ were defined as previously described, based on the $\mu_{il_1}$ and $\mu_{il_2}$ for each gene in each plate.
+For all other genes, $\mu_{ig_1}=\mu_{ig_2}=\mu_{i0}$.
+Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on the $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
 Simulated data were then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
 Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
