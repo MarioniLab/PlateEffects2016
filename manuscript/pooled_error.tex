@@ -503,7 +503,7 @@ Recall that the counts for cells on the same plate are conditionally independent
 This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
 The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \cite{marioni2008rnaseq} that is common to all samples.
 This means that the count sum for each plate will have near-identical mean-variance relationships, as described above for the pseudo-counts.
-In these particular simulations, the variable term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
+In these particular simulations, the plate-specific term in the mean-variance relationship of Equation~\ref{eqn:meanvar} goes to zero as $N_k$ increases.
 Any differences in these relationships between plates will be quantitatively negligible, especially for large $\mbox{var}(\delta_{ik})$.
 These results indicate that plate-specific relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
 
@@ -546,7 +546,7 @@ This subset contains all cells used in Figure X in \cite{scialdone2015single}, a
 A one-way layout was then used to model the two stages, with two plates per stage.
 
 % Note that Kim used ComBat to remove batch effects, not plate effects.
-% Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the conditions in the design matrix.
+% Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
 % In any case, ComBat seems to just regress out the plate effect, so even if you gave an all-intercept matrix to get it to run, you'd lose all DE.
 
 DE analyses were performed on each data set with DESeq2, voom or the QL framework in edgeR.
@@ -601,7 +601,7 @@ To determine the effect of summation on the gene ranking, genes were sorted base
 The identities of the top 20, 200 and 2000 genes were compared for analyses using single-cell and summed counts.
 In general, less than half of the top-ranking genes are shared between the two analyses for each method (Table~\ref{tab:realrank}).
 The difference is attributable to changes in variance modelling after summation, to focus on variability between plates rather than between cells.
-This effect is important as genes associated with phenotypic differences between conditions are expected to exhibit strong DE.
+This effect is important as genes associated with phenotypic differences between groups are expected to exhibit strong DE.
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
 
@@ -638,7 +638,7 @@ One potential criticism of summation is that the variability between cells is hi
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would no longer be penalized by a large cell-to-cell variance estimate.
 This would not be appropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
-Figure~\ref{fig:realdata} shows the top set of DE genes from summation, all of which exhibit robust differences between conditions.
+Figure~\ref{fig:realdata} shows the top set of DE genes from summation, all of which exhibit robust differences between groups.
 DE genes driven by a few outliers tend to be less significant.
 This is because the conditional variance of the count sum increases with fewer contributing cells, 
     which increases the total variance and decreases the relative significance of DE.
@@ -677,22 +677,22 @@ Summation prior to DE analyses also affects the biological conclusions for real 
     by decreasing the size of the DE lists and by changing the ranking of DE genes.
 
 It is possible to resolve plate effects at the single-cell level with careful experimental design.
-Ideally, cells should be arranged onto plates such that each plate contains cells from multiple conditions.
-DE comparisons can then be performed within plates such that any plate effect cancels out between conditions on the same plate.
+Ideally, cells should be arranged onto plates such that each plate contains cells from multiple biological groups.
+DE comparisons can then be performed within plates such that any plate effect cancels out between groups on the same plate.
 For such experimental designs, summation has fewer benefits.
-This is because the biological condition is no longer confounded by the plate of origin.
+This is because the group is no longer confounded by the plate of origin.
 The latter can be included as a blocking factor in the linear model for the single-cell counts, 
-    to explicitly regress out the plate effect without removing genuine DE between conditions.
-This avoids any loss of type I error due to hidden correlations between cells on each plate.
+    to explicitly regress out the plate effect without removing genuine DE between groups.
+This avoids any loss of type I error due to hidden dependencies between cells on each plate.
 
-Nonetheless, summation can still be applied to all cells of the same condition on each plate.
+Nonetheless, summation can still be applied to all cells of the same group on each plate.
 This increases the count sizes and decreases technical noise for greater compatibility with existing analysis methods like edgeR.
-It also reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells ($>$ 100).
-Power is preserved upon summation as the nature of the DE comparison (i.e., between condition averages) remains unchanged.
-More generally, including several different conditions on a single plate may not always be logistically feasible, and designs with one condition per plate are often more practical.
+It also reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells (100-1000).
+Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) remains unchanged.
+More generally, including several different groups on a single plate may not always be logistically feasible, and designs with one group per plate are often more practical.
 In such cases, the best way to handle plate effects is to simply increase the number of plates.
 This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and experimental resources.
-The choice of the number of plates is analogous to that of replicates in bulk RNA-seq, so about 3-4 plates per group should be sufficient in most cases.
+The choice of the number of plates is analogous to that of replicates in bulk RNA-seq, which suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
 
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
