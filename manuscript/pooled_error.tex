@@ -320,7 +320,7 @@ The other methods are not used here, for various reasons -- voom with correlatio
 
 \subsection{Summation does not compromise DE detection power}
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
-In a DE analysis, the average expression of each gene is compared between two or more groups.
+In a DE analysis, the average expression of each gene is computed for each group and then compared between two or more groups.
 This is true regardless of whether those groups contain replicate cells or replicate plates. 
 (Scenarios involving differing numbers or sizes of cells per plate will be considered in the next section.)
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
@@ -334,8 +334,8 @@ Values of $\lambda_{ik}$ for each $k$ were defined as previously described, base
 Simulated data were then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
 Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
-For each method, the ROC curve obtained with the analysis on summed counts is near-identical to that obtained with single-cell counts (Figure~\ref{fig:roc}).
-This indicates that detection power is not affected by summation.
+For each method, the ROC curve for the analysis on summed counts was nearly identical to that for the single-cell counts (Figure~\ref{fig:roc}).
+This indicates that detection power at any given false positive rate is not compromised by summation.
 
 \subsection{Justifying summation in a single-cell study}
 Despite the obvious improvement in performance, the summation strategy may not have unqualified appeal.
