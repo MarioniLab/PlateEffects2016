@@ -217,23 +217,23 @@ Loss of type I error control will result in an unacceptable number of false posi
 This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
 
 Loss of error control is caused by ignoring the plate structure in the statistical model.
-While the counts for cells on the same plate are independent, this is conditional on the plate-specific effect on the mean.
+Most DE analysis methods assume that replicate samples (i.e., cells) are independent in the one-way layout.
+However, the counts for cells on the same plate are only conditionally independent, given the plate-specific effect on the mean.
 The use of a one-way layout ignores the plate of origin and assumes that all cells in the same group have the same mean.
 Under this model, the counts for cells on the same plate are no longer independent.
 The count for one cell will provide information about the count for another cell on the same plate,
     due to the shared scaling of the mean for both counts from the plate effect.
 (In contrast, conditional independence is preserved under this interpretation, as no extra information is provided when the plate effect on the mean is already known.)
-Most DE analysis methods assume that replicate samples (i.e., cells) are independent, given only the groupings in the one-way layout.
-If this is not true, the amount of information in the data set is reduced as cells on the same plate are effectively redundant.
+This reduces the amount of information in the data set as cells on the same plate are effectively redundant.
 Methods that assume independence will overstate the information available to estimate model parameters such as the group-specific coefficients, the variance or the NB dispersion.
 This results in overconfident inferences and liberalness during hypothesis testing.
 
 The problem can also be described in terms of the residual degrees of freedom (d.f.) that are available in the fitted model.
 The simulation uses an experimental design with $6 \times 50 =  300$ cells and two coefficients in a one-way layout.
 If all cells were truly independent -- as is assumed by most methods -- this design would provide 298 residual d.f. 
-At the other extreme, consider the scenario where all cells on a plate are identical, i.e., there is no technical noise or heterogeneity between cells.
+At the other extreme, consider the scenario where all cells on a plate have identical counts, i.e., there is no noise or heterogeneity between cells.
 This means that there are only six independent samples (one cell per plate, as all other cells on that plate are redundant) and only four residual d.f.
-This is substantially smaller than the 298 d.f.\ expected by the various methods, resulting in an underestimation of the uncertainty of various parameter estimates.
+This is substantially smaller than the expected 298 d.f., such that the uncertainty of various parameter estimates will be underestimated.
 For example, the use of edgeR with the LRT assumes that sufficient residual d.f.\ are present to estimate the dispersion for each gene separately,
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
@@ -243,10 +243,10 @@ This method exhibits the best performance of all tested methods in the presence 
     i.e., the observed type I error rate is closest to the specified threshold.
 Nonetheless, voom with correlations is still liberal.
 This is attributable to the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
-Another contributing factor is the low number of plates, which may result in biased estimates of the consensus correlation.
+Another contributing factor is the low number of plates in the experimental design, which may result in biased estimates of the consensus correlation.
 
 \subsection{Alternative analysis strategies are problematic}
-Simply ignoring the plate effects results in unacceptable loss of control.
+Simply ignoring the plate effects results in an unacceptable loss of type I control for all DE analysis methods.
 However, the obvious alternatives are not without their own difficulties.
 One natural approach would be to introduce blocking factors for the plates.
 In a log-link model similar to that used in edgeR and DESeq, this is equivalent to setting
@@ -258,14 +258,14 @@ where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{ig}$ 
 The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between $k$, thus eliminating the plate effect.
 However, $\beta_{ik}$ will also absorb differences in $\mu_{ig}$ between groups, which can eliminate genuine DE and reduce detection power.
 The same problem is observed for methods like ComBat \citep{johnson2007adjusting} when they are applied to remove confounding plate effects prior to a DE analysis.
-In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
-This cannot be resolved without altering the interpretation of $\beta_{ig}$ such that it no longer represents the group average.
-For example, one could set $\beta_{ik}=0$ for the first plate in each group, 
-    but $\beta_{ig}$ would then represent the log-expression of that first plate alone rather than the average of all plates for $g$.
-As such, it would no longer be sensible to interpret differences in $\beta_{ig}$ as DE between groups.
+%In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
+%This cannot be resolved without altering the interpretation of $\beta_{ig}$ such that it no longer represents the group average.
+%For example, one could set $\beta_{ik}=0$ for the first plate in each group, 
+%    but $\beta_{ig}$ would then represent the log-expression of that first plate alone rather than the average of all plates for $g$.
+%This means that it would no longer be sensible to interpret differences in $\beta_{ig}$ as DE between groups.
 
 A more elegant model involves orthogonal plate and group terms.
-For a simple experimental design involving two plates in two groups ($k=1,2$ for $g=1$, $k=3,4$ for $g=2$), this can be parametrized as
+For a simple design involving plates $k=1,2$ in group $g=1$ and plates $k=3,4$ in group $g=2$, this can be parametrized as
 \[
     \beta_{ij} = \beta_{ig} + 
     \begin{cases} 
