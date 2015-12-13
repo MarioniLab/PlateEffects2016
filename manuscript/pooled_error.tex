@@ -115,8 +115,7 @@ $X_{ik}$ is some random variable such that
 where $\mu_{ig}$ is the expected read count for group $g$. 
 Any references to the conditional distribution, variance or mean will refer to the corresponding attributes of $X_{ik}$.
 %In other words, the conditional distribution of $y_{ij}$ given $\delta_{ik}$ is defined as $X_{ik}$.
-The plate effect $\delta_{ik}$ is sampled from some independent distribution $Z$ where $E(Z) = 1$.
-This ensures that $E(y_{ij}) = \mu_{il}$, consistent with the definition of $\mu_{il}$.
+The plate effect $\delta_{ik}$ is sampled from some independent distribution $Z$ where $E(Z) = 1$, which ensures that $E(y_{ij}) = \mu_{il}$.
 
 One aim of the data analysis for this experiment is to identify DE genes between groups.
 However, this is complicated by the presence of the plate effects.
@@ -142,8 +141,6 @@ A simple simulation is used to test the performance of the analysis when plate e
 Let the count for each gene in each cell follow a negative binomial (NB) distribution, conditional on the plate effect.
 In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{ig}$ and a dispersion of $\varphi_{i}$.
 The size of $\varphi_{i}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
-(A constant value for the dispersion is used across all plates for each gene, to fulfill the distributional assumptions of methods like edgeR and DESeq
-    -- this provides a favourable situation for such methods to operate.)
 The plate effects themselves are sampled from a log-normal distribution, i.e., $Z = \ln \mathcal{N}(-\sigma^2/2, \sigma^2)$.
 This parametrization ensures that $E(Z)=1$, as originally defined.
 
@@ -158,6 +155,10 @@ to represent the decreasing mean-dispersion trend observed in real data.
 Large values of $\varphi_{i}$ are also consistent with high technical and biological variability in scRNA-seq counts.
 Finally, $\sigma^2$ was set to a value of 0.5 to represent a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
+
+One might observe that these simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
+This is done to fulfill the distributional assumptions of methods like edgeR and DESeq, which do not accommodate variable dispersions between counts for the same gene.
+Use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance.
 
 \subsection{Implementation of DE analysis methods}
 DE analyses of the simulated data were performed using edgeR v3.12.0, DESeq2 v1.10.0 \citep{love2014moderated}, voom \citep{law2014voom} in limma v3.26.3, 
