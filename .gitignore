@@ -14,8 +14,7 @@ power/with.rds
 power/without.pdf
 power/without.rds
 quantile/sim_schematic.pdf
-quantile/with.pdf
-quantile/without.pdf
+quantile/*.eps
 realdata/results/
 realdata/top_edgeR_ola1_sum.pdf
 realdata/top_edgeR_ola2_sum.pdf
