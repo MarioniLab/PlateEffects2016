@@ -372,7 +372,7 @@ The most obvious difference is that in the magnitude of the count sum between di
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
 Briefly, the variance of a random variable can be expressed as a function of its mean.
 Most parametric models assume that this function is the same for all observations of a given gene.
-Differences in the function between plates may compromise model accuracy for the count sums.
+Plate-specific differences in this function may compromise the accuracy of the model for the count sums.
 
 To illustrate, consider the NB-based simulation framework described in the previous section.
 Let $s_{ik}$ be the count sum for gene $i$ in plate $k$.
@@ -390,26 +390,24 @@ As $\delta_{ik}$ is independent of the other parameters, the total variance of $
 \end{align*}
 where $E(s_{ik})=N_k\mu_{ig}$. 
 Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
-This means that the mean-variance relationship of $s_{ik}$ will not be identical across $k$ when $N_k$ differs between plates.
-Plate-specific differences in library size lead to similar complications, by altering the distribution of each $s_{ik} |\delta_{ik}$.
+This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ differs between plates.
+Differences in library size between cells on the same plate can lead to similar complications by altering the distribution of $s_{ik} |\delta_{ik}$ in a plate-specific manner.
 
-Data sets with observation-specific mean-variance relationships are not typically considered in most analysis pipelines.
+Variable mean-variance relationships are not considered by most analysis methods.
 For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene.
-This defines an identical mean-variance relationship for all counts of the gene, which may not be accurate when the relationship varies across observations.
-Model inaccuracy is particularly problematic when the variance is consistently underestimated for all plates in a particular group.
-Such cases will result in loss of error control and the detection of spurious DE between groups.
-This may affect the performance of the summation strategy when the numbers of cells and library sizes vary between or within plates.
+This defines an identical mean-variance relationship for all counts of the gene, which may not be accurate when the relationship varies across counts.
+Any inaccuracy may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
 
 One solution to this problem uses quantile adjustment \citep{robinson2008small} to generate Poisson-distributed pseudo-counts.
 Recall that the count for each cell is NB-distributed, conditional on the plate effect.
-The count is converted into a Poisson-distributed pseudo-count by matching the percentile of the NB distribution to that of a Poisson distribution with the same mean.
+Each count is converted into a Poisson-distributed pseudo-count by matching the percentile of the NB distribution to that of a Poisson distribution with the same mean.
 This exploits the fact that the sum of independently Poisson-distributed variates is itself Poisson-distributed.
-The mean-variance relationship of the pseudo-count sum $\tilde{s}_{ik}$ is
+The mean-variance relationship of the pseudo-count sum $\tilde{s}_{ik}$ is then
 \[
     \mbox{var}(\tilde{s}_{ik}) = E(\tilde{s}_{ik})^2 \mbox{var}(\delta_{ik}) + E(\tilde{s}_{ik}) 
 \]
-such that it will be identical for all $k$, regardless of the number and size of libraries.
-Statistical modelling can then be performed with standard methods that do not consider observation-specific relationships.
+such that it will be identical for all $k$, regardless of the number and size of libraries in each plate.
+The DE analysis can subsequently be performed using standard methods like edgeR, without any need to consider plate-specific differences in the relationships.
 More details on the implementation of this approach can be found in Section~\suppquantile{} of the Supplementary Materials.
 
 \subsection{Direct and quantile-adjusted summation control type I error rates}
@@ -417,7 +415,7 @@ The performances of direct and quantile-adjusted summation were evaluated with m
 Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
 Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$.
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
-The experimental design was also changed such that only two plates were present for each biological group.
+The experimental design was also modified such that only two replicate plates were present for each biological group.
 
 To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Supplementary Figure~\suppcompsim{}).
 Library sizes were kept constant for all cells in this scenario.
