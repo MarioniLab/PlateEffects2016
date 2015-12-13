@@ -16,9 +16,14 @@ for (type in c("raw", "sum")) {
         par(mar=c(6.2, 4.1, 4.1, 2.1))
         xbounds <- c(0.5, length(all.means)+0.5)
         ybounds <- c(-3, 0)
-        
+       
+        if (type=="sum") { 
+            main <- "" 
+        } else {
+            main <- sprintf("%s plate effects", paste0(toupper(substring(pv, 1,1)), substring(pv, 2)))
+        }
         plot(0,0, type="n", xaxt="n", yaxt="n", xlab="", ylab="Observed type I error rate", ylim=ybounds, xlim=xbounds, cex.lab=1.4,
-                main=sprintf("%s plate effects", paste0(toupper(substring(pv, 1,1)), substring(pv, 2))), cex.main=1.4)
+               main=main, cex.main=1.4)
         xticks <- seq_along(out)
         abline(v=xticks, col="grey", lwd=1.5, lty=3)
         points(xticks, all.means, pch=16, cex=2)
@@ -35,7 +40,7 @@ for (type in c("raw", "sum")) {
         segments(xticks-0.2, all.means+all.se, xticks+0.2, all.means+all.se, lwd=2)
 
         # Adding the threshold.
-        abline(h=log10(as.numeric(0.01)), col="grey50", lwd=2, lty=2)
+        abline(h=log10(as.numeric(0.01)), col="red", lwd=2, lty=2)
 
 
         dev.off()

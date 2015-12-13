@@ -539,27 +539,27 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 5mm,clip]{failsim_with_raw.eps}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 5mm,clip]{failsim_without_raw.eps}
+\includegraphics[width=0.48\textwidth]{failsim_with_raw.eps}
+\includegraphics[width=0.48\textwidth]{failsim_without_raw.eps}
 \end{center}
 \caption{
     Observed type I error rates for each method on simulated data, in the presence (left) or absence (right) of a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
-    Each error bar represents the standard error of the average.
-    The threshold of 0.01 is represented by the horizonal dashed line.
-    Only one iteration was used for monocle due to its running time.
+    Each error bar represents the standard error of the log-average rate.
+    The threshold of 0.01 is represented by the red dashed line.
+    Only one iteration was used for monocle due to its long running time.
 }
 \label{fig:platefail}
 \end{figure}
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 15mm,clip]{failsim_with_sum.eps}
+\includegraphics[width=0.48\textwidth]{failsim_with_sum.eps}
 \end{center}
 \caption{
     Observed type I error rate for each method after summation in simulations with a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
-    Error bars represent standard errors, and the threshold of 0.01 is represented by the horizontal dashed line.
+    Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
 }
 \label{fig:platesum}
 \end{figure}
@@ -578,7 +578,7 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_with.eps}
+\includegraphics[width=0.48\textwidth]{quantile_with.eps}
 %\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_without.pdf} % Doesn't really add any value; didn't put up control before either, so why do it now?
 \end{center}
 \caption{
