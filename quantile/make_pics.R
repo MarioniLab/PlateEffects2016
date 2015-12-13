@@ -25,7 +25,8 @@ for (pv in c("with", "without")) {
     is.quant <- rep(c(FALSE, TRUE), 8)
     cols <- ifelse(is.quant, "grey50", "black")
 
-    pdf(sprintf("%s.pdf", pv))
+    setEPS()
+    postscript(sprintf("%s.eps", pv))
     xbounds <- range(xpos)
     ybounds <- c(-3, -1)
     plot(0,0, type="n", xaxt="n", yaxt="n", xlab="", ylab="Observed type I error rate", ylim=ybounds, xlim=xbounds, cex.lab=1.4)
