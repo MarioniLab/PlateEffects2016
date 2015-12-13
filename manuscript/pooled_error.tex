@@ -309,8 +309,8 @@ Summation has the additional benefit of increasing the size and precision of the
 This makes the data more amenable for analysis with methods designed for bulk data.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
-This is attributable to the presence of independent counts and proper consideration of the true number of residual d.f.\ in the model.
-Overconfident estimation of model parameters is subsequently avoided.
+This is attributable to the presence of independent counts and to the proper consideration of the true number of residual d.f., 
+    which ensure that overconfident estimation of model parameters is avoided.
 Note that some mild liberalness is still observed for edgeR and DESeq2 
     -- this is due to the fact that the counts are not truly NB-distributed, which results in some inaccuracy during modelling.
 In contrast, type I error control is fully restored for voom as it is inherently more conservative \citep{law2014voom}
