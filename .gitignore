@@ -9,10 +9,8 @@ manuscript/suppmat.aux
 manuscript/suppmat.log
 manuscript/suppmat.pdf
 manuscript/texput.log
-power/with.pdf
-power/with.rds
-power/without.pdf
-power/without.rds
+power/*.eps
+power/*.rds
 quantile/sim_schematic.pdf
 quantile/*.eps
 realdata/results/
