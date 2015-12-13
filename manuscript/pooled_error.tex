@@ -57,10 +57,10 @@ In the latter, individual cells are captured in separate reaction chambers withi
 All cells on each chip are then simultaneously processed into libraries.
 Each plate or chip can only handle a limited number of cells, so data is usually generated for multiple plates across several biological groups. 
 All cells on each plate typically come from the same population (e.g., culture, embryo, animal) of a single biological group.
-If replicate populations are present in a group, one plate is used for each population.
+If replicate populations are present in a group, a separate plate is used for cells from each population.
 
 The experimental design described above is motivated largely by practicality.
-It is logistically simpler to track and process cells when each plate corresponds to one population of one biological group, compared to partitioning the plate into different groups.
+It is logistically simpler to track and process cells when each plate corresponds to one population of one group, compared to partitioning the plate into different groups.
 For example, FACS is typically performed such that all cells on a plate are derived from the same gates, i.e., from the same subpopulation.
 In the C1, cells are captured randomly into reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
 Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
@@ -73,19 +73,19 @@ This does not strictly require single-cell resolution, and is more conventionall
 Nonetheless, there are some benefits to using single-cell data here.
 Rare cells are more easily sequenced with single-cell protocols, and irrelevant cells from contaminating populations can be screened out before analysis.
 It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk data exclusively for this purpose.
-The DE analysis itself is typically performed using software packages such as edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were designed for bulk data;
+The DE analysis itself is typically performed using methods such as edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were designed for bulk data;
     or with methods such as monocle \citep{trapnell2014dynamics} and SCDE \citep{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
-Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more biological groups of interest.
+Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more groups of interest.
 
 The presence of plate effects complicates the parametrization of the experimental design for the DE analysis.
-Such effects are obviously undesirable as they result from uncontrolled experimental variability.
+Obviously, such effects are undesirable as they result from uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
 However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the groups of interest \citep{hicks2015widespread}.
 At the most extreme, consider a situation involving one plate for each group.
-Changes in gene expression due to the plate effect will be indistinguishable from genuine DE between groups.
+Changes in expression due to the plate effect will be indistinguishable from genuine DE between groups.
 This problem is still present in data sets with two or three plates per group, where plate-to-plate variability may explain some or all of the apparent DE between groups.
 In lieu of a sensible method to remove plate effects, most studies have simply ignored them and treated cells from different plates as direct replicates \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
-This may not be statistically rigorous as the variability across plates and cells will not be modelled properly.
+This may not be statistically rigorous as the variability across cells will not be modelled properly.
 
 This article demonstrates that plate effects must be handled properly to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
