@@ -304,17 +304,18 @@ These count sums are then supplied to the DE analysis software, where the plates
 Dependencies between samples are no longer present when counts are considered for plates instead of cells.
 This is because the plate effect is assumed to be independent between plates. 
 Similarly, counts for cells within each plate are conditionally independent and will not introduce dependencies between plates.
-Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ of the experimental design.
+Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ in the model.
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with methods designed for bulk data.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
-This is attributable to the proper consideration of the true number of residual d.f.\ in the experimental design.
-Some mild liberalness is still observed for edgeR and DESeq2.
-This is due to the fact that the counts are not truly NB-distributed, which results in some inaccuracy during modelling.
-voom is inherently more conservative \citep{law2014voom}, which results in lower observed rates and restoration of type I error control.
+This is attributable to the presence of independent counts and proper consideration of the true number of residual d.f.\ in the model.
+Overconfident estimation of model parameters is subsequently avoided.
+Note that some mild liberalness is still observed for edgeR and DESeq2 
+    -- this is due to the fact that the counts are not truly NB-distributed, which results in some inaccuracy during modelling.
+In contrast, type I error control is fully restored for voom as it is inherently more conservative \citep{law2014voom}
 The other methods are not used here, for various reasons -- voom with correlations is not necessary as the replicate plates are independent;
-    monocle is designed for per-cell data rather than summed per-plate counts;
+    monocle and MAST are designed for per-cell rather than summed per-plate counts;
     and for edgeR without EB shrinkage, there are insufficient residual d.f.\ to stably estimate the dispersion.
 
 \subsection{Summation does not compromise DE detection power}
