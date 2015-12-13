@@ -339,7 +339,7 @@ However, the use of summation to restore type I error control in the presence of
 
 \subsection{Direct summation may yield inconsistent mean-variance relationships}
 The simulation used in the previous section describes a situation involving the same number of libraries of the same size on each plate.
-A result of this experimental design is that the count sums for all plates are identically distributed for any given gene.
+As a result, the count sums for all plates are identically distributed for any given gene.
 This is statistically convenient as it substantially simplifies the modelling procedure.
 However, more realistic data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 In such scenarios, the count sum for each plate will not be identically distributed.
@@ -431,7 +431,7 @@ A more mathematical explanation of this behaviour can be found in Section~\suppm
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
 To determine whether this behaviour is relevant, both strategies were applied on real data from two scRNA-seq studies.
 The first study examines mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single},
-    where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or the alternative ground state a2i).
+    where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or a2i).
 The second study examines gastrulation in the early mouse embryo at various development stages \citep{scialdone2015single},
     where all cells on each plate originate from the same stage.
 
@@ -449,7 +449,7 @@ A one-way layout was then used to model the two stages, with two plates per stag
 % Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
 % In any case, ComBat seems to just regress out the plate effect, so even if you gave an all-intercept matrix to get it to run, you'd lose all DE.
 
-DE analyses were performed on each data set with DESeq2, voom or the QL framework in edgeR.
+DE analyses were performed on each data set with DESeq2, voom and QL edgeR.
 These methods were chosen as they could be applied on both the single-cell counts and summed counts for all cells in each plate. 
 Analyses were performed to detect DE genes between 2i and serum in the first study; between a2i and serum; and between the PS and NP stages in the second study.
 %In each data set, low-quality cells were removed if they had library sizes below 10$^5$ reads or more than 10\% of reads assigned to mitochondrial genes.
@@ -489,7 +489,7 @@ Technical noise and heterogeneity will not average out if the sum is dominated b
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
 
-\section{Conclusions}
+\section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.
 Simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
 In this article, a solution is presented involving the summation of counts across all cells on each plate for each gene.
@@ -515,7 +515,7 @@ It also reduces computational work as the sample size is defined from the number
 Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) remains unchanged.
 More generally, including several different groups on a single plate may not always be logistically feasible, and designs with one group per plate are often more practical.
 In such cases, the best way to handle plate effects is to simply increase the number of plates.
-This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and experimental resources.
+This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and resources.
 The choice of the number of plates is analogous to that of replicates in bulk RNA-seq, which suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
 
