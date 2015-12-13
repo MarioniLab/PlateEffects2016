@@ -56,7 +56,7 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 \end{minipage}
 
 \vspace{1.5cm}
-{\large 8 December 2015}
+{\large \today{}}
 
 \vspace*{\fill}
 \end{center}
@@ -75,12 +75,12 @@ In the second analysis, the NB dispersion was estimated for each gene individual
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
 For voom, counts were converted to log-counts per million (log-CPMs) and precision weights were computed from a fitted mean-variance trend.
-Log-CPMs and weights for each gene were used to fit a linear model.
-Variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
+A linear model was fitted to the log-CPMs and weights for each gene using the lmFit function in limma.
+Sample variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
 For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
-The consensus correlation across all genes was incorporated into the linear model by blocking on the plate of origin.
-DE testing was then repeated on this refitted model.
+The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for each cell.
+DE testing for each gene was then repeated on this refitted model.
 
 For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
@@ -88,34 +88,34 @@ The estimated dispersion was used to fit a GLM to the counts for each gene.
 Finally, DE testing was performed between groups using the Wald test.
 
 For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \citep{robinson2010scaling}.
-For DESeq2, normalization was performed using size factors.
-This step is not strictly necessary in this simulation, given that library-specific biases have not been introduced and all cells have the same library size.
-Nonetheless, normalization is included as part of the standard analysis.
+For DESeq2, normalization was performed using the size factor method \citep{anders2010differential}.
+This step is not strictly necessary for analyses of simulated data, given that library-specific biases have not been introduced and all cells have the same library size.
+Nonetheless, normalization is included as part of the standard analysis and will be used for real data.
 
 For monocle, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
 For MAST, counts were log-transformed after adding a prior count of 1.
-All libraries were of the same size, and all genes were of the same length, 
-    so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \citep{finak2015mast}.
-A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as a covariate.
+In the simulation, all libraries are of the same size and all genes are of the same length, 
+    so the log-counts are functionally equivalent to the log-transcripts per million used in the original description of the algorithm \citep{finak2015mast}.
+A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as an additional covariate.
 The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
-DE genes between groups were identified using the LRT.
+Putative DE genes between groups were identified using the LRT.
 
 \section{Implementing the quantile adjustment method}
 The quantile adjustment method models the conditional distribution of each count as a NB distribution.
 All cells within a single plate are defined as a separate group in a one-way layout.
 For each gene, means are estimated for all cells by fitting a GLM to the counts for that gene.
 The mean for each cell accounts for its library size as well as any gene- and plate-specific effects.
-A gene-specific NB dispersion is also estimated using standard methods, e.g., with the Cox-Reid adjusted profile likelihood in edgeR \citep{mccarthy2012differential}.
-The count for each cell is now modelled by a NB distribution with the estimated mean and dispersion.
+A gene-specific NB dispersion is also estimated using the Cox-Reid adjusted profile likelihood in edgeR \citep{mccarthy2012differential}.
+The count for each cell is modelled by a NB distribution with the estimated mean and dispersion.
 The percentile corresponding to each count is computed, and the matching quantile for a Poisson distribution with the same mean is identified \citep{robinson2008small}.
-This quantile is Poisson-distributed and is used as the pseudo-count for each cell.
+This quantile is used as the Poisson-distributed pseudo-count for each cell.
 
 This method depends on stable estimation of the mean for each cell and the dispersion for each gene.
 The latter should not be an issue as there should be sufficient residual d.f. across all cells to obtain a precise dispersion estimate.
 Note that the previously mentioned problems with residual d.f. overestimation are not applicable here.
-Correlations induced by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
+Dependencies induced by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
 For the means, stable estimation can be ensured by having sufficient cells per plate.
 This is usually the case given that low-quality plates with very few cells would be removed.
 
@@ -141,7 +141,7 @@ This is because
 \[
  \left(\sum_{N_k}\theta_j\mu_{ig} \right)^2 > \sum_{N_k} \theta_j^2\mu_{ig}^2
 \]
-for positive values of $\theta_j$ and $\mu_{ig}$, such that the quotient of the latter to the former will always decrease for an increasing number of cells.
+for positive values of $\theta_j$ and $\mu_{ig}$, such that the ratio of the latter to the former will always decrease for an increasing number of cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion.
 Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
 
@@ -150,18 +150,18 @@ Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect
 
 \section{Avoiding zero counts during normalization}
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
-Methods like size factor \citep{anders2010differential} and TMM normalization are based on ratios between counts in different cells,
+Methods like size factor and TMM normalization are based on ratios between counts in different cells,
     but will be compromised for noisy data that contain many zero and near-zero counts.
 For example, size factor normalization constructs an average reference library by taking the geometric mean of all counts for each gene, 
     and normalizes each library against this reference by computing the median ratio of the count to the geometric mean across all genes.
-This is not sensible in the presence of many zeroes as the geometric mean becomes undefined.
-Moreover, the median ratio for many libraries will be equal to zero.
+In the presence of many zeroes, the geometric mean itself becomes zero such that many ratios will be undefined.
+Even if a more stable average measure is used (e.g., the arithmetic mean), the median ratio for many libraries will be equal to zero if more than 50\% of the counts of that library are zero.
 This is not a sensible scaling factor for obtaining normalized expression values.
-Summation reduces the incidence of such counts so that these normalization methods can be properly applied.
-In particular, normalization of the summed counts will remove plate-specific differences that affect each gene in the same manner, 
+Summation reduces the incidence of zero counts so that these normalization methods can be properly applied.
+In particular, normalization of the summed counts will remove any plate-specific differences that affect each gene in the same manner, 
     e.g., differences in capture efficiency or sequencing depth between plates.
 Removal of cell-specific biases within each plate is not required as these will average out when many cells are summed together.
-Indeed, type I error control is maintained in the simulations where the library size differs across cells.
+Indeed, recall that type I error control is maintained in the simulations where the library size differs across cells.
 
 % And if it doesn't average out, then it will be considered to be a plate-specific difference and removed anyway.
 
@@ -175,7 +175,7 @@ Indeed, type I error control is maintained in the simulations where the library 
         Simulation scenarios with different number of cells per plate and different library sizes per cell.
         Each scenario is represented by two plates where the set-up for each plate is used for all plates in group $g_1$ or $g_2$.
         Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
-        The library size of each cell is indicated by the colour of the well.
+        The relative library size $\theta_j$ of each cell is indicated by the colour of the well.
     }
     \label{fig:compsim}
 \end{figure}
