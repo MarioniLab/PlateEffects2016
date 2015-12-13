@@ -2,7 +2,8 @@
 
 for (x in c("with", "without")) { 
     current <- readRDS(sprintf("%s.rds", x))
-    pdf(sprintf("%s.pdf", x))
+    setEPS()
+    postscript(sprintf("%s.eps", x))
     plot(0,0, type="n", xlab="False positive rate", cex.lab=1.4, cex.axis=1.2,
          ylab="True positive rate", xlim=c(0, 1), ylim=c(0, 1))
     collected.names <- collected.col <- collected.lty <- list()
