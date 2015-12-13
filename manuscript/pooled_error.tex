@@ -33,6 +33,7 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 \newcommand{\suppimplementation}{1}
 \newcommand{\suppquantile}{2}
 \newcommand{\suppmeanvar}{3}
+\newcommand{\suppnorm}{4}
 
 % Supplementary figures
 \newcommand{\suppcompsim}{S1}
@@ -508,7 +509,8 @@ The latter can be included as a blocking factor in the linear model for the sing
 This avoids any loss of type I error due to hidden dependencies between cells on each plate.
 
 Nonetheless, summation can still be applied to all cells of the same group on each plate.
-This increases the count sizes and decreases technical noise for greater compatibility with existing analysis methods like edgeR.
+This increases the count sizes and decreases technical noise for greater compatibility with existing analysis methods like edgeR
+    (especially during normalization -- see Section~\suppnorm{} of the Supplementary Materials).
 It also reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells (100-1000).
 Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) remains unchanged.
 More generally, including several different groups on a single plate may not always be logistically feasible, and designs with one group per plate are often more practical.
@@ -516,17 +518,6 @@ In such cases, the best way to handle plate effects is to simply increase the nu
 This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and experimental resources.
 The choice of the number of plates is analogous to that of replicates in bulk RNA-seq, which suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
-
-One particular benefit of using summed counts with existing analysis methods is in the normalization step.
-Methods like size factor and TMM normalization are based on ratios between counts in different cells,
-    but will be compromised for noisy data that contain many zero and near-zero counts.
-Summation reduces the incidence of such counts so that these normalization methods can be properly applied.
-Specifically, normalization of the summed counts will remove plate-specific differences that affect each gene in the same manner, 
-    e.g., differences in capture efficiency or sequencing depth between plates.
-Removal of cell-specific biases within each plate is not required as these will average out when many cells are summed together.
-Indeed, type I error control is maintained in simulations where the library size differs across cells.
-
-% And if it doesn't average out, then it will be considered to be a plate-specific difference and removed anyway.
 
 Summation is a simple but effective approach to overcome the problem of plate effects in a DE analysis. 
 This complements other aspects of the data analysis that use single-cell counts, e.g., in cell clustering or to identify highly variable genes.
