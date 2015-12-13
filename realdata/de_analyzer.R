@@ -1,5 +1,5 @@
-suppressPackageStartupMessages(require(simpaler))
-suppressPackageStartupMessages(require(TxDb.Mmusculus.UCSC.mm10.ensGene))
+#suppressPackageStartupMessages(require(simpaler))
+#suppressPackageStartupMessages(require(TxDb.Mmusculus.UCSC.mm10.ensGene))
 suppressPackageStartupMessages(require(edgeR))
 suppressPackageStartupMessages(require(DESeq2))
 
@@ -149,6 +149,10 @@ for (con in c("ola1", "ola2", "scialdone1")) {
     write(sprintf("& %s & %.2f & %.2f & %.2f \\\\", names(top.v), unlist(top.d), unlist(top.v), unlist(top.e)), file=log.top, append=TRUE) 
     write(file=log.top, "\\hline", append=TRUE)
 }
+
+#######################################################
+
+sessionInfo()
 
 #######################################################
 # End.
