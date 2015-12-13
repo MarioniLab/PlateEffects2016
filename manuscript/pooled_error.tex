@@ -68,7 +68,7 @@ The count data can then be analyzed to identify cell subtypes by clustering of t
     to identify highly variable genes contributing to cell-to-cell heterogeneity;
     and to identify differentially expressed (DE) genes between groups of cells.
 The ability to assay expression profiles for individual cells provides scRNA-seq studies with biological resolution that cannot be matched by bulk RNA-seq experiments on cell populations.
-This comes at the cost of high technical noise, due to difficulties in sequencing low input RNA quantities.
+However, this comes at the cost of high technical noise due to the difficulties in sequencing low input quantities of RNA from single cells.
 
 Most existing scRNA-seq protocols are based either on microwell plates \citep{picelli2014full} or microfluidics systems like the Fluidigm C1 \citep{pollen2014low}.
 In the former, cells are placed into individual wells, typically with automated approaches such as fluorescently activated cell sorting (FACS).
@@ -145,10 +145,10 @@ This is because the plate effect varies for each gene, whereas the scaling facto
 The plate effects are also confounded by the biological group, as previously described.
 A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{ig}$, based solely on the counts for a single plate.
 Any attempt to remove the former will affect detection of genuine DE in the latter.
-Even with multiple plates, this problem is still present as stochastic increases in $\delta_{ik}$ for all $k$ in $g$ can explain part or all of the observed DE.
+Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
 
 A common strategy ignores the plate effects and treats the cells from different plates as direct replicates.
-The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as that of $\delta_{ik}$ between plates.
+The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
 Methods can then be applied to detect DE between groups, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., monocle).
 This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
 However, it is not clear whether statistical rigor is maintained when plate effects are unaccounted for.
@@ -162,19 +162,19 @@ A simple simulation is used to test the performance of the analysis when plate e
 Let the count for each gene in each cell follow a negative binomial (NB) distribution, conditional on the plate effect.
 In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{ig}$ and a dispersion of $\varphi_{i}$.
 The size of $\varphi_{i}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
-The plate effects themselves are sampled from a log-normal distribution, i.e., $Z = \ln \mathcal{N}(-\sigma^2/2, \sigma^2)$.
+The plate effects themselves are sampled from a log-normal distribution, i.e., $Z \sim \ln \mathcal{N}(-\sigma^2/2, \sigma^2)$.
 This parametrization ensures that $E(Z)=1$, as originally defined.
 
-Simulated data were generated for 10000 genes across two groups, each consisting of 3 replicate plates with 50 cells in each plate.
-The expected read count for each group was set to $\mu_{ig}=\mu_{i0}$, where $\log \mu_{i0}$ was sampled from a uniform distribution over the interval (3, 8).
-This captures the spread of abundances for different genes in real data. 
+Simulated data were generated for 10000 genes across two groups, where each group consisted of three replicate plates with 50 cells in each plate.
+The expected read count for each group was set to $\mu_{ig}=\mu_{i0}$ to simulate non-DE genes.
+The value of $\mu_{i0}$ was sampled from $\exp(A)$ where $A \sim \mbox{Uniform}(3, 8)$, to recapitulate the spread of abundances for different genes in real data. 
 For each gene $i$, the NB dispersion was defined according to the mean, i.e., 
 \[
     \varphi_{i} = \frac{1}{2} + \frac{100}{\mu_{i0}} 
 \]
 to represent the decreasing mean-dispersion trend observed in real data.
-Large values of $\varphi_{i}$ are also consistent with high technical and biological variability in scRNA-seq counts.
-Finally, $\sigma^2$ was set to a value of 0.5 to represent a strong plate effect.
+The constants in the above expression were chosen to yield large values of $\varphi_{i}$, consistent with high technical and biological variability in scRNA-seq counts.
+Finally, $\sigma^2$ was set to a value of 0.5 to generate a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
 
 One might observe that these simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
@@ -196,13 +196,13 @@ edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lun
 Similarly, voom was run once with the one-way layout, and again after estimating the correlations induced by the plate effect.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
-In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for both biological groups.
+In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
 Any rejections of the null represent type I errors, i.e., false positives.
 For a specified type I error rate $\alpha = 0.01$, the observed error rate was defined as the proportion of all genes with a $p$-value below $\alpha$.
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
 A method was considered to be liberal if its observed error rate in the simulation was above the specified $\alpha$.
 Note that this evaluation is only possible for methods that compute $p$-values for each gene -- 
-    Bayesian methods \citep{vallejos2015basics,kharchenko2014bayesian} are not comparable as they generate posterior probabilities, and so are not tested here.
+    Bayesian methods \citep{kharchenko2014bayesian} are not comparable as they generate posterior probabilities, and so are not tested here.
 
 % BASiCS requires spike-ins, that the other methods don't use, so it's not entirely comparable.
 % Kharchenko's method generates z-scores and MLEs, but no p-values.
