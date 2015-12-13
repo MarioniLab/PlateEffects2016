@@ -169,7 +169,8 @@ monocle and MAST are explicitly designed for analyzing scRNA-seq data and operat
 Each method was applied on the simulated data to test for DE between groups. 
 In all methods, the experimental design was parametrized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
-edgeR was run twice, using either the likelihood ratio test (LRT) \citep{mccarthy2012differential} or the quasi-likelihood (QL) framework \citep{lund2012detecting}.
+edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
+    or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
 Similarly, voom was run once with the one-way layout, and again after estimating the correlations induced by the plate effect.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 

@@ -65,14 +65,14 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 %\onehalfspacing
 
 \section{Details on the implementation of the DE analysis methods}
-For edgeR, analyses were performed with and without empirical Bayes (EB) shrinkage.
+For edgeR, analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
     and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \citep{mccarthy2012differential}.
-The GLM deviance was used to estimate the quasi-likelihood (QL) dispersion for each gene, 
+The GLM deviance was used to estimate the QL dispersion for each gene, 
     which was stabilized by robust EB shrinkage towards another mean-dispersion trend \citep{lund2012detecting}.
 DE testing between groups was performed using the QL F-test.
 In the second analysis, the NB dispersion was estimated for each gene individually.
-This was used directly to fit the GLM for each gene, and DE testing was performed using the likelihood ratio test (LRT).
+This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
 For voom, counts were converted to log-counts per million (log-CPMs) and precision weights were computed from a fitted mean-variance trend.
 Log-CPMs and weights for each gene were used to fit a linear model.
