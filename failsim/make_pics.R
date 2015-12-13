@@ -11,7 +11,8 @@ for (type in c("raw", "sum")) {
         all.means <- sapply(out, FUN=mean)
         all.se <- sqrt(sapply(out, FUN=var)/lengths(out))
 
-        pdf(sprintf("%s_%s.pdf", pv, type))
+        setEPS()
+        postscript(sprintf("%s_%s.eps", pv, type))
         par(mar=c(6.2, 4.1, 4.1, 2.1))
         xbounds <- c(0.5, length(all.means)+0.5)
         ybounds <- c(-3, 0)
@@ -34,7 +35,7 @@ for (type in c("raw", "sum")) {
         segments(xticks-0.2, all.means+all.se, xticks+0.2, all.means+all.se, lwd=2)
 
         # Adding the threshold.
-        abline(h=log10(as.numeric(0.01)), col="red", lwd=2, lty=2)
+        abline(h=log10(as.numeric(0.01)), col="grey50", lwd=2, lty=2)
 
 
         dev.off()
