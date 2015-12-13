@@ -1,7 +1,4 @@
-failsim/with_raw.pdf
-failsim/with_sum.pdf
-failsim/without_raw.pdf
-failsim/without_sum.pdf
+failsim/*.eps
 manuscript/pooled_error.aux
 manuscript/pooled_error.bbl
 manuscript/pooled_error.blg
