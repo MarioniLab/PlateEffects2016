@@ -407,7 +407,7 @@ such that it will be identical for all $k$, regardless of the number and size of
 The DE analysis can subsequently be performed using standard methods like edgeR or DESeq2, without any need to consider plate-specific differences in the relationships.
 More details on the implementation of this approach can be found in Section~\suppquantile{} of the Supplementary Materials.
 
-\subsection{Direct and quantile-adjusted summation control type I error rates}
+\subsection{Simulation design with different numbers and sizes of cells}
 The performances of direct and quantile-adjusted summation were evaluated with more complex simulations involving different numbers of cells and library sizes per plate.
 Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
 Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$.
@@ -426,17 +426,18 @@ This subtlety is necessary because the mean-variance relationship will be the sa
 The use of two plates in each group also allows the simulated data set to be permuted.
 Specifically, plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
     or cells with different library sizes (in the other scenarios).
-This swapping procedure generates simulation scenarios where differences are present between plates in the same group, 
+This swapping procedure generates new simulation scenarios where differences are present between plates in the same group, 
     complementing the original scenarios where the differences are only present between plates in different groups.
 
 Direct and quantile-adjusted summation were applied on the simulated data by summing the counts or pseudo-counts for all cells in each plate.
 The resulting (pseudo-)count sums were tested for DE between groups, using the QL framework in edgeR as a representative of the bulk analysis methods.
-The observed type I error rate was calculated, and the average rate was computed across 10 simulation iterations.
-This was repeated for each scenario described above, before and after swapping replicate plates between groups.
+The observed type I error rate was calculated and averaged across 10 simulation iterations.
+This was repeated for each scenario described above, before and after swapping.
+
+\subsection{Direct and quantile-adjusted summation control type I error rates}
 Both strategies are able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
 This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
-
 The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
 Recall that the counts for cells on the same plate are conditionally independent. 
 This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
@@ -485,7 +486,7 @@ Recall that the single-cell analyses fail to maintain type I error control in th
 This suggests that the increased numbers in Table~\ref{tab:realnum} correspond to detection of false positives rather than genuine DE genes.
 Conversely, reduced detection of DE genes by the analyses on summed counts is consistent with more accurate error control.
 It should be stressed that differences in the number of DE genes can only be interpreted as a difference in power when the number of false positives are similar.
-This is clearly not the case here -- the previous simulations demonstrate that the analyses on single-cell counts are substantially liberal.
+This is clearly not the case here -- the previous simulations demonstrate that the analyses on single-cell counts are liberal.
 
 To determine the effect of summation on the gene ranking, genes were sorted based on the $p$-value computed from each method.
 The identities of the top 20, 200 and 2000 genes were compared for analyses using single-cell and summed counts.
@@ -497,13 +498,13 @@ Changes to the ranking indicate that summation will affect the biological conclu
 
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
-This would not be appropriate as such outlier patterns are uninteresting.
+This would be inappropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
 The top set of DE genes from summation all exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}).
 DE genes driven by a few outliers tend to be less significant.
 This is because the conditional variance of the count sum increases with fewer contributing cells, 
     which increases the total variance and decreases the relative significance of DE.
-Technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
+In other words, technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
 
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
