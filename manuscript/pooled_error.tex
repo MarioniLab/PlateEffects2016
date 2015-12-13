@@ -372,14 +372,15 @@ The most obvious difference is that in the magnitude of the count sum between di
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
 Briefly, the variance of a random variable can be expressed as a function of its mean.
 Most parametric models assume that this function is the same for all observations of a given gene.
-Plate-specific differences in this function may compromise the accuracy of the model for the count sums.
+For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
+Plate-specific differences in the relationship may compromise the accuracy of these methods when applied to the count sums.
 
 To illustrate, consider the NB-based simulation framework described in the previous section.
 Let $s_{ik}$ be the count sum for gene $i$ in plate $k$.
 Denote the conditional mean of $s_{ik}$ as $E(s_{ik}|\delta_{ik})=N_k \delta_{ik}\mu_{ig} = \rho_{ik}$, where $N_k$ is the number of cells in plate $k$.
 The sum of independently and identically NB-distributed random variables is itself NB-distributed \citep{robinson2008small}, 
     such that $s_{ik} |\delta_{ik} \sim \mbox{NB}(\rho_{ik}, \varphi_{i}/N_k)$.
-The conditional variance is then
+The conditional variance of $s_{ik}$ can then be written as
 \[
     \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{i}}{N_k}\rho_{ik}^2 \;.
 \]
@@ -392,11 +393,7 @@ where $E(s_{ik})=N_k\mu_{ig}$.
 Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ differs between plates.
 Differences in library size between cells on the same plate can lead to similar complications by altering the distribution of $s_{ik} |\delta_{ik}$ in a plate-specific manner.
-
-Variable mean-variance relationships are not considered by most analysis methods.
-For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene.
-This defines an identical mean-variance relationship for all counts of the gene, which may not be accurate when the relationship varies across counts.
-Any inaccuracy may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
+Any systematic variability in the mean-variance relationship across plates may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
 
 One solution to this problem uses quantile adjustment \citep{robinson2008small} to generate Poisson-distributed pseudo-counts.
 Recall that the count for each cell is NB-distributed, conditional on the plate effect.
@@ -407,7 +404,7 @@ The mean-variance relationship of the pseudo-count sum $\tilde{s}_{ik}$ is then
     \mbox{var}(\tilde{s}_{ik}) = E(\tilde{s}_{ik})^2 \mbox{var}(\delta_{ik}) + E(\tilde{s}_{ik}) 
 \]
 such that it will be identical for all $k$, regardless of the number and size of libraries in each plate.
-The DE analysis can subsequently be performed using standard methods like edgeR, without any need to consider plate-specific differences in the relationships.
+The DE analysis can subsequently be performed using standard methods like edgeR or DESeq2, without any need to consider plate-specific differences in the relationships.
 More details on the implementation of this approach can be found in Section~\suppquantile{} of the Supplementary Materials.
 
 \subsection{Direct and quantile-adjusted summation control type I error rates}
