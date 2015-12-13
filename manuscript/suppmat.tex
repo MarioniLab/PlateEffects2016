@@ -5,6 +5,7 @@
 \usepackage{color}
 \usepackage{xcite}
 \usepackage{amsmath}
+\usepackage{natbib}
 
 \renewcommand{\textfraction}{1.0}
 \renewcommand{\floatpagefraction}{.9}
@@ -28,14 +29,18 @@
 \vspace*{3cm}
 \begin{center}
 
-\textsc{\Large Supplementary Materials For}
-
-\vspace{1.5cm}
 {\LARGE
 Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data
 \par}
 
 \vspace{0.75cm}
+
+{\Large 
+    \textsc{Supplementary Materials}
+\par
+}
+\vspace{0.75cm}
+
 \large
 by
 
@@ -62,14 +67,14 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 \section{Details on the implementation of the DE analysis methods}
 For edgeR, analyses were performed with and without empirical Bayes (EB) shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
-    and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \cite{mccarthy2012differential}.
+    and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the quasi-likelihood (QL) dispersion for each gene, 
-    which was stabilized by robust EB shrinkage towards another mean-dispersion trend \cite{lund2012detecting}.
+    which was stabilized by robust EB shrinkage towards another mean-dispersion trend \citep{lund2012detecting}.
 DE testing between groups was performed using the QL F-test.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing was performed using the likelihood ratio test (LRT).
 
-For voom, counts were converted to log-CPMs and precision weights were computed from a fitted mean-variance trend.
+For voom, counts were converted to log-counts per million (log-CPMs) and precision weights were computed from a fitted mean-variance trend.
 Log-CPMs and weights for each gene were used to fit a linear model.
 Variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
@@ -82,7 +87,7 @@ A normal prior was applied to the log-dispersions for all genes, and the maximum
 The estimated dispersion was used to fit a GLM to the counts for each gene.
 Finally, DE testing was performed between groups using the Wald test.
 
-For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \cite{robinson2010scaling}.
+For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \citep{robinson2010scaling}.
 For DESeq2, normalization was performed using size factors.
 This step is not strictly necessary in this simulation, given that library-specific biases have not been introduced and all cells have the same library size.
 Nonetheless, normalization is included as part of the standard analysis.
@@ -92,7 +97,7 @@ These were used for DE testing between groups with the LRT in the differentialGe
 
 For MAST, counts were log-transformed after adding a prior count of 1.
 All libraries were of the same size, and all genes were of the same length, 
-    so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \cite{finak2015mast}.
+    so the log-counts are effectively equivalent to the log-transcripts per million used in the original description of the algorithm \citep{finak2015mast}.
 A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as a covariate.
 The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 DE genes between groups were identified using the LRT.
@@ -102,9 +107,9 @@ The quantile adjustment method models the conditional distribution of each count
 All cells within a single plate are defined as a separate group in a one-way layout.
 For each gene, means are estimated for all cells by fitting a GLM to the counts for that gene.
 The mean for each cell accounts for its library size as well as any gene- and plate-specific effects.
-A gene-specific NB dispersion is also estimated using standard methods, e.g., with the Cox-Reid adjusted profile likelihood in edgeR \cite{mccarthy2012differential}.
+A gene-specific NB dispersion is also estimated using standard methods, e.g., with the Cox-Reid adjusted profile likelihood in edgeR \citep{mccarthy2012differential}.
 The count for each cell is now modelled by a NB distribution with the estimated mean and dispersion.
-The percentile corresponding to each count is computed, and the matching quantile for a Poisson distribution with the same mean is identified \cite{robinson2008small}.
+The percentile corresponding to each count is computed, and the matching quantile for a Poisson distribution with the same mean is identified \citep{robinson2008small}.
 This quantile is Poisson-distributed and is used as the pseudo-count for each cell.
 
 This method depends on stable estimation of the mean for each cell and the dispersion for each gene.
@@ -127,7 +132,7 @@ Given that $E(s_{ik}) = \sum_{N_k} \theta_j\mu_{ig}$, the variance of the count 
     \mbox{var}(s_{ik}) 
     &= \mbox{var}\left(\delta_{ik}\sum_{N_k} \theta_{j}\mu_{ig}\right) + E\left(\delta_{ik}\sum_{N_k}  \theta_{j}\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_{N_k}\theta_{j}^2\mu_{ig}^2\right)\\
     &= \left(\sum_{N_k} \theta_{j}\mu_{ig}\right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_{N_k}  \theta_{j}\mu_{ig}\right) + \left( \varphi_i \sum_{N_k} \theta_j^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
-    &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left( \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{ (\sum_{N_k} \theta_j\mu_{ig})^2}  \right) E(s_{ik})^2 E(\delta_{ik}^2) \;. 
+    &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left\{ \varphi_i \frac{\sum_{N_k} \theta_j^2\mu_{ig}^2}{ (\sum_{N_k} \theta_j\mu_{ig})^2}  \right\} E(s_{ik})^2 E(\delta_{ik}^2) \;. 
 \end{align*}
 Recall that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
 This means that only the third term is involved in defining the plate-specific aspect of the mean-variance relationship.
