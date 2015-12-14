@@ -105,10 +105,11 @@ for (pv in c(0, plate.var)) {
             }
 
             if (mode=="raw") {
-                # MAST on log2(counts+1)
+                # MAST
                 oldseed <- .Random.seed
                 suppressMessages({
-                    sca <- FromMatrix('SingleCellAssay', t(log2(counts+1)), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
+                    cpms <- cpm(counts, prior.count=1, log=TRUE)
+                    sca <- FromMatrix('SingleCellAssay', t(cpms), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
                     cData(sca)$cngeneson <- colMeans(counts>0)
                     cData(sca)$condition <- grp
                     fit <- zlm.SingleCellAssay(~ condition + cngeneson, sca, method="bayesglm", ebayes=TRUE, ebayesControl=list(method="MLE", model="H1"))
@@ -123,7 +124,7 @@ for (pv in c(0, plate.var)) {
         
             if (it==1L && mode=="raw") {
                 # Only running monocle in one iteration, as it takes too long.
-                cpms <- cpm(all.counts, prior.count=0)
+                cpms <- cpm(counts, prior.count=0)
                 pdat <- AnnotatedDataFrame(data=data.frame(grp=grp))
                 sampleNames(pdat) <- colnames(cpms)
                 HSMM <- new("CellDataSet", exprs=cpms, phenoData=pdat, expressionFamily=negbinomial())

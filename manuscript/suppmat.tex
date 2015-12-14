@@ -95,11 +95,10 @@ Nonetheless, normalization is included as part of the standard analysis and will
 For monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
-For MAST v0.931, counts were log-transformed after adding a prior count of 1.
-In the simulation, all libraries are of the same size and all genes are of the same length, 
-    so the log-counts are functionally equivalent to the log-transcripts per million used in the original description of the algorithm \citep{finak2015mast}.
-A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as an additional covariate.
-The fitting method was set to ``bayesglm'' and empirical Bayes shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
+For MAST v0.931, counts were converted into log-CPMs after adding a prior count of 1.
+For each gene, a hurdle model was fitted to the log-CPMs across all cells. 
+The group was used as the factor of interest and the proportion of genes with non-zero counts in each library was used as an additional covariate \citep{finak2015mast}.
+The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 Putative DE genes between groups were identified using the LRT.
 
 \section{Implementing the quantile adjustment method}
