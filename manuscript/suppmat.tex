@@ -65,7 +65,7 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 %\onehalfspacing
 
 \section{Details on the implementation of the DE analysis methods}
-For edgeR, analyses were performed with and without EB shrinkage.
+For edgeR v3.12.0, analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
     and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, 
@@ -74,28 +74,28 @@ DE testing between groups was performed using the QL F-test.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
-For voom, counts were converted to log-counts per million (log-CPMs) and precision weights were computed from a fitted mean-variance trend.
-A linear model was fitted to the log-CPMs and weights for each gene using the lmFit function in limma.
+For voom, all counts were converted to log-CPM values and precision weights were computed from a fitted mean-variance trend.
+A linear model was fitted to the log-CPMs and weights for each gene using methods in the limma package v3.26.3.
 Sample variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
-For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin.
+For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin for that cell.
 The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for each cell.
 DE testing for each gene was then repeated on this refitted model.
 
-For DESeq2, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
+For DESeq2 v1.10.0, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
 The estimated dispersion was used to fit a GLM to the counts for each gene.
-Finally, DE testing was performed between groups using the Wald test.
+DE testing was performed between groups using the Wald test.
 
 For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \citep{robinson2010scaling}.
 For DESeq2, normalization was performed using the size factor method \citep{anders2010differential}.
 This step is not strictly necessary for analyses of simulated data, given that library-specific biases have not been introduced and all cells have the same library size.
 Nonetheless, normalization is included as part of the standard analysis and will be used for real data.
 
-For monocle, counts were transformed into CPM values that were considered to be roughly log-normal.
+For monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
-For MAST, counts were log-transformed after adding a prior count of 1.
+For MAST v0.931, counts were log-transformed after adding a prior count of 1.
 In the simulation, all libraries are of the same size and all genes are of the same length, 
     so the log-counts are functionally equivalent to the log-transcripts per million used in the original description of the algorithm \citep{finak2015mast}.
 A hurdle model was fitted to the log-counts using the biological group as the factor of interest and the number of non-zero counts in each library as an additional covariate.

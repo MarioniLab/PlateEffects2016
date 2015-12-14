@@ -182,17 +182,16 @@ This is done to fulfill the distributional assumptions of methods like edgeR and
 Use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance.
 
 \subsection{Implementation of DE analysis methods}
-DE analyses of the simulated data were performed using edgeR v3.12.0, DESeq2 v1.10.0 \citep{love2014moderated}, voom \citep{law2014voom} in limma v3.26.3, 
-    monocle v1.4.0 and MAST v0.931 \citep{finak2015mast}.
+DE analyses of the simulated data were performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, monocle and MAST \citep{finak2015mast}.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
-edgeR and DESeq2 model counts with NB distributions, while voom uses a normal distribution to model log-counts per million with precision weights.
-monocle and MAST are explicitly designed for analyzing scRNA-seq data and operate on pre-processed expression values.
+edgeR and DESeq2 model counts with NB distributions, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
+monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
 
 Each method was applied on the simulated data to test for DE between groups. 
 In all methods, the experimental design was parametrized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
-    or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
+    or using the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
 Similarly, voom was run once with the one-way layout, and again after estimating the correlations induced by the plate effect.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
