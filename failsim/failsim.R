@@ -108,7 +108,7 @@ for (pv in c(0, plate.var)) {
                 # MAST
                 oldseed <- .Random.seed
                 suppressMessages({
-                    cpms <- cpm(counts, prior.count=1, log=TRUE)
+                    cpms <- cpm(counts+1, prior.count=0, log=TRUE, lib.size=colSums(counts))
                     sca <- FromMatrix('SingleCellAssay', t(cpms), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
                     cData(sca)$cngeneson <- colMeans(counts>0)
                     cData(sca)$condition <- grp
