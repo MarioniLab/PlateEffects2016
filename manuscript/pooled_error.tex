@@ -466,13 +466,12 @@ To account for the batch effect, the experimental design was parametrized as an 
 %    -- this is slightly conservative as cells with DE are less likely to be included in that cluster.
 %A one-way layout was then used to model the two stages, with two plates per stage.
 
-DE analyses were performed on the real data using DESeq2, voom and QL edgeR.
+DE analyses were performed on the data using DESeq2, voom and QL edgeR.
 These methods were chosen as they could be applied on both the single-cell counts and summed counts for all cells in each plate. 
-Analyses were performed to detect DE genes between 2i and serum in the first study; between a2i and serum; and between the PS and NP stages in the second study.
 %In each data set, low-quality cells were removed if they had library sizes below 10$^5$ reads or more than 10\% of reads assigned to mitochondrial genes.
-Low-abundance genes were defined as those with an average count below 1 across all cells and were filtered out.
-Each analysis method was then implemented as previously described. 
+Prior to analysis, low-abundance genes were defined as those with an average count below 1 across all cells and were filtered out.
 Sample-level quality control was not applied as low-quality cells had already been removed.
+Each analysis method was then implemented as previously described, to detect DE genes between 2i and serum or between a2i and serum.
 The total number of DE genes detected at a FDR of 5\% was counted for each method, with and without summation.
 The number of DE genes detected in both approaches was also counted.
 
@@ -637,11 +636,11 @@ The number of DE genes detected with both counts is also shown.
 & Sum & 2004 & 758 & 238 \\
 & Shared & 1876 & 747 & 238 \\
 \hline
-\multirow{3}{*}{PS vs. NP} 
-& Cell & 268 & 4862 & 522 \\
-& Sum & 17 & 0 & 0 \\
-& Shared & 15 & 0 & 0 \\
-\hline
+%\multirow{3}{*}{PS vs. NP} 
+%& Cell & 268 & 4862 & 522 \\
+%& Sum & 17 & 0 & 0 \\
+%& Shared & 15 & 0 & 0 \\
+%\hline
 \end{tabular}
 \end{center}
 \end{table}
@@ -666,11 +665,11 @@ Top genes were defined as those with the smallest 20, 200, or 2000 $p$-values in
 & 200 & 0.26 & 0.54 & 0.31 \\
 & 2000 & 0.46 & 0.58 & 0.61 \\
 \hline
-\multirow{3}{*}{PS vs. NP} 
-& 20 & 0.35 & 0.30 & 0.35 \\
-& 200 & 0.30 & 0.26 & 0.44 \\
-& 2000 & 0.39 & 0.26 & 0.66 \\
-\hline
+%\multirow{3}{*}{PS vs. NP} 
+%& 20 & 0.35 & 0.30 & 0.35 \\
+%& 200 & 0.30 & 0.26 & 0.44 \\
+%& 2000 & 0.39 & 0.26 & 0.66 \\
+%\hline
 \end{tabular}
 \end{center}
 \end{table}
