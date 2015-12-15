@@ -154,8 +154,8 @@ Methods like size factor and TMM normalization are based on ratios between count
 For example, size factor normalization constructs an average reference library by taking the geometric mean of all counts for each gene, 
     and normalizes each library against this reference by computing the median ratio of the count to the geometric mean across all genes.
 In the presence of many zeroes, the geometric mean itself becomes zero such that many ratios will be undefined.
-Even if a more stable average measure is used (e.g., the arithmetic mean), the median ratio for many libraries will be equal to zero if more than 50\% of the counts of that library are zero.
-This is not a sensible scaling factor for obtaining normalized expression values.
+Even if a more stable average is used (e.g., the arithmetic mean), the median ratio for many libraries will be equal to zero if more than 50\% of the counts of that library are zero.
+This is not a sensible scaling factor for normalizing expression values.
 Summation reduces the incidence of zero counts so that these normalization methods can be properly applied.
 In particular, normalization of the summed counts will remove any plate-specific differences that affect each gene in the same manner, 
     e.g., differences in capture efficiency or sequencing depth between plates.
