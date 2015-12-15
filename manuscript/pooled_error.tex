@@ -43,7 +43,7 @@ In this article, we demonstrate that failing to consider plate effects in the st
 A solution is proposed whereby counts are summed from all cells in each plate, and the count sums across all plates are used in the DE analysis.
 This restores type I error control in the presence of plate effects without compromising detection power in simulated data.
 The summation approach is also robust to varying numbers and sizes of cells per plate.
-Similar results are observed in DE analyses of real data sets, where the use of count sums and single-cell counts lead to a different number and ranking of DE genes.
+Similar results are observed in DE analyses of real data where the use of count sums and single-cell counts lead to a different number and ranking of DE genes.
 This suggests that summation can help in maintaining statistical rigour in DE analyses of scRNA-seq data with plate effects.
 }
 {Single-cell RNA sequencing; Differential expression; Plate effects; Summation.}
@@ -448,27 +448,25 @@ A more mathematical explanation of this behaviour can be found in Section~\suppm
 
 \section{Summation results in reduced DE detection in real data}
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
-To determine whether this behaviour is relevant, both strategies were applied on real data from two scRNA-seq studies.
-The first study examines mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single},
-    where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or a2i).
-The second study examines gastrulation in the early mouse embryo at various development stages \citep{scialdone2015single},
-    where all cells on each plate originate from the same stage.
-
-For the first study, count data were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}. 
-This data set contains multiple chips across several batches for each serum condition.
-Counts were only taken from the two batches where all three serum conditions were represented.
+To determine whether this behaviour is relevant, both strategies were applied on real scRNA-seq data from a study examining mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
+This data set contains multiple chips across several batches for each serum condition, where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or a2i). 
+Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}.
+To simplify the analysis, counts were only used from cells in the two batches where all three serum conditions were represented.
 To account for the batch effect, the experimental design was parametrized as an additive model with serum-specific expression terms and batch-specific blocking factors.
-For the second study, data were obtained from \url{http://www.ebi.ac.uk/antonio/some-silly-pun}.
-Counts were taken from a subset of cells in the primitive streak (PS) and neural plate (NP) stages.
-This subset contains all cells used in Figure X in \cite{scialdone2015single}, and was originally selected by clustering on the single-cell expression profiles 
-    -- this is slightly conservative as cells with DE are less likely to be included in that cluster.
-A one-way layout was then used to model the two stages, with two plates per stage.
 
 % Note that Kim used ComBat to remove batch effects, not plate effects.
 % Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
 % In any case, ComBat seems to just regress out the plate effect, so even if you gave an all-intercept matrix to get it to run, you'd lose all DE.
 
-DE analyses were performed on each data set with DESeq2, voom and QL edgeR.
+%The second study examines gastrulation in the early mouse embryo at various development stages \citep{scialdone2015single},
+%    where all cells on each plate originate from the same stage.
+%For the second study, data were obtained from \url{http://www.ebi.ac.uk/antonio/some-silly-pun}.
+%Counts were taken from a subset of cells in the primitive streak (PS) and neural plate (NP) stages.
+%This subset contains all cells used in Figure X in \cite{scialdone2015single}, and was originally selected by clustering on the single-cell expression profiles 
+%    -- this is slightly conservative as cells with DE are less likely to be included in that cluster.
+%A one-way layout was then used to model the two stages, with two plates per stage.
+
+DE analyses were performed on the real data using DESeq2, voom and QL edgeR.
 These methods were chosen as they could be applied on both the single-cell counts and summed counts for all cells in each plate. 
 Analyses were performed to detect DE genes between 2i and serum in the first study; between a2i and serum; and between the PS and NP stages in the second study.
 %In each data set, low-quality cells were removed if they had library sizes below 10$^5$ reads or more than 10\% of reads assigned to mitochondrial genes.
