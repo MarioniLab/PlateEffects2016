@@ -311,8 +311,8 @@ Summation substantially reduces the liberalness of the DE analysis methods in th
 This is attributable to the presence of independent counts and to the proper consideration of the true number of residual d.f., 
     which ensure that overconfident estimation of model parameters is avoided.
 Note that some mild liberalness is still observed for edgeR and DESeq2 
-    -- this is due to the fact that the counts are not truly NB-distributed, which results in some inaccuracy during modelling.
-In contrast, type I error control is fully restored for voom as it is inherently more conservative \citep{law2014voom}
+    -- this is because the counts are not truly NB-distributed which results in some inaccuracy during modelling.
+In contrast, type I error control is fully restored for voom as it is more accurate for large counts and log-normally-distributed plate effects.
 The other methods are not used here, for various reasons -- voom with correlations is not necessary as the replicate plates are independent;
     monocle and MAST are designed for per-cell rather than summed per-plate counts;
     and for edgeR without EB shrinkage, there are insufficient residual d.f.\ to stably estimate the dispersion.
