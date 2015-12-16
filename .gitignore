@@ -4,18 +4,12 @@ manuscript/pooled_error.bbl
 manuscript/pooled_error.blg
 manuscript/pooled_error.log
 manuscript/pooled_error.out
-manuscript/pooled_error.pdf
 manuscript/pooled_error.dvi
 manuscript/suppmat.aux
 manuscript/suppmat.log
-manuscript/suppmat.pdf
 manuscript/texput.log
 
-manuscript/failsim_with_raw.pdf
-manuscript/failsim_with_sum.pdf
-manuscript/failsim_without_raw.pdf
-manuscript/power_with.pdf
-manuscript/quantile_with.pdf
+manuscript/*.pdf
 
 power/*.eps
 power/*.rds
