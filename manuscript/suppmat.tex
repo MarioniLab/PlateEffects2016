@@ -51,7 +51,7 @@ Aaron T. L. Lun$^{1}$ and John C. Marioni$^{1,2}$
 \begin{minipage}{0.9\textwidth}
 \begin{flushleft} 
 $^1$Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom \\[6pt]
-$^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom \\[6pt]
+$^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom \\[6pt]
 \end{flushleft}
 \end{minipage}
 
@@ -92,7 +92,7 @@ For DESeq2, normalization was performed using the size factor method \citep{ande
 This step is not strictly necessary for analyses of simulated data, given that library-specific biases have not been introduced and all cells have the same library size.
 Nonetheless, normalization is included as part of the standard analysis and will be used for real data.
 
-For monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
+For Monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
 For MAST v0.931, counts were converted into log-CPMs after adding a prior count of 1.
