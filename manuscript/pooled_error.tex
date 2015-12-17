@@ -246,8 +246,11 @@ It is worth pointing out that voom with correlations explicitly accounts for the
 This method exhibits the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}),
     i.e., the observed type I error rate is closest to the specified threshold.
 Nonetheless, voom with correlations is still liberal.
-This is attributable to the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
-Another contributing factor is the low number of plates in the experimental design, which may result in biased estimates of the consensus correlation.
+This is attributable to the difficulties in accurately estimating the consensus correlation when the number of plates is low.
+In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
+This may also be compounded by the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
+
+% Discreteness is secondary, as voom itself does fine without a plate effect.
 
 \subsection{Alternative analysis strategies are problematic}
 Simply ignoring the plate effects results in an unacceptable loss of type I control for all DE analysis methods.
