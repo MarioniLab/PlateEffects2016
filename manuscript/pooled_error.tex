@@ -12,13 +12,13 @@ accepted for publication November 1, 2010}
 \title{Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data}
 
 % List of authors, with corresponding author marked by asterisk
-\author{AARON T. L. LUN$^1$, JOHN C. MARIONI$^{1,2,\ast}$ \\[4pt]
+\author{AARON T. L. LUN$^{1,\ast}$, JOHN C. MARIONI$^{1,2,\ast}$ \\[4pt]
     % Author addresses
     \textit{$^1$Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom;
-$^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom}
+$^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom}
     \\[2pt]
     % E-mail address for correspondence
-{marioni@ebi.ac.uk}}
+{aaron.lun@cruk.cam.ac.uk, marioni@ebi.ac.uk}}
 
 % Running headers of paper:
 \markboth%
@@ -36,8 +36,8 @@ $^2$European Bioinformatics Institute (EMBL-EBI), Wellcome Genome Campus, Hinxto
 \begin{abstract}{
 An increasing number of studies are using single-cell RNA-sequencing (scRNA-seq) to characterize the gene expression profiles of individual cells.
 One common analysis applied to scRNA-seq data involves detecting differentially expressed (DE) genes between cells in different biological groups.
-However, many experiments are designed so that the cells to be compared are processed in separate plates or chips, 
-    such that the groupings are confounded with systematic plate effects.
+However, many experiments are designed such that the cells to be compared are processed in separate plates or chips, 
+    meaning that the groupings are confounded with systematic plate effects.
 This confounding aspect is frequently ignored in DE analyses of scRNA-seq data.
 In this article, we demonstrate that failing to consider plate effects in the statistical model will result in loss of type I error control.
 A solution is proposed whereby counts are summed from all cells in each plate, and the count sums across all plates are used in the DE analysis.
@@ -63,7 +63,7 @@ This suggests that summation can help in maintaining statistical rigour in DE an
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
 RNA is isolated from individual cells and reverse-transcribed into cDNA fragments that are sequenced using massively parallel technologies \citep{stegle2015computational}.
-Mapping of the sequence reads to a reference genome allows quantification of gene expression in each cell, based on the number of reads assigned to each gene.
+Mapping of the sequence reads to a reference genome allows quantification of gene expression in each cell based on the number of reads assigned to each gene.
 The count data can then be analyzed to identify cell subtypes by clustering of the gene expression profiles;
     to identify highly variable genes contributing to cell-to-cell heterogeneity;
     and to identify differentially expressed (DE) genes between groups of cells.
@@ -76,39 +76,43 @@ The entire plate is processed to generate sequencing libraries for all cells at 
 In the latter, individual cells are captured in separate reaction chambers within the C1 chip 
     (for simplicity, each chip will be treated as being equivalent to a plate in the following text).
 All cells on each chip are then simultaneously processed into libraries.
-Each plate or chip can only handle a limited number of cells, so data is usually generated for multiple plates across several biological groups. 
+Each plate or chip can only handle a limited number of cells, so data are usually generated for multiple plates across several biological groups. 
 All cells on each plate typically come from the same population (e.g., culture, embryo, animal) of a single biological group.
 If replicate populations are present in a group, a separate plate is used for cells from each population.
 
 The experimental design described above is motivated largely by practicality.
 It is logistically simpler to track and process cells when each plate corresponds to one population of one group, compared to partitioning the plate into different groups.
 For example, FACS is typically performed such that all cells on a plate are derived from the same gates, i.e., from the same subpopulation.
-In the C1, cells are captured randomly into reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
+In the C1, cells are captured randomly in reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
 Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
 However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect for all cells on each plate but a variable effect across different plates. 
 These variables can be technical in origin, such as differences in library preparation or sequencing efficiency between plates; 
     or biological, due to inherent variability in gene expression across replicate populations on different plates.
 
+% Yeah, yeah, indexed FACS, I know. But there's a lot of experimental designs that don't use that.
+
 One common analysis applied to scRNA-seq data involves identifying DE genes between groups of cells.
 This does not strictly require single-cell resolution, and is more conventionally performed with bulk data.
-Nonetheless, there are some benefits to using single-cell data here.
+Nonetheless, there are some benefits to using single-cell data in this context.
 Rare cells are more easily sequenced with single-cell protocols, and irrelevant cells from contaminating populations can be screened out before analysis.
 It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk data exclusively for this purpose.
 The DE analysis itself is typically performed using methods such as edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were designed for bulk data;
-    or with methods such as monocle \citep{trapnell2014dynamics} and SCDE \citep{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
+    or with methods such as Monocle \citep{trapnell2014dynamics} and SCDE \citep{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
 Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more groups of interest.
 
-The presence of plate effects complicates the parametrization of the experimental design for the DE analysis.
-Obviously, such effects are undesirable as they result from uncontrolled experimental variability.
+The presence of plate effects complicates the parametrization of the experimental design in the DE analysis.
+Obviously, such effects are undesirable as they arise via uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
 However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the groups of interest \citep{hicks2015widespread}.
-At the most extreme, consider a situation involving one plate for each group.
-Changes in expression due to the plate effect will be indistinguishable from genuine DE between groups.
-This problem is still present in data sets with two or three plates per group, where plate-to-plate variability may explain some or all of the apparent DE between groups.
-In lieu of a sensible method to remove plate effects, most studies have simply ignored them and treated cells from different plates as direct replicates \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
-This may not be statistically rigorous as the variability across cells will not be modelled properly.
+At the most extreme, consider a data set with multiple groups where each group is comprised of cells from a single plate.
+Changes in gene expression due to a plate-specific effect will be indistinguishable from genuine DE between groups.
+Any attempt to remove the former will compromise the detection of the latter.
+This problem is still present in data sets with small numbers (e.g., 2-3) of plates in each group, 
+    where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
+In the absence of a suitable method to remove plate effects, most studies have simply ignored them and treated cells from different plates as direct replicates \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
+This strategy may not be statistically rigorous as the variability across cells will not be modelled properly.
 
-This article demonstrates that plate effects must be handled properly to maintain the statistical validity of a DE analysis.
+This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
 This was caused by dependencies between cells on the same plate, which compromised inferences from the fitted model.
 To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
@@ -149,7 +153,7 @@ Even with multiple plates per group, this problem is still present as stochastic
 
 A common strategy ignores the plate effects and treats the cells from different plates as direct replicates.
 The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
-Methods can then be applied to detect DE between groups, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., monocle).
+Methods can then be applied to detect DE between groups, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
 This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
 However, it is not clear whether statistical rigor is maintained when plate effects are unaccounted for.
 
@@ -182,10 +186,10 @@ This is done to fulfill the distributional assumptions of methods like edgeR and
 Use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance.
 
 \subsection{Implementation of DE analysis methods}
-DE analyses of the simulated data were performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, monocle and MAST \citep{finak2015mast}.
+DE analyses of the simulated data were performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle and MAST \citep{finak2015mast}.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 model counts with NB distributions, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
-monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
+Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
 
 Each method was applied on the simulated data to test for DE between groups. 
 In all methods, the experimental design was parametrized as a one-way layout with two groups.
@@ -314,7 +318,7 @@ Note that some mild liberalness is still observed for edgeR and DESeq2
     -- this is because the counts are not truly NB-distributed which results in some inaccuracy during modelling.
 In contrast, type I error control is fully restored for voom as it is more accurate for large counts and log-normally-distributed plate effects.
 The other methods are not used here, for various reasons -- voom with correlations is not necessary as the replicate plates are independent;
-    monocle and MAST are designed for per-cell rather than summed per-plate counts;
+    Monocle and MAST are designed for per-cell rather than summed per-plate counts;
     and for edgeR without EB shrinkage, there are insufficient residual d.f.\ to stably estimate the dispersion.
 
 \subsection{Summation does not compromise DE detection power}
@@ -567,7 +571,7 @@ Funding for the project was provided by Cancer Research UK.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
     The threshold of 0.01 is represented by the red dashed line.
-    Only one iteration was used for monocle due to its long running time.
+    Only one iteration was used for Monocle due to its long running time.
 }
 \label{fig:platefail}
 \end{figure}
