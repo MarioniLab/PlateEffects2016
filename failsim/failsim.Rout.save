@@ -124,10 +124,11 @@ Type 'q()' to quit R.
 +             }
 + 
 +             if (mode=="raw") {
-+                 # MAST on log2(counts+1)
++                 # MAST
 +                 oldseed <- .Random.seed
 +                 suppressMessages({
-+                     sca <- FromMatrix('SingleCellAssay', t(log2(counts+1)), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
++                     cpms <- cpm(counts+1, prior.count=0, log=TRUE, lib.size=colSums(counts))
++                     sca <- FromMatrix('SingleCellAssay', t(cpms), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
 +                     cData(sca)$cngeneson <- colMeans(counts>0)
 +                     cData(sca)$condition <- grp
 +                     fit <- zlm.SingleCellAssay(~ condition + cngeneson, sca, method="bayesglm", ebayes=TRUE, ebayesControl=list(method="MLE", model="H1"))
@@ -142,7 +143,7 @@ Type 'q()' to quit R.
 +         
 +             if (it==1L && mode=="raw") {
 +                 # Only running monocle in one iteration, as it takes too long.
-+                 cpms <- cpm(all.counts, prior.count=0)
++                 cpms <- cpm(counts, prior.count=0)
 +                 pdat <- AnnotatedDataFrame(data=data.frame(grp=grp))
 +                 sampleNames(pdat) <- colnames(cpms)
 +                 HSMM <- new("CellDataSet", exprs=cpms, phenoData=pdat, expressionFamily=negbinomial())
@@ -205,4 +206,4 @@ loaded via a namespace (and not attached):
 > 
 > proc.time()
      user    system   elapsed 
-43740.507    15.009 45166.611 
+43804.990    16.613 46375.847 
