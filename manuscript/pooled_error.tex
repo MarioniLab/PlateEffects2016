@@ -334,7 +334,7 @@ DE was introduced for 1000 randomly selected genes by setting $\mu_{ig_1} = 3\mu
 This was repeated for a separate set of 1000 genes by setting $\mu_{ig_2} = 3\mu_{i0}$ for group $g_2$.
 The balanced addition of DE genes ensures that composition biases \citep{robinson2010scaling} are not introduced between samples.
 For all other genes, $\mu_{ig_1}=\mu_{ig_2}=\mu_{i0}$.
-Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on the $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
+Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
 Simulated data were then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
 Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
@@ -371,7 +371,7 @@ As a result, the count sums for all plates are identically distributed for any g
 This is statistically convenient as it substantially simplifies the modelling procedure.
 However, more realistic data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 In such scenarios, the count sum for each plate will not be identically distributed.
-The most obvious difference is that in the magnitude of the count sum between different plates, 
+The most obvious difference is observed in the magnitude of the count sum between different plates, 
     but this can be overcome by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
 Briefly, the variance of a random variable can be expressed as a function of its mean.
@@ -395,7 +395,7 @@ As $\delta_{ik}$ is independent of the other parameters, the total variance of $
 \end{align*}
 where $E(s_{ik})=N_k\mu_{ig}$. 
 Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
-This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ differs between plates.
+This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ is not constant.
 Differences in library size between cells on the same plate can lead to similar complications by altering the distribution of $s_{ik} |\delta_{ik}$ in a plate-specific manner.
 Any systematic variability in the mean-variance relationship across plates may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
 
@@ -453,7 +453,7 @@ A more mathematical explanation of this behaviour can be found in Section~\suppm
 
 \section{Summation results in reduced DE detection in real data}
 The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
-To determine whether this behaviour is relevant, both strategies were applied on real scRNA-seq data from a study examining mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
+To determine whether this behaviour is relevant, both strategies were applied to real scRNA-seq data from a study examining mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
 This data set contains multiple chips across several batches for each serum condition, where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or a2i). 
 Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}.
 To simplify the analysis, counts were only used from cells in the two batches where all three serum conditions were represented.
@@ -474,7 +474,7 @@ To account for the batch effect, the experimental design was parametrized as an 
 DE analyses were performed on the data using DESeq2, voom and QL edgeR.
 These methods were chosen as they could be applied on both the single-cell counts and summed counts for all cells in each plate. 
 %In each data set, low-quality cells were removed if they had library sizes below 10$^5$ reads or more than 10\% of reads assigned to mitochondrial genes.
-Prior to analysis, low-abundance genes were defined as those with an average count below 1 across all cells and were filtered out.
+Prior to analysis, low-abundance genes (defined as those with an average count below 1 across all cells) were filtered out.
 Sample-level quality control was not applied as low-quality cells had already been removed.
 Each analysis method was then implemented as previously described, to detect DE genes between 2i and serum or between a2i and serum.
 The total number of DE genes detected at a FDR of 5\% was counted for each method, with and without summation.
