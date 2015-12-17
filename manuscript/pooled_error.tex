@@ -221,16 +221,15 @@ These results suggest that DE analyses will perform poorly if the plate effect i
 Loss of type I error control will result in an unacceptable number of false positives in the final set of DE genes.
 This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
 
-Loss of error control is caused by ignoring the plate structure in the statistical model.
-Most DE analysis methods assume that replicate samples (i.e., cells) are independent in the one-way layout.
-However, the counts for cells on the same plate are only conditionally independent, given the plate-specific effect on the mean.
-The use of a one-way layout ignores the plate of origin and assumes that all cells in the same group have the same mean.
-Under this model, the counts for cells on the same plate are no longer independent.
-The count for one cell will provide information about the count for another cell on the same plate,
-    due to the shared scaling of the mean for both counts from the plate effect.
-(In contrast, conditional independence is preserved under this interpretation, as no extra information is provided when the plate effect on the mean is already known.)
+Loss of error control is caused by ignoring the plate effects in the statistical model.
+In the one-way layout, the count of each gene in each cell is modelled by a distribution with a group-specific mean.
+Most DE analysis methods assume that the counts for all cells are independently sampled from these distributions.
+However, this is not the case when a plate effect is present.
+The true mean of the sampling distribution for each cell is scaled by a plate-specific factor, 
+    such that the counts for cells on the same plate are more similar than expected under independence.
+(Conditional independence is irrelevant here, as the plate of origin is not used in the model parametrization.)
 This reduces the amount of information in the data set as cells on the same plate are effectively redundant.
-Methods that assume independence will overstate the information available to estimate model parameters such as the group-specific coefficients, the variance or the NB dispersion.
+Methods that assume independence will overstate the information available to estimate model parameters such as the group-specific means, the variance or the NB dispersion.
 This results in overconfident inferences and liberalness during hypothesis testing.
 
 The problem can also be described in terms of the residual degrees of freedom (d.f.) that are available in the fitted model.
@@ -254,7 +253,7 @@ Another contributing factor is the low number of plates in the experimental desi
 Simply ignoring the plate effects results in an unacceptable loss of type I control for all DE analysis methods.
 However, the obvious alternatives are not without their own difficulties.
 One natural approach would be to introduce blocking factors for the plates as fixed effects in the model.
-In a log-link model like those used in edgeR and DESeq2, this is equivalent to setting
+In a log-link model like that used in edgeR and DESeq2, this is equivalent to setting
 \[
     \beta_{ij} = \beta_{ig} + \beta_{ik} + o_{ij}
 \]
