@@ -322,6 +322,11 @@ The other methods are not used here, for various reasons -- voom with correlatio
     Monocle and MAST are designed for per-cell rather than summed per-plate counts;
     and for edgeR without EB shrinkage, there are insufficient residual d.f.\ to stably estimate the dispersion.
 
+Summation will not explicitly protect against pathological situations where, e.g., $\delta_{ik} > 1$ for all plates in one group and $\delta_{ik} < 1$ for all plates in the other groups.
+Such genes are more likely than others to be type I errors, regardless of whether single-cell or summed counts are used in the DE analysis.
+However, the benefit of summation is that it provides more accurate control of these errors.
+This is achieved through the appropriate consideration of the model uncertainty with low residual d.f., which reduces the significance of spurious DE caused by variable $\delta_{ik}$.
+
 \subsection{Summation does not compromise DE detection power}
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
 In a DE analysis, the average expression of each gene is computed for each group and then compared between two or more groups.
