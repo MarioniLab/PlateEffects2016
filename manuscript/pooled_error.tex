@@ -337,17 +337,21 @@ This is true regardless of whether those groups contain replicate cells or repli
 (Scenarios involving differing numbers or sizes of cells per plate will be considered in the next section.)
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
-This can be demonstrated with a simulation involving genes with genuine DE between groups.
+This can be demonstrated with a simulation containing DE genes between groups.
 DE was introduced for 1000 randomly selected genes by setting $\mu_{ig_1} = 3\mu_{i0}$ for group $g_1$ i.e., a 3-fold increase in expression in the first group.
 This was repeated for a separate set of 1000 genes by setting $\mu_{ig_2} = 3\mu_{i0}$ for group $g_2$.
-The balanced addition of DE genes ensures that composition biases \citep{robinson2010scaling} are not introduced between samples.
+The balanced addition of DE genes ensures that composition biases \citep{robinson2010scaling} are not introduced between groups.
 For all other genes, $\mu_{ig_1}=\mu_{ig_2}=\mu_{i0}$.
 Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
-Simulated data were then generated in the presence of a plate effect (i.e., $\sigma^2=0.5$).
-Analyses with DESeq2, QL edgeR and voom were performed on the single-cell and summed counts.
+Simulated data were then generated with a plate effect, i.e., $\sigma^2=0.5$.
+
+Analyses with DESeq2, QL edgeR and voom were performed on the simulated data using either the single-cell or summed counts.
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
-For each method, the ROC curve for the analysis on summed counts was nearly identical to that for the single-cell counts (Figure~\ref{fig:roc}).
+For each method, the ROC curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
 This indicates that detection power at any given false positive rate is not compromised by summation.
+In fact, at low false positive rates, a modest increase was observed in the true positive rate of the analyses with summed counts compared to their single-cell counterparts.
+This improvement may be due to the greater suitability of the statistical models for large counts.
+For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
 
 \subsection{Justifying summation in a single-cell study}
 Despite the obvious improvement in performance, the summation strategy may not have unqualified appeal.
