@@ -126,9 +126,9 @@ Consider an experimental design consisting of multiple biological groups of inte
 Each group consists of cells sorted onto multiple plates, where all cells on each plate come from an independent population of a single group.
 As previously mentioned, this is not an uncommon setup due to the logistics of the experimental protocol, e.g., cell sorting onto a plate with FACS, cell capture with the C1.
 Further assume that a plate effect exists in the data set, whereby the expression of each gene in all cells of a given plate is modified in a gene- and plate-specific manner.
-Consideration of gene specificity in the plate effects is motivated by biological variability across cell populations, 
-    given that all cells on each plate are derived from a separate population.
-The observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ is distributed as 
+This setup is motivated by biological variability between replicate populations.
+Stochastic differences in population-wide expression for each gene will result in gene-specific population-wide (and thus, plate-wide) effects on the expression of that gene for all constituent cells of each population.
+Now, let the observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ be distributed as 
 \[
     y_{ij} | \delta_{ik}  \sim X_{ik}
 \]
@@ -139,8 +139,10 @@ $X_{ik}$ is some random variable such that
 \]
 where $\mu_{ig}$ is the expected read count for group $g$. 
 Any references to the conditional distribution, variance or mean will refer to the corresponding attributes of $X_{ik}$.
-%In other words, the conditional distribution of $y_{ij}$ given $\delta_{ik}$ is defined as $X_{ik}$.
 The plate effect $\delta_{ik}$ is sampled from some independent distribution $Z$ where $E(Z) = 1$, which ensures that $E(y_{ij}) = \mu_{ig}$.
+
+% Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
+% Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
 
 One aim of the data analysis for this experiment is to identify DE genes between groups.
 However, this is complicated by the presence of the plate effects.
@@ -155,7 +157,7 @@ A common strategy ignores the plate effects and treats the cells from different 
 The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
 Methods can then be applied to detect DE between groups, using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
 This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
-However, it is not clear whether statistical rigor is maintained when plate effects are unaccounted for.
+However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
 
 % Trapnell paper uses one C1 chip for each timepoint.
 % Kolod...'s paper has multiple chip for each serum condition.
@@ -181,9 +183,9 @@ The constants in the above expression were chosen to yield large values of $\var
 Finally, $\sigma^2$ was set to a value of 0.5 to generate a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
 
-One might observe that these simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
+These simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
 This is done to fulfill the distributional assumptions of methods like edgeR and DESeq, which do not accommodate variable dispersions between counts for the same gene.
-Use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance.
+The use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance of these methods.
 
 \subsection{Implementation of DE analysis methods}
 DE analyses of the simulated data were performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle and MAST \citep{finak2015mast}.
@@ -205,14 +207,14 @@ For a specified type I error rate $\alpha = 0.01$, the observed error rate was d
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
 A method was considered to be liberal if its observed error rate in the simulation was above the specified $\alpha$.
 Note that this evaluation is only possible for methods that compute $p$-values for each gene -- 
-    Bayesian methods \citep{kharchenko2014bayesian} are not comparable as they generate posterior probabilities, and so are not tested here.
+    Bayesian methods \citep{kharchenko2014bayesian} are not directly comparable as they generate posterior probabilities, and so are not tested here.
 
 % BASiCS requires spike-ins, that the other methods don't use, so it's not entirely comparable.
 % Kharchenko's method generates z-scores and MLEs, but no p-values.
 
 \subsection{Type I error control is lost by all methods}
 The observed type I error rate exceeds the specified threshold in all methods (Figure~\ref{fig:platefail}).
-In all methods except for voom with correlations, the discrepancy between the observed and specified rates is greater than an order of magnitude.
+For all methods except for voom with correlations, the discrepancy between the observed and specified rates is greater than an order of magnitude.
 This liberalness is attributable to the plate effect, rather than any inherent fault with the methods.
 In the control simulation with $\sigma^2=0$, the observed rates for all methods are substantially closer to the threshold, if not below it.
 These results suggest that DE analyses will perform poorly if the plate effect is simply ignored.
@@ -236,12 +238,12 @@ The simulation uses an experimental design with $6 \times 50 =  300$ cells and t
 If all cells were truly independent -- as is assumed by most methods -- this design would provide 298 residual d.f. 
 At the other extreme, consider the scenario where all cells on a plate have identical counts, i.e., there is no noise or heterogeneity between cells.
 This means that there are only six independent samples (one cell per plate, as all other cells on that plate are redundant) and only four residual d.f.
-This is substantially smaller than the expected 298 d.f., such that the uncertainty of various parameter estimates will be underestimated.
+This is substantially smaller than the expected 298 d.f., meaning that the uncertainty of various parameter estimates will be underestimated.
 For example, the use of edgeR with the LRT assumes that sufficient residual d.f.\ are present to estimate the dispersion for each gene separately,
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
 
-It is worth pointing out that voom with correlations will explicitly account for the dependencies between cells.
+It is worth pointing out that voom with correlations explicitly accounts for the dependencies between cells.
 This method exhibits the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}),
     i.e., the observed type I error rate is closest to the specified threshold.
 Nonetheless, voom with correlations is still liberal.
@@ -251,14 +253,14 @@ Another contributing factor is the low number of plates in the experimental desi
 \subsection{Alternative analysis strategies are problematic}
 Simply ignoring the plate effects results in an unacceptable loss of type I control for all DE analysis methods.
 However, the obvious alternatives are not without their own difficulties.
-One natural approach would be to introduce blocking factors for the plates.
-In a log-link model similar to that used in edgeR and DESeq, this is equivalent to setting
+One natural approach would be to introduce blocking factors for the plates as fixed effects in the model.
+In a log-link model like those used in edgeR and DESeq2, this is equivalent to setting
 \[
     \beta_{ij} = \beta_{ig} + \beta_{ik} + o_{ij}
 \]
 where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{ig}$ is the average log-expression for group $g$, 
-    $\beta_{ik}$ is the plate effect for plate $k$ and $o_{ij}$ is a normalization offset.
-The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between $k$, thus eliminating the plate effect.
+    $\beta_{ik}$ is the plate effect for gene $i$ in plate $k$ and $o_{ij}$ is a normalization offset.
+The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between plates, thus eliminating the confounding effect.
 However, $\beta_{ik}$ will also absorb differences in $\mu_{ig}$ between groups, which can eliminate genuine DE and reduce detection power.
 The same problem is observed for methods like ComBat \citep{johnson2007adjusting} when they are applied to remove confounding plate effects prior to a DE analysis.
 %In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
@@ -291,7 +293,7 @@ The most sophisticated approach uses a mixed model with fixed effects for the gr
 This accounts for plate-to-plate variability while considering the dependencies between cells on each plate.
 However, mixed models are difficult to implement and are not supported by most existing methods for analyzing genomic data, e.g., edgeR.
 Using voom with correlations is analogous to fitting a mixed model with information sharing across genes \citep{smyth2005limma}, 
-    but fails to maintain type I error control in the simuations.
+    but fails to maintain type I error control in the simulations.
 Alternatively, one could use general statistical methods for mixed modelling such as those in the lme4 package \citep{bates2015fitting}.
 To test this approach, the glmer.nb function in lme4 v1.1-10 was used to fit a NB generalized linear mixed model to the simulated counts for each gene.
 This was unable to control type I error rate, yielding an observed rate of 0.032 at a threshold of 0.01.
