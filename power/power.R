@@ -46,7 +46,8 @@ for (pv in c(0, plate.var)) {
     for (it in 1:10) {
         mean.per.plate <- all.means * exp(matrix(rnorm(nplates*ngenes, -pv/2, sqrt(pv)), ncol=nplates))
         
-        # Adding balanced 2-fold DE to the first 2000 genes.
+        # Adding balanced 2-fold DE to the first 2000 genes. Don't worry about DE being concentrated at high-abundances,
+        # the fact that we have a spread of abundances for non-DE genes should mitigate any effects.
         mean.per.plate[first.set,conditions=="A"] <- mean.per.plate[first.set,conditions=="A"]*fc
         mean.per.plate[second.set,conditions=="B"] <- mean.per.plate[second.set,conditions=="B"]*fc
 
