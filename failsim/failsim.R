@@ -129,7 +129,7 @@ for (pv in c(0, plate.var)) {
                 sampleNames(pdat) <- colnames(cpms)
                 HSMM <- new("CellDataSet", exprs=cpms, phenoData=pdat, expressionFamily=negbinomial())
                 out <- differentialGeneTest(HSMM, fullModelFormulaStr="expression~grp", cores=6) 
-                save.fun("monocle", pv, out$pval, log.file)
+                save.fun("Monocle", pv, out$pval, log.file)
             }         
         }
     }
