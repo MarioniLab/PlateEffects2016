@@ -312,9 +312,9 @@ This strategy avoids dependencies between samples in the one-way layout by ensur
 Specifically, the plate effect is independently sampled from $Z$ such that it will not be constant across plates.
 This means that it will not introduce unexpected similarities between the count sums for different plates.
 Similarly, the counts for cells within each plate are conditionally independent and will not provide any information on the counts in other plates.
-Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ in the model.
+Independence of the count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ in the model.
 Summation has the additional benefit of increasing the size and precision of the counts.
-This makes the data more amenable for analysis with methods designed for bulk data.
+This makes the data more amenable for analysis with existing methods designed for bulk data.
 
 % A more mathematical description of independence is probably unnecessary, e.g., P(X=x | Y=y) = P(X=x) for counts sums X and Y.
 % But, I can't see how knowing 'y' would give me any information on 'x', if the plate effects are independent and the counts are also independent.
