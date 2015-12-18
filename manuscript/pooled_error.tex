@@ -307,10 +307,9 @@ Model fitting was also more time-consuming, taking several hours to run for a si
 \subsection{Error control can be restored by summing over cells}
 A simple solution presents itself for restoring error control in the presence of plate effects.
 Firstly, the counts for each gene are summed across all cells within each plate.
-These count sums are then supplied to the DE analysis software, where the plates themselves are treated as replicate samples for each biological group.
-Dependencies between samples are no longer present when counts are considered for plates instead of cells.
-This is because the plate effect is assumed to be independent between plates. 
-Similarly, counts for cells within each plate are conditionally independent and will not introduce dependencies between plates.
+These count sums are then used directly in the DE analysis, where the plates themselves are treated as replicate samples for each biological group.
+This strategy avoids dependencies between samples in the one-way layout by ensuring that there is no shared scaling of the mean across samples.
+Specifically, the plate effect is independently sampled from $Z$ for each plate, which means that it will not introduce unexpected similarities between the count sums for different plates.
 Independence between count sums fulfills the expectations of the analysis methods and avoids overestimating the residual d.f.\ in the model.
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with methods designed for bulk data.
