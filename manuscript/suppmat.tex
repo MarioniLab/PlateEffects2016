@@ -167,6 +167,7 @@ Attempting to model it with a group-specific mean will lead to hidden dependenci
 This situation is arguably pathological as plates with different subpopulations should not be replicates.
 
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
+% Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
 
 \section{Avoiding zero counts during normalization}
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
