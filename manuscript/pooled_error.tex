@@ -316,8 +316,9 @@ Independence of the count sums fulfills the expectations of the analysis methods
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with existing methods designed for bulk data.
 
-% A more mathematical description of independence is probably unnecessary, e.g., P(X=x | Y=y) = P(X=x) for counts sums X and Y.
-% But, I can't see how knowing 'y' would give me any information on 'x', if the plate effects are independent and the counts are also independent.
+% Every sampling step used to obtain each count for each cell is independent.
+% Thus, the only possible dependencies arise from having the same mean, but failing to realize that in the model.
+% Dependencies due to e.g. joint sampling of a multivariate distribution are not relevant here.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
 This is attributable to the presence of independent counts and to the proper consideration of the true number of residual d.f., 
