@@ -123,7 +123,7 @@ The robustness of direct summation to differences in the number or size of cells
 Assume that the cells on plate $k$ can be partitioned into $L_k$ subpopulations.
 Each subpopulation $l$ contains $N_l$ cells and differs from the other subpopulations by the library size modifier $\theta_l$.
 Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of subpopulation $l$.
-The count for each cell is sampled from a NB distribution with mean $\lambda_{ij}$ and dispersion $\varphi_i$, as described in the simulation design.
+The count for each cell is independently sampled from a NB distribution with mean $\lambda_{ij}$ and dispersion $\varphi_i$, as described in the simulation design.
 The conditional variance of the count sum $s_{ik}$ for plate $k$ is then
 \[
     \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{l} N_l \lambda_{il}  + \varphi_{i} \sum_{l} N_l \lambda_{il}^2 \;.
@@ -149,10 +149,24 @@ For any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution o
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or size of those cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion.
 Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
-While this result is described for subpopulations of cells with discrete $\theta_l$, it can be generalized to a continuous distribution of $\theta_l$ by considering an arbitrarily large $L_k$ on each plate.
+While this result is described for subpopulations of cells with discrete $\theta_l$, it can also be generalized to a continuous distribution of $\theta_l$ by considering an arbitrarily large $L_k$ on each plate.
 
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
 % Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
+
+As an aside, what happens when each plate contains several biological subpopulations that systematically differ in their gene expression profile?
+This can be parametrized as $\lambda_{il} = \delta_{ik} \theta_l \mu_{il}$ where $\mu_{il}$ represents the subpopulation-specific mean for gene $i$.
+The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}$ in all expressions.
+A more subtle point concerns the independence of the count sums.
+If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent under a one-way layout.
+This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
+Each count sum will then be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\mu_{il}$).
+However, this will not be true if the proportion of each subpopulation is different across replicate plates.
+In such cases, the mean for each count sum will vary for each plate.
+Attempting to model it with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
+This situation is arguably pathological as plates with different subpopulations should not be replicates.
+
+% It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
 
 \section{Avoiding zero counts during normalization}
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
