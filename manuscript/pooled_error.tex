@@ -317,8 +317,12 @@ Summation has the additional benefit of increasing the size and precision of the
 This makes the data more amenable for analysis with existing methods designed for bulk data.
 
 % Every sampling step used to obtain each count for each cell is independent.
-% Thus, the only possible dependencies arise from having the same mean, but failing to realize that in the model.
+% You could even think of the count sum as being independently sampled from some NB-like distribution, conditional on the plate effect.
+% If the plate effect itself is independent, then the entire process should be independent.
+% In fact, the only possible dependencies arise from having the same mean, but failing to realize that in the model.
 % Dependencies due to e.g. joint sampling of a multivariate distribution are not relevant here.
+% In the example above, everyone has the same mean - differences in means due to library size/cell numbers can be normalized out as they apply for all genes.
+% See the supplementaries for some thoughts about what to do for subpopulations with gene-specific expression profiles.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
 This is attributable to the presence of independent counts and to the proper consideration of the true number of residual d.f., 
