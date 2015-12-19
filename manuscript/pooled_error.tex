@@ -389,11 +389,12 @@ However, the use of summation to restore type I error control in the presence of
 \subsection{Direct summation may yield inconsistent mean-variance relationships}
 The simulation used in the previous section describes a situation involving the same number of libraries of the same size on each plate.
 As a result, the count sums for all plates are identically distributed for any given gene.
-This is statistically convenient as it substantially simplifies the modelling procedure.
+This is statistically convenient as it simplifies the modelling procedure.
 However, more realistic data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 In such scenarios, the count sum for each plate will not be identically distributed.
-The most obvious difference is observed in the magnitude of the count sum between different plates, 
-    but this can be overcome by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
+The most obvious difference is observed in the magnitude of the count sum between different plates
+    -- this leads to a consistent fold-difference in the expression of all genes on one plate relative to another,
+    and can be overcome by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
 Briefly, the variance of a random variable can be expressed as a function of its mean.
 Most parametric models assume that this function is the same for all observations of a given gene.
