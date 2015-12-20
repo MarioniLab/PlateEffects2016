@@ -523,11 +523,12 @@ One potential criticism of summation is that the variability between cells is hi
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
 This would be inappropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
-The top set of DE genes from summation all exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}).
-DE genes driven by a few outliers tend to be less significant.
-This is because the conditional variance of the count sum increases with fewer contributing cells, 
+The top set of DE genes from summation exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}), whereas genes driven by outliers tend to be less significant.
+This is because the conditional variance of the count sum will be larger with fewer contributing cells, 
     which increases the total variance and decreases the relative significance of DE.
-In other words, technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
+In other words, technical noise and heterogeneity will not average out if the sum is dominated by a few outliers.
+If more cells contribute to the sum, variability will be hidden but this is not undesirable for single-cell analyses.
+Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or subpopulations.
 
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
