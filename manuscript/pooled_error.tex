@@ -438,7 +438,7 @@ The performances of direct and quantile-adjusted summation were evaluated with m
 Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
 Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$.
 The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
-The experimental design was also modified such that only two replicate plates were present for each biological group.
+The experimental design was also modified such that only two replicate plates were present for each biological group (see below).
 
 To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Supplementary Figure~\suppcompsim{}).
 Library sizes were kept constant for all cells in this scenario.
@@ -450,10 +450,10 @@ This subtlety is necessary because the mean-variance relationship will be the sa
     or if there is an increase in the library size for the same proportion of cells on all plates.
 
 The use of two plates in each group also allows the simulated data set to be permuted.
-Specifically, plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
+Plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
     or cells with different library sizes (in the other scenarios).
-This swapping procedure generates new simulation scenarios where differences are present between plates in the same group, 
-    complementing the original scenarios where the differences are only present between plates in different groups.
+This generates new scenarios where the differences between plates are present within groups, 
+    complementing the original scenarios where the differences are present between groups.
 
 Direct and quantile-adjusted summation were applied on the simulated data by summing the counts or pseudo-counts for all cells in each plate.
 The resulting (pseudo-)count sums were tested for DE between groups, using the QL framework in edgeR as a representative of the bulk analysis methods.
