@@ -87,6 +87,15 @@ for (pv in c(0, plate.var)) {
             fit <- eBayes(fit, robust=TRUE)
             res <- topTable(fit, n=Inf, sort.by="none", coef=2)
             voom.collected[[mode]][[it]] <- compute.roc(res$P.Value)
+
+            # Also trialling voom with correlations, for reference (pretty much the same as voom):
+            # plate.of.origin <- rep(seq_len(nplates), each=ncells)
+            # dc <- duplicateCorrelation(v.all, design=design, block=plate.of.origin)
+            # fit <- lmFit(v.all, design, block=plate.of.origin, correlation=dc$consensus)
+            # fit <- eBayes(fit, robust=TRUE)
+            # res <- topTable(fit, n=Inf, sort.by="none", coef=2)
+            # voom.cor <- compute.roc(res$P.Value)
+
         }
     }
 
