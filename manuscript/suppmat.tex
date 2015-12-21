@@ -138,18 +138,19 @@ Given that $E(s_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}
 \end{align*}
 Recall that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
 This means that only the third term is involved in defining the plate-specific aspect of the mean-variance relationship.
-As the number of cells increases,
+Now, consider the behaviour of this term as the number of cells increases.
+If $N_l$ increases in each of $s$ subpopulations, the limit becomes
 \[
-    \lim_{\substack{N_{l_1} \to \infty \\ N_{l_2} \to \infty \\ \dots}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
-    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ N_{l_2} \to \infty \\ \dots}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_s} \to \infty}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_s} \to \infty}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
 = 0
 \]
-for any, some or all $l_1, l_2, \dots$ and positive values for $\theta_j$ and $\mu_{ig}$.
-For any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term in the relationship will approach zero as the number of cells increases.
-Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or size of those cells.
+for positive values of $\theta_j$ and $\mu_{ig}$.
+This means that, for any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
+Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion.
 Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
-While this result is described for subpopulations of cells with discrete $\theta_l$, it can also be generalized to a continuous distribution of $\theta_l$ by considering an arbitrarily large $L_k$ on each plate.
+%While this result is described for discrete subpopulations of cells with the same $\theta_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\theta_l$) by considering an arbitrarily large $L_k$ on the plate.
 
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
 % Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
