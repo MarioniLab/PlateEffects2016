@@ -140,11 +140,11 @@ Recall that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for al
 This means that only the third term is involved in defining the plate-specific aspect of the mean-variance relationship.
 As the number of cells increases,
 \[
-\lim_{N_l \to \infty} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
-= \sum_l \lim_{N_l \to \infty} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    \lim_{\substack{N_{l_1} \to \infty \\ N_{l_2} \to \infty \\ \dots}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ N_{l_2} \to \infty \\ \dots}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
 = 0
 \]
-for any, some or all values of $N_l$ and positive values for $\theta_j$ and $\mu_{ig}$.
+for any, some or all $l_1, l_2, \dots$ and positive values for $\theta_j$ and $\mu_{ig}$.
 For any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term in the relationship will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or size of those cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion.
