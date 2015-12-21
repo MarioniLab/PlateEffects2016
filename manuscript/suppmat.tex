@@ -155,6 +155,9 @@ Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
 % Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
 
+% Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
+% be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.
+
 As an aside, what happens when each plate contains several biological subpopulations with different gene expression profiles?
 This can be parametrized as $\lambda_{il} = \delta_{ik} \theta_l \mu_{il}$ where $\mu_{il}$ represents the subpopulation-specific mean for gene $i$.
 The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}$ in all expressions.
