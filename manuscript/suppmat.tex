@@ -155,16 +155,16 @@ Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
 % Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
 
-As an aside, what happens when each plate contains several biological subpopulations that systematically differ in their gene expression profiles?
+As an aside, what happens when each plate contains several biological subpopulations with different gene expression profiles?
 This can be parametrized as $\lambda_{il} = \delta_{ik} \theta_l \mu_{il}$ where $\mu_{il}$ represents the subpopulation-specific mean for gene $i$.
 The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}$ in all expressions.
 A more subtle point concerns the independence of the count sums.
-If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent under a one-way layout.
+If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent in a one-way layout.
 This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
-Each count sum will then be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\mu_{il}$).
+Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\mu_{il}$).
 However, this will not be true if the proportion of each subpopulation is different across replicate plates.
 In such cases, the mean for each count sum will vary for each plate.
-Attempting to model it with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
+Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
 This situation is arguably pathological as plates with different subpopulations should not be replicates.
 
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
