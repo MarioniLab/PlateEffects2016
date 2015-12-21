@@ -123,15 +123,15 @@ The robustness of direct summation to differences in the number or size of cells
 Assume that the cells on plate $k$ can be partitioned into $L_k$ subpopulations.
 Each subpopulation $l$ contains $N_l$ cells and differs from the other subpopulations by the library size modifier $\theta_l$.
 Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of subpopulation $l$.
-The count for each cell is independently sampled from a NB distribution with mean $\lambda_{ij}$ and dispersion $\varphi_i$, as described in the simulation design.
+The count for each cell is independently sampled from a NB distribution with mean $\lambda_{il}$ and dispersion $\varphi_i$, as described in the simulation design.
 The conditional variance of the count sum $s_{ik}$ for plate $k$ is then
 \[
     \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{l} N_l \lambda_{il}  + \varphi_{i} \sum_{l} N_l \lambda_{il}^2 \;.
 \]
-Given that $E(s_{ik}) = \sum_l N_l\lambda_{il} = \sum_l N_l \theta_l \mu_{ig}$, the variance of the count sum can be decomposed to
+Given that $E(s_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(s_{ik}) 
-    &= \mbox{var}(E(s_{ik} | \delta_{ik}) + E\{ \mbox{var}(s_{ik} | \delta_{ik}) \}\\
+    &= \mbox{var}\{E(s_{ik} | \delta_{ik} ) \} + E\{ \mbox{var}(s_{ik} | \delta_{ik}) \}\\
     &= \mbox{var}\left(\delta_{ik}\sum_l N_l \theta_{l}\mu_{ig}\right) + E\left(\delta_{ik}\sum_l  N_l\theta_l\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_l  N_l\theta_l^2\mu_{ig}^2\right)\\
     &= \left(\sum_l N_l \theta_{l}\mu_{ig} \right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_l N_l \theta_{l}\mu_{ig}\right) + \left( \varphi_i \sum_l  N_l\theta_l^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
     &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2}  \right\} E(s_{ik})^2 E(\delta_{ik}^2) \;. 
