@@ -378,9 +378,9 @@ The single-cell counts can still be used for other aspects of the analysis, e.g.
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
-Jaitin \textit{et al.} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering \citep{jaitin2014massively}.
-Klein \textit{et al.} also pool single-cell counts within each group prior to performing a DE analysis between groups,
-    to assess the technical reproducibility of their experimental protocol \citep{klein2015droplet}.
+\cite{jaitin2014massively} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering.
+\cite{klein2015droplet} also pool single-cell counts within each group prior to performing a DE analysis between groups,
+    which increases the count size and avoids unstable estimates of the DE fold change.
 However, the use of summation to restore type I error control in the presence of plate effects has not yet been addressed in the literature.
 
 \section{Error control does not require variance adjustment}
@@ -565,7 +565,7 @@ The number of cells is less important, though there should be enough cells per p
 Summation is a simple but effective approach to overcome the problem of plate effects in a DE analysis. 
 This complements other aspects of the data analysis that use single-cell counts, e.g., in cell clustering or to identify highly variable genes.
 Summation also reduces technical noise and may be a more general strategy to improve data quality when many cells are available,
-    such as in droplet-based protocols \citep{klein2015droplet}.
+    as performed by \cite{klein2015droplet} for thousands of cells from a droplet-based protocol.
 
 \section{Software}
 \label{sec5}
