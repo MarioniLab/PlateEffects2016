@@ -126,8 +126,8 @@ Consider an experimental design consisting of multiple biological groups of inte
 Each group consists of cells sorted onto multiple plates, where all cells on each plate come from an independent population of a single group.
 As previously mentioned, this is not an uncommon setup due to the logistics of the experimental protocol, e.g., cell sorting onto a plate with FACS, cell capture with the C1.
 Further assume that a plate effect exists in the data set, whereby the expression of each gene in all cells of a given plate is modified in a gene- and plate-specific manner.
-This setup is motivated by biological variability between replicate populations.
-Stochastic differences in population-wide expression for each gene will result in gene-specific population-wide (and thus, plate-wide) effects on the expression of that gene for all constituent cells of each population.
+Here, gene specificity is motivated by the presence of biological variability between replicate populations.
+This introduces differences in population-wide expression that vary stochastically across genes.
 Now, let the observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ be distributed as 
 \[
     y_{ij} | \delta_{ik}  \sim X_{ik}
