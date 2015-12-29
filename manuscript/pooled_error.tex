@@ -54,7 +54,8 @@ This suggests that summation can help in maintaining statistical rigour in DE an
 \newcommand{\suppimplementation}{1}
 \newcommand{\suppquantile}{2}
 \newcommand{\suppmeanvar}{3}
-\newcommand{\suppnorm}{4}
+\newcommand{\supphiddenvar}{4}
+\newcommand{\suppnorm}{5}
 
 % Supplementary figures
 \newcommand{\suppcompsim}{S1}
@@ -198,7 +199,7 @@ In all methods, the experimental design was parametrized as a one-way layout wit
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
     or using the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
-Similarly, voom was run once with the one-way layout, and again after estimating the correlations induced by the plate effect.
+Similarly, the analysis with voom was repeated after estimating the correlations between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
 In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
@@ -519,7 +520,6 @@ This effect is important as genes associated with phenotypic differences between
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
 
-\subsection{The effect of variability between cells on the count sum}
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
 This would be inappropriate as such outlier patterns are uninteresting.
@@ -527,17 +527,12 @@ However, these genes do not seem to be favoured in real data.
 The top set of DE genes from summation exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}), whereas genes driven by outliers tend to be less significant.
 This is because the conditional variance of the count sum will be larger with fewer contributing cells, 
     i.e., technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
-This increases the total variance and decreases the relative significance of DE.
+This increases the total variance and decreases the relative significance of DE for genes with outliers.
+For genes with more contributing cells, cell-to-cell variability will be hidden but this is not wholly undesirable 
+    -- see Section~\supphiddenvar{} of the Supplementary Materials for details.
 
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
-
-If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
-However, this is not undesirable for single-cell analyses.
-Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or the presence of subpopulations.
-This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates,
-    where variability between replicates is explicitly modelled rather than being hidden by averaging the replicate signals \citep{smyth2005use}.
-The difference in strategies is due to the fact that the variability between technical replicates should be minimal as it represents measurement error, whereas the variability between cells can be arbitrarily large as it depends on the biology.
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.

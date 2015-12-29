@@ -77,10 +77,10 @@ This was used directly to fit the GLM for each gene, and DE testing for each gen
 For voom, all counts were converted to log-CPM values and precision weights were computed from a fitted mean-variance trend.
 A linear model was fitted to the log-CPMs and weights for each gene using methods in the limma package v3.26.3.
 Sample variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
-This analysis was also repeated after using the duplicateCorrelation function to estimate the correlations introduced by the plate effects.
+This analysis was also repeated after using the duplicateCorrelation function \citep{smyth2005use} to estimate the correlations introduced by the plate effects.
 For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin for that cell.
 The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for each cell.
-DE testing for each gene was then repeated on this refitted model.
+DE testing was then performed on this refitted model.
 
 For DESeq2 v1.10.0, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
@@ -172,6 +172,16 @@ This situation is arguably pathological as plates with different subpopulations 
 
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
 % Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
+
+\section{Benefits of hiding the variability between cells}
+If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
+However, this is not undesirable for single-cell analyses.
+Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or the presence of subpopulations.
+This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates,
+    where variability between replicates is explicitly modelled rather than being hidden by averaging the replicate signals \citep{smyth2005use}.
+The difference in strategies is due to the fact that the technical replicates in microarray analyses are expected to be similar.
+Genes with large differences between technical replicates are considered to be unreliable and will have reduced significance for DE.
+In contrast, cells are not expected to be similar due to biological heterogeneity within populations.
 
 \section{Avoiding zero counts during normalization}
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
