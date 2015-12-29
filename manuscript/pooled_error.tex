@@ -501,6 +501,7 @@ Each analysis method was then implemented as previously described, to detect DE 
 The total number of DE genes detected at a FDR of 5\% was counted for each method, with and without summation.
 The number of DE genes detected in both approaches was also counted.
 
+\subsection{Numbers and ranking of DE genes are altered upon summation}
 In all comparisons, the number of DE genes detected with summed counts was substantially smaller than that detected with single-cell counts (Table~\ref{tab:realnum}).
 In fact, the DE list from the former was generally a subset of that from the latter.
 However, this does not mean that DE analyses with single-cell counts provide more power.
@@ -518,19 +519,27 @@ This effect is important as genes associated with phenotypic differences between
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
 
+\subsection{The effect of variability between cells on the count sum}
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
 This would be inappropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
 The top set of DE genes from summation exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}), whereas genes driven by outliers tend to be less significant.
 This is because the conditional variance of the count sum will be larger with fewer contributing cells, 
-    which increases the total variance and decreases the relative significance of DE.
-In other words, technical noise and heterogeneity will not average out if the sum is dominated by a few outliers.
-If more cells contribute to the sum, variability will be hidden but this is not undesirable for single-cell analyses.
-Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or subpopulations.
+    i.e., technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
+This increases the total variance and decreases the relative significance of DE.
 
 % Number of outlier cells to which this applies depends on the plate effect.
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
+
+If more cells contribute to the sum, cell-to-cell variability will cease to affect the total variance.
+However, this is not undesirable for single-cell analyses.
+Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or the presence of subpopulations.
+This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates 
+    -- there, the choice is between averaging the replicate signals or including the replicate-to-replicate variability in the analysis,
+    and the latter is often preferred to mitigate the effect of artifacts in one or more replicates \citep{smyth2005use}.
+The difference in strategies is due to the fact that variability between technical replicates should be minimal whereas variability between cells depends on the biology.
+    
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.
