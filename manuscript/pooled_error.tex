@@ -535,11 +535,9 @@ This increases the total variance and decreases the relative significance of DE.
 If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
 However, this is not undesirable for single-cell analyses.
 Genes with reproducible DE between plates should not be penalized for having high variability within plates, e.g., due to cellular heterogeneity or the presence of subpopulations.
-This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates 
-    -- there, the choice is between averaging the replicate signals or incorporating the replicate-to-replicate variability in the analysis,
-    and the latter is often preferred to mitigate the effect of artifactual signals \citep{smyth2005use}.
-The difference in strategies is due to the fact that variability between technical replicates should be minimal whereas variability between cells depends on biology.
-   
+This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates,
+    where variability between replicates is explicitly modelled rather than being hidden by averaging the replicate signals \citep{smyth2005use}.
+The difference in strategies is due to the fact that the variability between technical replicates should be minimal as it represents measurement error, whereas the variability between cells can be arbitrarily large as it depends on the biology.
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.
