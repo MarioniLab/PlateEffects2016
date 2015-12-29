@@ -299,7 +299,7 @@ Using voom with correlations is analogous to fitting a mixed model with informat
 Alternatively, one could use general statistical methods for mixed modelling such as those in the lme4 package \citep{bates2015fitting}.
 To test this approach, the glmer.nb function in lme4 v1.1-10 was used to fit a NB generalized linear mixed model to the simulated counts for each gene.
 This was unable to control type I error rate, yielding an observed rate of 0.032 at a threshold of 0.01.
-Loss of control is likely caused by inaccurate estimates of the variance of the random effect for low numbers of plates.
+Loss of control was likely caused by inaccurate estimates of the variance of the random effect for low numbers of plates.
 Model fitting was also more time-consuming, taking several hours to run for a single simulation iteration compared to several minutes for edgeR or voom.
 
 \section{Improved performance with summation across cells in each plate}
@@ -324,8 +324,7 @@ This makes the data more amenable for analysis with existing methods designed fo
 % See the supplementaries for some thoughts about what to do for subpopulations with gene-specific expression profiles.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
-This is attributable to the presence of independent counts and to the proper consideration of the true number of residual d.f., 
-    which ensure that overconfident estimation of model parameters is avoided.
+Overconfident estimation of model parameters is avoided due to the presence of independent counts.
 Note that some mild liberalness is still observed for edgeR and DESeq2 
     -- this is because the counts are not truly NB-distributed which results in some inaccuracy during modelling.
 In contrast, type I error control is fully restored for voom as it is more accurate for large counts and log-normally-distributed plate effects.
@@ -357,7 +356,7 @@ Analyses with DESeq2, QL edgeR and voom were performed on the simulated data usi
 A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
 For each method, the ROC curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
 This indicates that detection power at any given false positive rate is not compromised by summation.
-In fact, at low false positive rates, a modest increase was observed in the true positive rate of the analysis with summed counts compared to its single-cell counterpart.
+In fact, at low false positive rates, a modest increase was observed in the true positive rate of each analysis with summed counts compared to its single-cell counterpart.
 This improvement may be due to the greater suitability of the statistical models for large summed counts.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
 
@@ -473,9 +472,10 @@ This suggests that any plate-specific differences in the mean-variance relations
 A more mathematical explanation of this behaviour can be found in Section~\suppmeanvar{} of the Supplementary Materials.
 
 \section{Summation results in reduced DE detection in real data}
-The simulations suggest that DE analyses on summed counts are less liberal than analyses using the original single-cell counts.
-To determine whether this behaviour is relevant, both strategies were applied to real scRNA-seq data from a study examining mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
-This data set contains multiple chips across several batches for each serum condition, where all mESCs on each C1 chip correspond to a single condition (serum, 2i, or a2i). 
+
+\subsection{Overview of the real data set}
+To determine the relevance of the simulation results, DE analyses with single-cell and summed counts were performed on real scRNA-seq data from a study of mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
+This data set contains multiple C1 chips across several batches for each serum condition, where all mESCs on each chip correspond to a single condition (serum, 2i, or a2i). 
 Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}.
 To simplify the analysis, counts were only used from cells in the two batches where all three serum conditions were represented.
 To account for the batch effect, the experimental design was parametrized as an additive model with serum-specific expression terms and batch-specific blocking factors.
