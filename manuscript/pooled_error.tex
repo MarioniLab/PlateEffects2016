@@ -199,7 +199,7 @@ In all methods, the experimental design was parametrized as a one-way layout wit
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
     or using the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
-Similarly, the analysis with voom was repeated after estimating the correlations between cells on the same plate \citep{smyth2005use}.
+Similarly, the analysis with voom was repeated after estimating the correlation between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
 In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
