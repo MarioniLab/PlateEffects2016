@@ -180,8 +180,10 @@ Genes with reproducible DE between plates should not be penalized for having hig
 This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates,
     where variability between replicates is explicitly modelled rather than being hidden by averaging the replicate signals \citep{smyth2005use}.
 The difference in strategies is due to the fact that the technical replicates in microarray analyses are expected to be similar.
-Genes with large differences between technical replicates are considered to be unreliable and will have reduced significance for DE.
+Genes with large differences between replicates are considered to be unreliable and will have reduced significance for DE.
 In contrast, cells are not expected to be similar due to biological heterogeneity within populations.
+Large cell-to-cell variability has no bearing on the reliability of DE between populations when many cells are present.
+For example, if the subpopulation structure is the same in each replicate plate, one would have a situation with large variability between cells in different subpopulations but reproducible count sums across plates.
 
 \section{Avoiding zero counts during normalization}
 One particular benefit of using summed counts with existing analysis methods is in the normalization step.
