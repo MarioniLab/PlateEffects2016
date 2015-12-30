@@ -1,6 +1,6 @@
 all: pooled_error.pdf suppmat.pdf
 
-pooled_error.pdf: pooled_error.tex failsim_without_raw.pdf failsim_with_raw.pdf failsim_with_sum.pdf power_with.pdf quantile_with.pdf power_with_zoom.pdf
+pooled_error.pdf: pooled_error.tex failsim_without_raw.pdf failsim_with_raw.pdf failsim_with_sum.pdf power_with.pdf quantile_with.pdf power_with_zoom.pdf references.bib
 	pdflatex pooled_error.tex
 	bibtex pooled_error
 	pdflatex pooled_error.tex
