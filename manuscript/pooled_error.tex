@@ -160,7 +160,7 @@ Even with multiple plates per group, this problem is still present as stochastic
 
 A common strategy ignores the plate effects and treats cells from different plates in the same group as replicates.
 This is most obvious in a one-way layout but also applies to multi-factor designs involving some level of replication across plates.
-The estimated variance will include the conditional variance between cells on given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
+The estimated variance will include the conditional variance between cells on a given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
 DE genes can then be detected between groups using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
 This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
 However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
