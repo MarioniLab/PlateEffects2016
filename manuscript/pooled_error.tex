@@ -104,14 +104,18 @@ Putative DE genes are defined as those that exhibit significant differences in t
 The presence of plate effects complicates the parametrization of the experimental design in the DE analysis.
 Obviously, such effects are undesirable as they arise via uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
-However, they cannot be easily removed during the statistical modelling, since the plate effect is confounded with the groups of interest \citep{hicks2015widespread}.
-At the most extreme, consider a data set with multiple groups where each group is comprised of cells from a single plate.
-Changes in gene expression due to a plate-specific effect will be indistinguishable from genuine DE between groups.
+However, they cannot be easily removed during statistical modelling, since the plate effect is confounded with the groups of interest \citep{hicks2015widespread}.
+In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
+Changes in gene expression due to a plate effect will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
 This problem is still present in data sets with small numbers (e.g., 2-3) of plates in each group, 
     where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
-In the absence of a suitable method to remove plate effects, most studies have simply ignored them and treated cells from the same group as replicates \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
+In the absence of a suitable method to remove plate effects, most studies have ignored them and treated all cells from the same group as replicates \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
 This strategy may not be statistically rigorous as the variability across cells on the same plate will not be modelled properly.
+
+% Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches
+% Gaublomme's paper has multiple C1 chips for CNS/LN across batches (the DE test is done with empirical subpopulations, but still ignores the plate effect as it uses a one-way layout).
+% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq.
 
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
@@ -158,12 +162,8 @@ A common strategy ignores the plate effects and treats cells from different plat
 This is most obvious in a one-way layout but also applies to multi-factor designs involving some level of replication across plates.
 The estimated variance will include the conditional variance between cells on given plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
 DE genes can then be detected between groups using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
-This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,trapnell2014dynamics,avraham2015pathogen}.
+This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
 However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
-
-% Trapnell paper uses one C1 chip for each timepoint.
-% Kolod...'s paper has multiple chip for each serum condition.
-% Avraham's paper has 192 cells for the Salmonella exposed, and 96 for unexposed; this must be different plates.
 
 \subsection{Simulating plate effects to evaluate analysis methods}
 A simple simulation is used to test the performance of the analysis when plate effects are ignored.
