@@ -186,8 +186,9 @@ Finally, $\sigma^2$ was set to a value of 0.5 to generate a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
 
 These simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
-This is done to fulfill the distributional assumptions of methods like edgeR and DESeq that do not allow for variable dispersions between counts for the same gene.
-The use of a constant dispersion across counts simplifies the interpretation of the results by precluding variability in the dispersions as a cause for any poor performance of these methods.
+This is done to fulfill the distributional assumptions of methods like edgeR and DESeq.
+Specifically, these methods do not allow for variable dispersions between counts of the same gene.
+The use of a constant dispersion across counts simplifies the interpretation of the results by excluding variability in the dispersions as the cause for any poor performance.
 
 \subsection{Implementation of DE analysis methods}
 DE analyses of the simulated data were performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle and MAST \citep{finak2015mast}.
