@@ -115,7 +115,9 @@ This strategy may not be statistically rigorous as the variability across cells 
 
 % Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches
 % Gaublomme's paper has multiple C1 chips for CNS/LN across batches (the DE test is done with empirical subpopulations, but still ignores the plate effect as it uses a one-way layout - those populations are also associated with CNS/LN identity, see Figure 2 of their paper).
-% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq.
+% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. There's definitely replicate mice, but it's not explicit that they're put on separate plates.
+% Trapnell and Finak use data sets with one plate per condition, so that's not entirely what we're looking for.
+% Avraham's data set seems a bit mixed; there's multiple timepoints per plate, so it's not entirely clear what's happening.
 
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
