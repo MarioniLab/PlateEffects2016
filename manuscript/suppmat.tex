@@ -65,11 +65,11 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 %\onehalfspacing
 
 \section{Details on the implementation of the DE analysis methods}
-For edgeR v3.12.0, analyses were performed with and without EB shrinkage.
+For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
     and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, 
-    which was stabilized by robust EB shrinkage towards another mean-dispersion trend \citep{lund2012detecting}.
+    which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
 DE testing between groups was performed using the QL F-test.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
@@ -82,7 +82,7 @@ For each gene, this correlation refers to the strength of the association betwee
 The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for each cell.
 DE testing was then performed on this refitted model.
 
-For DESeq2 v1.10.0, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
+For DESeq2 v1.10.1, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
 The estimated dispersion was used to fit a GLM to the counts for each gene.
 DE testing was performed between groups using the Wald test.
@@ -95,7 +95,7 @@ Nonetheless, normalization is included as part of the standard analysis and will
 For Monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
-For MAST v0.931, counts were converted into log-CPMs after adding a prior count of 1.
+For MAST v0.933, counts were converted into log-CPMs after adding a prior count of 1.
 For each gene, a hurdle model was fitted to the log-CPMs across all cells. 
 The group was used as the factor of interest and the proportion of genes with non-zero counts in each library was used as an additional covariate \citep{finak2015mast}.
 The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
@@ -114,7 +114,7 @@ This quantile is used as the Poisson-distributed pseudo-count for each cell.
 This method depends on stable estimation of the mean for each cell and the dispersion for each gene.
 The latter should not be an issue as there should be sufficient residual d.f. across all cells to obtain a precise dispersion estimate.
 Note that the previously mentioned problems with residual d.f. overestimation are not applicable here.
-Dependencies induced by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
+Dependencies caused by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
 For the means, stable estimation can be ensured by having sufficient cells per plate.
 This is usually the case given that low-quality plates with very few cells would be removed.
 
@@ -164,7 +164,7 @@ The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}
 A more subtle point concerns the independence of the count sums.
 If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent in a one-way layout.
 This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
-Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\mu_{il}$).
+Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\lambda_{il}$).
 However, this will not be true if the proportion of each subpopulation is different across replicate plates.
 In such cases, the mean for each count sum will vary for each plate.
 Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
@@ -180,7 +180,7 @@ Genes with reproducible DE between plates should not be penalized for having hig
 This philosophy is almost the exact opposite of that in microarray analyses involving technical replicates,
     where variability between replicates is explicitly modelled rather than being hidden by averaging the replicate signals \citep{smyth2005use}.
 The difference in strategies is due to the fact that the technical replicates in microarray analyses are expected to be similar.
-Genes with large differences between replicates are considered to be unreliable and will have reduced significance for DE.
+Genes with large differences between replicates are considered to be unreliable and should have reduced significance for DE.
 In contrast, cells are not expected to be similar due to biological heterogeneity within populations.
 Large cell-to-cell variability has no bearing on the reliability of DE between populations when many cells are present.
 For example, if the subpopulation structure is the same in each replicate plate, one would have a situation with large variability between cells in different subpopulations but reproducible count sums across plates.
