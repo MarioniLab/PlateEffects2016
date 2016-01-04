@@ -65,10 +65,19 @@ xfp2 <- sapply(thresholds, function(x) { sum(res.2$P.Value[-is.de] <= x) })/(nge
 xtpr <- sapply(thresholds, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
 xfpr <- sapply(thresholds, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
 
+cat("Current type is", type, "\n")
+cat("Default voom:\n")
+print(data.frame(Threshold=thresholds, TP=xtp, FP=xfp))
+cat("voom + correlations:\n")
+print(data.frame(Threshold=thresholds, TP=xtp2, FP=xfp2))
+cat("voom on averaged arrays:\n")
+print(data.frame(Threshold=thresholds, TP=xtpr, FP=xfpr))
+cat("\n")
+
 # Making a plot.
 
 setEPS()
-postscript(paste0("normal_", type, ".eps"), width=10, height=6)
+postscript(paste0(type, ".eps"), width=10, height=6)
 par(mfrow=c(1, 2))
 plot(fp, tp, xlim=c(0, 1), ylim=c(0, 1), main=type)
 points(fp2, tp2, col="grey50")

@@ -84,6 +84,15 @@ Type 'q()' to quit R.
 + xtpr <- sapply(thresholds, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
 + xfpr <- sapply(thresholds, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
 + 
++ cat("Current type is", type, "\n")
++ cat("Default voom:\n")
++ print(data.frame(Threshold=thresholds, TP=xtp, FP=xfp))
++ cat("voom + correlations:\n")
++ print(data.frame(Threshold=thresholds, TP=xtp2, FP=xfp2))
++ cat("voom on averaged arrays:\n")
++ print(data.frame(Threshold=thresholds, TP=xtpr, FP=xfpr))
++ cat("\n")
++ 
 + # Making a plot.
 + 
 + setEPS()
@@ -106,6 +115,40 @@ Type 'q()' to quit R.
 + dev.off()
 + }
 Loading required package: limma
+Current type is oneway 
+Default voom:
+  Threshold    TP        FP
+1     0.005 0.982 0.6762222
+2     0.010 0.983 0.7006667
+3     0.050 0.989 0.7686667
+voom + correlations:
+  Threshold    TP          FP
+1     0.005 0.430 0.009555556
+2     0.010 0.507 0.018222222
+3     0.050 0.747 0.072444444
+voom on averaged arrays:
+  Threshold    TP          FP
+1     0.005 0.329 0.004666667
+2     0.010 0.424 0.009444444
+3     0.050 0.687 0.051111111
+
+Current type is blocked 
+Default voom:
+  Threshold    TP        FP
+1     0.005 0.987 0.7243333
+2     0.010 0.987 0.7470000
+3     0.050 0.989 0.8030000
+voom + correlations:
+  Threshold    TP         FP
+1     0.005 0.522 0.01966667
+2     0.010 0.615 0.03466667
+3     0.050 0.801 0.10411111
+voom on averaged arrays:
+  Threshold    TP          FP
+1     0.005 0.334 0.004777778
+2     0.010 0.432 0.009666667
+3     0.050 0.692 0.052111111
+
 > 
 > # Session information
 > 
@@ -133,4 +176,4 @@ loaded via a namespace (and not attached):
 > 
 > proc.time()
    user  system elapsed 
- 73.301   0.089  73.842 
+ 67.953   0.053  68.294 
