@@ -169,7 +169,7 @@ This approach has been used in a number of scRNA-seq studies to detect DE in the
 However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
 
 \subsection{Simulating plate effects to evaluate analysis methods}
-A simple simulation is used to test the performance of the analysis when plate effects are ignored.
+A simple simulation was used to test the performance of the analysis when plate effects are ignored.
 Let the count for each gene in each cell follow a negative binomial (NB) distribution, conditional on the plate effect.
 In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{ig}$ and a dispersion of $\varphi_{i}$.
 The size of $\varphi_{i}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
@@ -188,8 +188,8 @@ The constants in the above expression were chosen to yield large values of $\var
 Finally, $\sigma^2$ was set to a value of 0.5 to generate a strong plate effect.
 Simulations were repeated with $\sigma^2=0$ (i.e., no plate effect) as a control. 
 
-These simulations use the same dispersion across all plates for each gene, rather than using plate-specific values.
-This is done to fulfill the distributional assumptions of methods like edgeR and DESeq.
+These simulations used the same dispersion across all plates for each gene, rather than using plate-specific values.
+This was done to fulfill the distributional assumptions of methods like edgeR and DESeq.
 Specifically, these methods do not allow for variable dispersions between counts of the same gene.
 The use of a constant dispersion across counts simplifies the interpretation of the results by excluding variability in the dispersions as the cause for any poor performance.
 
