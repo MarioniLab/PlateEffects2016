@@ -6,13 +6,17 @@ set.seed(0)
 # Data generation with a DE gene & plate effect.
 plate <- factor(rep(1:6, each=50))
 treatment <- factor(rep(1:2, each=150))
+ngenes <- 10000
+nde <- 1000
+is.de <- seq_len(nde)
 
 gvar <- 0.5
-dummy <- matrix(rnorm(10000 * length(treatment), sd=sqrt(gvar)), ncol=length(plate))
-dummy[1:1000,] <- t(t(dummy[1:1000,]) + c(-1, 1)[treatment])
-
-plate.effect <- matrix(rnorm(10000 * 20, sd=1), ncol=20)
+dummy <- matrix(rnorm(ngenes * length(treatment), sd=sqrt(gvar)), ncol=length(plate))
+dummy[is.de,] <- t(t(dummy[is.de,]) + c(-1, 1)[treatment])
+plate.effect <- matrix(rnorm(ngenes * 20, sd=1), ncol=20)
 dummy <- dummy+plate.effect[,as.integer(plate)]
+
+# Testing what happens with and without a blocking model.
 
 pdf("normal_results.pdf")
 for (type in c("oneway", "blocked")) { 
@@ -42,24 +46,42 @@ reffit <- lmFit(avearrays(dummy, plate), refdesign)
 reffit <- eBayes(reffit, robust=TRUE)
 refres <- topTable(reffit, coef=ncol(refdesign), sort.by="none", n=Inf)
 
-# Making a plot.
+# Computing FP and TP rates.
 
 hits <- 10^((-50):0)
-tp <- sapply(hits, function(x) { sum(res$P.Value[1:1000] <= x) })
-fp <- sapply(hits, function(x) { sum(res$P.Value[-(1:1000)] <= x) })
-tp2 <- sapply(hits, function(x) { sum(res.2$P.Value[1:1000] <= x) })
-fp2 <- sapply(hits, function(x) { sum(res.2$P.Value[-(1:1000)] <= x) })
-tpr <- sapply(hits, function(x) { sum(refres$P.Value[1:1000] <= x) })
-fpr <- sapply(hits, function(x) { sum(refres$P.Value[-(1:1000)] <= x) })
+tp <- sapply(hits, function(x) { sum(res$P.Value[is.de] <= x) })/nde
+fp <- sapply(hits, function(x) { sum(res$P.Value[-is.de] <= x) })/(ngenes-nde)
+tp2 <- sapply(hits, function(x) { sum(res.2$P.Value[is.de] <= x) })/nde
+fp2 <- sapply(hits, function(x) { sum(res.2$P.Value[-is.de] <= x) })/(ngenes-nde)
+tpr <- sapply(hits, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
+fpr <- sapply(hits, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
+
+thresholds <- c(0.005, 0.01, 0.05)
+pch <- c(16, 17, 18)
+xtp <-  sapply(thresholds, function(x) { sum(res$P.Value[is.de] <= x) })/nde
+xfp <-  sapply(thresholds, function(x) { sum(res$P.Value[-is.de] <= x) })/(ngenes-nde)
+xtp2 <- sapply(thresholds, function(x) { sum(res.2$P.Value[is.de] <= x) })/nde
+xfp2 <- sapply(thresholds, function(x) { sum(res.2$P.Value[-is.de] <= x) })/(ngenes-nde)
+xtpr <- sapply(thresholds, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
+xfpr <- sapply(thresholds, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
+
+# Making a plot.
 
 par(mfrow=c(1, 2))
-plot(fp, tp, xlim=c(0, 10000), ylim=c(0, 1000), main=type)
+plot(fp, tp, xlim=c(0, 1), ylim=c(0, 1), main=type)
 points(fp2, tp2, col="grey50")
 points(fpr, tpr, col="red")
+points(xfp, xtp, col="black", pch=pch)
+points(xfp2, xtp2, col="grey50", pch=pch)
+points(xfpr, xtpr, col="red", pch=pch)
 
-plot(fp, tp, xlim=c(0, 1000), ylim=c(0, 1000), main=type)
+plot(fp, tp, xlim=c(0, 0.1), ylim=c(0, 1), main=type)
 points(fp2, tp2, col="grey50")
 points(fpr, tpr, col="red")
+points(xfp, xtp, col="black", pch=pch)
+points(xfp2, xtp2, col="grey50", pch=pch)
+points(xfpr, xtpr, col="red", pch=pch)
+abline(v=thresholds, col="dodgerblue", lty=2)
 
 }
 dev.off()
