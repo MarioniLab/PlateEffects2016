@@ -2,6 +2,10 @@ cd quantile
 bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save quantile.R
 cd -
 
+cd quantile/power
+bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save test.R
+cd -
+
 cd power
 bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save power.R
 cd -

@@ -13,8 +13,13 @@ manuscript/*.pdf
 
 power/*.eps
 power/*.rds
+power/normality/*.eps
+
 quantile/sim_schematic.pdf
 quantile/*.eps
+quantile/power/*.eps
+quantile/power/*.rds
+
 realdata/results/
 realdata/top_edgeR_ola1_sum.pdf
 realdata/top_edgeR_ola2_sum.pdf
