@@ -203,7 +203,7 @@ Each method was applied on the simulated data to test for DE between groups.
 In all methods, the experimental design was parametrized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
-    or using the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
+    or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
 Similarly, the analysis with voom was repeated after estimating the correlation between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
@@ -227,7 +227,7 @@ These results suggest that DE analyses will perform poorly if the plate effect i
 Loss of type I error control will result in an unacceptable number of false positives in the final set of DE genes.
 This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
 
-Loss of error control is caused by ignoring the plate effects in the statistical model.
+Loss of error control is caused by plate-induced dependencies in the statistical model.
 In the one-way layout, the count of each gene in each cell is modelled by a distribution with a group-specific mean.
 Most DE analysis methods assume that the counts for all cells are independently sampled from these distributions.
 However, this is not the case when a plate effect is present.
@@ -269,7 +269,7 @@ In a log-link model like that used in edgeR and DESeq2, this is equivalent to se
 where $\beta_{ij}$ is the log-expression for gene $i$ in cell $j$, $\beta_{ig}$ is the average log-expression for group $g$, 
     $\beta_{ik}$ is the plate effect for gene $i$ in plate $k$ and $o_{ij}$ is a normalization offset.
 The intention is that $\beta_{ik}$ will absorb differences in $\delta_{ik}$ between plates, thus eliminating the confounding effect.
-However, $\beta_{ik}$ will also absorb differences in $\mu_{ig}$ between groups, which can eliminate genuine DE and reduce detection power.
+However, $\beta_{ik}$ can also absorb differences in $\beta_{ig}$ between groups, which can eliminate genuine DE and reduce detection power.
 The same problem is observed for methods like ComBat \citep{johnson2007adjusting} when they are applied to remove confounding plate effects prior to a DE analysis.
 %In addition, the design matrix will not be of full column rank when plate blocking factors are added, i.e., not all coefficients are estimable.
 %This cannot be resolved without altering the interpretation of $\beta_{ig}$ such that it no longer represents the group average.
@@ -465,7 +465,7 @@ The observed type I error rate was calculated and averaged across 10 simulation 
 This was repeated for each scenario described above, before and after swapping.
 
 \subsection{Direct and quantile-adjusted summation control type I error rates}
-Both strategies are able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
+Both strategies were able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
 This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
 The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
@@ -520,8 +520,8 @@ This is clearly not the case here -- the previous simulations demonstrate that t
 To determine the effect of summation on the gene ranking, genes were sorted based on the $p$-value computed from each method.
 The identities of the top 20, 200 and 2000 genes were compared for analyses using single-cell and summed counts.
 In general, less than half of the top-ranking genes are shared between the two analyses for each method (Table~\ref{tab:realrank}).
-The difference is attributable to changes in variance modelling after summation, to focus on variability between plates rather than between cells.
-This effect is important as genes associated with phenotypic differences between groups are expected to exhibit strong DE.
+This difference is attributable to changes in variance modelling after summation, to focus on variability between plates rather than between cells.
+These rankings are important as the genes driving the biological differences between groups are expected to exhibit strong DE.
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
 
@@ -531,8 +531,8 @@ This would be inappropriate as such outlier patterns are uninteresting.
 However, these genes do not seem to be favoured in real data.
 The top set of DE genes from summation exhibit robust differences between groups (Supplementary Figure~\suppexpprof{}), whereas genes driven by outliers tend to be less significant.
 This is because the conditional variance of the count sum will be larger with fewer contributing cells, 
-    i.e., technical noise and heterogeneity will not average out if the sum is dominated by a few outlier cells.
-This increases the total variance and decreases the relative significance of DE for genes with outliers.
+    i.e., technical noise and heterogeneity will not average out if the sum is dominated by a few outliers.
+This increases the total variance and decreases the relative significance of DE for outlier-driven genes.
 For genes with more contributing cells, cell-to-cell variability will be hidden but this is not wholly undesirable 
     -- see Section~\supphiddenvar{} of the Supplementary Materials for details.
 
@@ -540,7 +540,7 @@ For genes with more contributing cells, cell-to-cell variability will be hidden 
 % If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
 
 \section{Discussion}
-Confounding plate effects are often present in scRNA-seq data sets, but are typically ignored during the DE analysis.
+Confounding plate effects are often present in scRNA-seq data sets but are typically ignored during the DE analysis.
 Simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
 In this article, a solution is presented involving the summation of counts across all cells on each plate for each gene.
 The count sums can then be used in a DE analysis, effectively treating plates as individual samples.
@@ -577,7 +577,7 @@ Summation also reduces technical noise and may be a more general strategy to imp
 \label{sec5}
 All software packages except MAST are publicly available from the Bioconductor project (\url{http://bioconductor.org}).
 MAST is available on GitHub at \url{https://github.com/RGLab/MAST}.
-Simulation scripts are available on request from the corresponding author.
+Simulation scripts are available on request from the corresponding authors.
 
 \section{Supplementary Material}
 Supplementary Material is available online at \href{http://biostatistics.oxfordjournals.org}{http://biostatistics.oxfordjournals.org}.
