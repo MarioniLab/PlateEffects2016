@@ -174,36 +174,35 @@ attached base packages:
  [8] datasets  methods   base     
 
 other attached packages:
- [1] MAST_0.931                 reshape_0.8.5             
+ [1] MAST_0.933                 reshape_0.8.5             
  [3] monocle_1.4.0              plyr_1.8.3                
  [5] igraph_1.0.1               VGAM_1.0-0                
- [7] ggplot2_1.0.1              HSMMSingleCell_0.104.0    
- [9] DESeq2_1.10.0              RcppArmadillo_0.6.300.2.0 
+ [7] ggplot2_2.0.0              HSMMSingleCell_0.104.0    
+ [9] DESeq2_1.10.1              RcppArmadillo_0.6.400.2.2 
 [11] Rcpp_0.12.2                SummarizedExperiment_1.0.1
-[13] Biobase_2.30.0             GenomicRanges_1.22.1      
-[15] GenomeInfoDb_1.6.1         IRanges_2.4.5             
+[13] Biobase_2.30.0             GenomicRanges_1.22.2      
+[15] GenomeInfoDb_1.6.1         IRanges_2.4.6             
 [17] S4Vectors_0.8.5            BiocGenerics_0.16.1       
 [19] edgeR_3.12.0               limma_3.26.3              
 
 loaded via a namespace (and not attached):
- [1] locfit_1.5-9.1       lattice_0.20-33      digest_0.6.8        
- [4] chron_2.3-47         futile.options_1.0.0 acepack_1.3-3.3     
- [7] RSQLite_1.0.0        zlibbioc_1.16.0      data.table_1.9.6    
-[10] annotate_1.48.0      irlba_2.0.0          rpart_4.1-10        
-[13] Matrix_1.2-3         combinat_0.0-8       proto_0.3-10        
-[16] statmod_1.4.22       BiocParallel_1.4.0   geneplotter_1.48.0  
-[19] stringr_1.0.0        foreign_0.8-66       munsell_0.4.2       
-[22] nnet_7.3-11          gridExtra_2.0.0      Hmisc_3.17-0        
-[25] matrixStats_0.15.0   XML_3.98-1.3         MASS_7.3-45         
-[28] grid_3.2.2           xtable_1.8-0         gtable_0.1.2        
-[31] DBI_0.3.1            magrittr_1.5         scales_0.3.0        
-[34] stringi_1.0-1        XVector_0.10.0       reshape2_1.4.1      
-[37] genefilter_1.52.0    latticeExtra_0.6-26  futile.logger_1.4.1 
-[40] Formula_1.2-1        fastICA_1.2-0        lambda.r_1.1.7      
-[43] RColorBrewer_1.1-2   tools_3.2.2          abind_1.4-3         
-[46] survival_2.38-3      AnnotationDbi_1.32.2 colorspace_1.2-6    
-[49] cluster_2.0.3       
+ [1] genefilter_1.52.0    statmod_1.4.22       locfit_1.5-9.1      
+ [4] reshape2_1.4.1       lattice_0.20-33      colorspace_1.2-6    
+ [7] fastICA_1.2-0        chron_2.3-47         survival_2.38-3     
+[10] XML_3.98-1.3         foreign_0.8-66       DBI_0.3.1           
+[13] BiocParallel_1.4.3   RColorBrewer_1.1-2   lambda.r_1.1.7      
+[16] matrixStats_0.50.1   stringr_1.0.0        zlibbioc_1.16.0     
+[19] munsell_0.4.2        combinat_0.0-8       gtable_0.1.2        
+[22] futile.logger_1.4.1  latticeExtra_0.6-26  geneplotter_1.48.0  
+[25] irlba_2.0.0          AnnotationDbi_1.32.3 acepack_1.3-3.3     
+[28] xtable_1.8-0         scales_0.3.0         Hmisc_3.17-1        
+[31] annotate_1.48.0      XVector_0.10.0       abind_1.4-3         
+[34] gridExtra_2.0.0      stringi_1.0-1        grid_3.2.2          
+[37] tools_3.2.2          magrittr_1.5         RSQLite_1.0.0       
+[40] Formula_1.2-1        cluster_2.0.3        futile.options_1.0.0
+[43] Matrix_1.2-3         data.table_1.9.6     rpart_4.1-10        
+[46] nnet_7.3-11         
 > 
 > proc.time()
      user    system   elapsed 
-43804.990    16.613 46375.847 
+50176.908    21.864 51894.725 

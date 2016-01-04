@@ -1,0 +1,123 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # Quick DE analysis script for GSE59114 on single-cell RNA-seq in aging mice.
+> # Note there's a couple of assumptions here; they only report TPMs, so we'll
+> # assume library sizes of 1 million (this seems close to their actual library 
+> # sizes on GEO, so we'll go with it). Also, they don't indicate which plate
+> # each cell came from; we'll assume those numbered 96 and below come from one
+> # plate, and those numbered 97 and above come from another plate.
+> 
+> require(edgeR)
+Loading required package: edgeR
+Loading required package: limma
+> ltpms <- read.csv("GSE59114/GSE59114_C57BL6_GEO_all.csv", header=TRUE, skip=1)
+> ltpms <- ltpms[,-(1:2)]
+> raw.counts <- 2^ltpms -  1
+> keep <- rowMeans(raw.counts) > 1
+> raw.counts <- raw.counts[keep,]
+> 
+> # As single cell analysis.
+> groupings <- factor(sub("_[0-9]+$", "", colnames(raw.counts)))
+> design <- model.matrix(~0 + groupings)
+> colnames(design) <- levels(groupings)
+> 
+> y <- DGEList(raw.counts)
+> y <- calcNormFactors(y)
+> y <- estimateDisp(y, design)
+> fit <- glmQLFit(y, design, robust=TRUE)
+> 
+> res1 <- glmQLFTest(fit, contrast=makeContrasts(old_MPP - young_MPP, levels=design))
+> summary(decideTestsDGE(res1))
+   [,1]
+-1   71
+0  8223
+1   128
+> res2 <- glmQLFTest(fit, contrast=makeContrasts(young_ST_HSC - young_LT_HSC, levels=design))
+> summary(decideTestsDGE(res2))
+   [,1]
+-1  229
+0  8087
+1   106
+> res3 <- glmQLFTest(fit, contrast=makeContrasts(old_ST_HSC - old_LT_HSC, levels=design))
+> summary(decideTestsDGE(res3))
+   [,1]
+-1  165
+0  8100
+1   157
+> 
+> # After summation
+> platedness <- as.integer(sub(".*_([0-9]+)$", "\\1", colnames(raw.counts))) <= 96
+> same.plate <- paste0(groupings, "_", platedness)
+> sum.counts <- sumTechReps(raw.counts, same.plate)
+> sum.groups <- factor(sub("_(TRUE|FALSE)$", "", colnames(sum.counts)))
+> sum.design <- model.matrix(~0 + sum.groups)
+> colnames(sum.design) <- levels(sum.groups)
+> 
+> sum.y <- DGEList(sum.counts)
+> sum.y <- calcNormFactors(sum.y)
+> sum.y <- estimateDisp(sum.y, sum.design)
+> sum.fit <- glmQLFit(sum.y, sum.design, robust=TRUE)
+> 
+> sum.res1 <- glmQLFTest(sum.fit, contrast=makeContrasts(old_MPP - young_MPP, levels=sum.design))
+> summary(decideTestsDGE(sum.res1))
+   [,1]
+-1   20
+0  8332
+1    70
+> sum.res2 <- glmQLFTest(sum.fit, contrast=makeContrasts(young_ST_HSC - young_LT_HSC, levels=sum.design))
+> summary(decideTestsDGE(sum.res2))
+   [,1]
+-1  137
+0  8209
+1    76
+> sum.res3 <- glmQLFTest(sum.fit, contrast=makeContrasts(old_ST_HSC - old_LT_HSC, levels=sum.design))
+> summary(decideTestsDGE(sum.res3))
+   [,1]
+-1   35
+0  8288
+1    99
+> 
+> # Reporting session information.
+> 
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] edgeR_3.12.0 limma_3.26.3
+
+loaded via a namespace (and not attached):
+[1] splines_3.2.2   grid_3.2.2      locfit_1.5-9.1  statmod_1.4.22 
+[5] lattice_0.20-33
+> 
+> proc.time()
+   user  system elapsed 
+565.905  62.771 634.676 
