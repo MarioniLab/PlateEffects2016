@@ -164,7 +164,7 @@ The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}
 A more subtle point concerns the independence of the count sums.
 If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent in a one-way layout.
 This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
-Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts (given $\lambda_{il}$).
+Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
 However, this will not be true if the proportion of each subpopulation is different across replicate plates.
 In such cases, the mean for each count sum will vary for each plate.
 Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
