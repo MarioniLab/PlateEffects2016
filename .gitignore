@@ -13,7 +13,6 @@ manuscript/*.pdf
 
 power/*.eps
 power/*.rds
-power/*.pdf
 quantile/sim_schematic.pdf
 quantile/*.eps
 realdata/results/

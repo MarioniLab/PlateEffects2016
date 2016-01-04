@@ -1,5 +1,7 @@
 # This checks the behaviour of limma, limma+cor and limma/sum on normally distributed data.
-# The idea is to show that we still get roughly the same performance.
+# The idea is to show that we still get roughly the same performance, so the main cause of
+# the decrease in power is probably due to count discreteness. Similar behaviour is observed
+# in one-way layouts and with an additive model.
 
 set.seed(0)
 
@@ -18,9 +20,7 @@ dummy <- dummy+plate.effect[,as.integer(plate)]
 
 # Testing what happens with and without a blocking model.
 
-pdf("normal_results.pdf")
 for (type in c("oneway", "blocked")) { 
-
 if (type=="oneway") { 
     design <- model.matrix(~treatment)
     refdesign <- model.matrix(~factor(rep(1:2, each=3)))
@@ -67,6 +67,8 @@ xfpr <- sapply(thresholds, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ng
 
 # Making a plot.
 
+setEPS()
+postscript(paste0("normal_", type, ".eps"), width=10, height=6)
 par(mfrow=c(1, 2))
 plot(fp, tp, xlim=c(0, 1), ylim=c(0, 1), main=type)
 points(fp2, tp2, col="grey50")
@@ -82,6 +84,9 @@ points(xfp, xtp, col="black", pch=pch)
 points(xfp2, xtp2, col="grey50", pch=pch)
 points(xfpr, xtpr, col="red", pch=pch)
 abline(v=thresholds, col="dodgerblue", lty=2)
-
-}
 dev.off()
+}
+
+# Session information
+
+sessionInfo()

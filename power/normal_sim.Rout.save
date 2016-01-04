@@ -1,0 +1,136 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # This checks the behaviour of limma, limma+cor and limma/sum on normally distributed data.
+> # The idea is to show that we still get roughly the same performance, so the main cause of
+> # the decrease in power is probably due to count discreteness. Similar behaviour is observed
+> # in one-way layouts and with an additive model.
+> 
+> set.seed(0)
+> 
+> # Data generation with a DE gene & plate effect.
+> plate <- factor(rep(1:6, each=50))
+> treatment <- factor(rep(1:2, each=150))
+> ngenes <- 10000
+> nde <- 1000
+> is.de <- seq_len(nde)
+> 
+> gvar <- 0.5
+> dummy <- matrix(rnorm(ngenes * length(treatment), sd=sqrt(gvar)), ncol=length(plate))
+> dummy[is.de,] <- t(t(dummy[is.de,]) + c(-1, 1)[treatment])
+> plate.effect <- matrix(rnorm(ngenes * 20, sd=1), ncol=20)
+> dummy <- dummy+plate.effect[,as.integer(plate)]
+> 
+> # Testing what happens with and without a blocking model.
+> 
+> for (type in c("oneway", "blocked")) { 
++ if (type=="oneway") { 
++     design <- model.matrix(~treatment)
++     refdesign <- model.matrix(~factor(rep(1:2, each=3)))
++ } else {
++     batch <- factor(rep(rep(1:3, 2), each=50))
++     design <- model.matrix(~batch + treatment)
++     refdesign <- model.matrix(~factor(rep(1:3, 2)) + factor(rep(1:2, each=3)))
++ }
++ 
++ # Analyzing with various methods.
++ 
++ require(limma)
++ fit <- lmFit(dummy, design)
++ fit <- eBayes(fit, robust=TRUE)
++ res <- topTable(fit, coef=ncol(design), sort.by="none", n=Inf)
++ 
++ cor <- duplicateCorrelation(dummy, design, block=plate)
++ fit.2 <- lmFit(dummy, design, block=plate, correlation=cor$consensus)
++ fit.2 <- eBayes(fit.2, robust=TRUE)
++ res.2 <- topTable(fit.2, coef=ncol(design), sort.by="none", n=Inf)
++ 
++ reffit <- lmFit(avearrays(dummy, plate), refdesign)
++ reffit <- eBayes(reffit, robust=TRUE)
++ refres <- topTable(reffit, coef=ncol(refdesign), sort.by="none", n=Inf)
++ 
++ # Computing FP and TP rates.
++ 
++ hits <- 10^((-50):0)
++ tp <- sapply(hits, function(x) { sum(res$P.Value[is.de] <= x) })/nde
++ fp <- sapply(hits, function(x) { sum(res$P.Value[-is.de] <= x) })/(ngenes-nde)
++ tp2 <- sapply(hits, function(x) { sum(res.2$P.Value[is.de] <= x) })/nde
++ fp2 <- sapply(hits, function(x) { sum(res.2$P.Value[-is.de] <= x) })/(ngenes-nde)
++ tpr <- sapply(hits, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
++ fpr <- sapply(hits, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
++ 
++ thresholds <- c(0.005, 0.01, 0.05)
++ pch <- c(16, 17, 18)
++ xtp <-  sapply(thresholds, function(x) { sum(res$P.Value[is.de] <= x) })/nde
++ xfp <-  sapply(thresholds, function(x) { sum(res$P.Value[-is.de] <= x) })/(ngenes-nde)
++ xtp2 <- sapply(thresholds, function(x) { sum(res.2$P.Value[is.de] <= x) })/nde
++ xfp2 <- sapply(thresholds, function(x) { sum(res.2$P.Value[-is.de] <= x) })/(ngenes-nde)
++ xtpr <- sapply(thresholds, function(x) { sum(refres$P.Value[is.de] <= x) })/nde
++ xfpr <- sapply(thresholds, function(x) { sum(refres$P.Value[-is.de] <= x) })/(ngenes-nde)
++ 
++ # Making a plot.
++ 
++ setEPS()
++ postscript(paste0("normal_", type, ".eps"), width=10, height=6)
++ par(mfrow=c(1, 2))
++ plot(fp, tp, xlim=c(0, 1), ylim=c(0, 1), main=type)
++ points(fp2, tp2, col="grey50")
++ points(fpr, tpr, col="red")
++ points(xfp, xtp, col="black", pch=pch)
++ points(xfp2, xtp2, col="grey50", pch=pch)
++ points(xfpr, xtpr, col="red", pch=pch)
++ 
++ plot(fp, tp, xlim=c(0, 0.1), ylim=c(0, 1), main=type)
++ points(fp2, tp2, col="grey50")
++ points(fpr, tpr, col="red")
++ points(xfp, xtp, col="black", pch=pch)
++ points(xfp2, xtp2, col="grey50", pch=pch)
++ points(xfpr, xtpr, col="red", pch=pch)
++ abline(v=thresholds, col="dodgerblue", lty=2)
++ dev.off()
++ }
+Loading required package: limma
+> 
+> # Session information
+> 
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 14.04.3 LTS
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] limma_3.26.3
+
+loaded via a namespace (and not attached):
+[1] statmod_1.4.22
+> 
+> proc.time()
+   user  system elapsed 
+ 73.301   0.089  73.842 
