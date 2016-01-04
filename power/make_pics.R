@@ -1,5 +1,6 @@
-# This makes RDS curves using all the stuff in the thing.
+# This makes RDS curves using all the objects in the RDS file.
 
+colors <- c("red", "black", "grey", "darkgreen", "orange", "dodgerblue", "blue", "pink")
 for (x in c("with", "without")) {
     current <- readRDS(sprintf("%s.rds", x))
 
@@ -10,11 +11,10 @@ for (x in c("with", "without")) {
              ylab="True positive rate", xlim=c(0, ifelse(zoom, 0.1, 1)), ylim=c(0, ifelse(zoom, 0.6, 1)))
         collected.names <- collected.col <- collected.lty <- list()
 
-        for (method in names(current)) {
+        for (m in seq_along(current)) {
+            method <- names(current)[m]
+            col <- colors[m]
             curmeth <- current[[method]]
-            if (method=="edgeR") { col <- "red" } 
-            else if (method=="voom") { col <- "grey" }
-            else { col <- "black" }
 
             for (modes in names(curmeth)) { 
                 all.hits <- curmeth[[modes]]
