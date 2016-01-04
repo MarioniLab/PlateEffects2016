@@ -155,16 +155,17 @@ One aim of the data analysis for this experiment is to identify DE genes between
 However, this is complicated by the presence of the plate effects.
 These effects cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
 This is because the plate effect varies for each gene, whereas the scaling factor for normalization of each cell is constant across genes.
-The plate effects are also confounded by the biological group, as previously described.
+The plate effects are also confounded by the biological groups, as previously described.
 A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{ig}$, based solely on the counts for a single plate.
 Any attempt to remove the former will affect detection of genuine DE in the latter.
 Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
 
 A common strategy is to ignore the plate effects and treat cells from different plates in the same group as replicates.
-This is most apparent in a one-way layout but also applies to multi-factor designs involving some level of replication across plates.
-The estimated variance will include the conditional variance between cells on each plate, i.e., var$(X_{ik})$, as well as the variance of $\delta_{ik}$ between plates.
-DE genes can then be detected between groups using software designed for bulk RNA-seq data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
-This approach has been used in a number of scRNA-seq studies to detect DE across plates or chips \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
+The simplest example is that of a one-way layout where the groups are clearly defined.
+It also applies to multi-factor designs with more plates than model coefficients, as these designs will contain some level of replication between plates and thus between their constituent cells.
+DE genes can then be detected using software designed for bulk data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
+%In this manner, the conditional variance between cells on each plate and the variance of $\delta_{ik}$ between plates will be modelled in the final variance estimate.
+This approach has been used in a number of scRNA-seq studies to detect DE in designs with multiple plates or chips \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
 However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
 
 \subsection{Simulating plate effects to evaluate analysis methods}
