@@ -1,0 +1,132 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # This demonstrates that the presence of subpopulations will not introduce
+> # dependencies between plates, as long as the subpopulation structure is the
+> # same.  Okay, we're using correlations as a measure of dependence, but it's
+> # probably good enough if we're not dealing with pathological scenarios.
+> # Check out 'plot(rowSums(y1), rowSums(y2), log="xy")' for independence.
+> 
+> set.seed(10001)
+> 
+> # Simplest case - a common plate effect:
+> 
+> subpop <- c(1,2,3)
+> popsize <- c(20, 30, 50)
+> ngenes <- 10000
+> each.cell <- rep(subpop, popsize)
+> 
+> for (it in seq_len(10)) { 
++     a <- matrix(each.cell*10, byrow=TRUE, nrow=ngenes, ncol=sum(popsize))
++     a1 <- a*exp(rnorm(ngenes))
++     y1 <- matrix(rnbinom(length(a), mu=a1, size=20), nrow=ngenes)
++     a2 <- a*exp(rnorm(ngenes))
++     y2 <- matrix(rnbinom(length(a), mu=a2, size=20), nrow=ngenes)
++     print(cor(rowSums(y1), rowSums(y2)))
++ }
+[1] 0.004991276
+[1] -0.01358165
+[1] -0.01893435
+[1] -0.005064415
+[1] 0.006566602
+[1] -0.003723252
+[1] 0.003225255
+[1] -0.01484783
+[1] -0.01661574
+[1] 0.01748844
+> 
+> # More complex case - subpopulation-specific plate effects:
+> 
+> subpop <- c(1,2,3)
+> popsize <- c(20, 30, 50)
+> ngenes <- 10000
+> each.cell <- rep(subpop, popsize)
+> 
+> for (it in seq_len(10)) { 
++     a <- matrix(each.cell * 10, byrow=TRUE, nrow=ngenes, ncol=sum(popsize))
++     plate.effect <- matrix(exp(rnorm(ngenes*length(popsize))), nrow=ngenes)
++     a1 <- a*plate.effect[,each.cell]
++     y1 <- matrix(rnbinom(length(a), mu=a1, size=20), nrow=ngenes)
++     plate.effect <- matrix(exp(rnorm(ngenes*length(popsize))), nrow=ngenes)
++     a2 <- a*plate.effect[,each.cell]
++     y2 <- matrix(rnbinom(length(a), mu=a2, size=20), nrow=ngenes)
++     print(cor(rowSums(y1), rowSums(y2)))
++ }
+[1] -0.008300767
+[1] -0.008822168
+[1] -0.01548198
+[1] 0.002504742
+[1] 0.005031531
+[1] -0.008712901
+[1] 0.01178142
+[1] -0.01151744
+[1] 0.01747534
+[1] 0.006329841
+> 
+> # Even more complicated - subpopulation-specific effects that are dependent within each plate:
+> 
+> subpop <- c(1,2)
+> popsize <- c(50, 50)
+> ngenes <- 10000
+> each.cell <- rep(subpop, popsize)
+> 
+> for (it in seq_len(10)) { 
++     a <- matrix(each.cell * 10, byrow=TRUE, nrow=ngenes, ncol=sum(popsize))
++     effect <- exp(rnorm(ngenes))
++     plate.effect <- cbind(effect, 1/effect)
++     a1 <- a*plate.effect[,each.cell]
++     y1 <- matrix(rnbinom(length(a), mu=a1, size=20), nrow=ngenes)
++     effect <- exp(rnorm(ngenes))
++     plate.effect <- cbind(effect, 1/effect)
++     a2 <- a*plate.effect[,each.cell]
++     y2 <- matrix(rnbinom(length(a), mu=a2, size=20), nrow=ngenes)
++     print(cor(rowSums(y1), rowSums(y2)))
++ }
+[1] 0.007651044
+[1] -0.009151842
+[1] 0.01634854
+[1] -0.003577823
+[1] 0.01554309
+[1] -0.00335831
+[1] -0.003803654
+[1] -0.008446644
+[1] -0.006521905
+[1] 0.003961147
+> 
+> # Printing the session information.
+> 
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 14.04.3 LTS
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+> 
+> proc.time()
+   user  system elapsed 
+ 14.180   0.067  14.245 
