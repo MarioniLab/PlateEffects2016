@@ -100,6 +100,24 @@ for (pv in c(0, plate.var)) {
     }
 
     saveRDS(file=ifelse(pv<1e-8, "without.rds", "with.rds"), list(edgeR=edgeR.collected, DESeq2=DESeq2.collected, voom=voom.collected))
+    
+    # Printing out some output as a record.
+    cat(sprintf("Results for PV=%.1f\n", pv))
+    cat("\tedgeR raw\n")
+    print(summary(colMeans(do.call(rbind, edgeR.collected$raw))))
+    cat("\tedgeR sum\n")
+    print(summary(colMeans(do.call(rbind, edgeR.collected$sum))))
+
+    cat("\tvoom raw\n")
+    print(summary(colMeans(do.call(rbind, voom.collected$raw))))
+    cat("\tvoom sum\n")
+    print(summary(colMeans(do.call(rbind, voom.collected$sum))))
+
+    cat("\tDESeq2 raw\n")
+    print(summary(colMeans(do.call(rbind, DESeq2.collected$raw))))
+    cat("\tDESeq2 sum\n")
+    print(summary(colMeans(do.call(rbind, DESeq2.collected$sum))))
+    cat("\n")
 }
 
 ##################################################
