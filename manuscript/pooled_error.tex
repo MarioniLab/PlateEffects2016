@@ -156,20 +156,20 @@ However, this is complicated by the presence of the plate effects.
 These effects cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
 This is because the plate effect varies for each gene, whereas the scaling factor for normalization of each cell is constant across genes.
 The plate effects are also confounded by the biological groups, as previously described.
-A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{ig}$, based solely on the counts for a single plate.
+A fold-increase in $\delta_{ik}$ cannot be distinguished from a matching increase in $\mu_{ig}$ based solely on the counts for a single plate.
 Any attempt to remove the former will affect detection of genuine DE in the latter.
 Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
 
 A common strategy is to ignore the plate effects and treat cells from different plates in the same group as replicates.
-The simplest example is that of a one-way layout where the groups are clearly defined.
-It also applies to multi-factor designs with more plates than model coefficients, as these designs will contain some level of replication between plates and thus between their constituent cells.
+This is most obviously applied in a one-way layout where the groups are clearly defined.
+It is also relevant to multi-factor designs with more plates than model coefficients, as these designs will contain some level of replication between plates and thus between their constituent cells.
 DE genes can then be detected using software designed for bulk data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
 %In this manner, the conditional variance between cells on each plate and the variance of $\delta_{ik}$ between plates will be modelled in the final variance estimate.
 This approach has been used in a number of scRNA-seq studies to detect DE in the presence of multiple plates or chips \citep{kolod2015single,gaublomme2015single,kowalczyk2015single}.
 However, it is not clear whether statistical rigour is maintained when plate effects are unaccounted for.
 
 \subsection{Simulating plate effects to evaluate analysis methods}
-A simple simulation was used to test the performance of the analysis when plate effects are ignored.
+A simple simulation was used to examine the behaviour of a DE analysis where plate effects are ignored.
 Let the count for each gene in each cell follow a negative binomial (NB) distribution, conditional on the plate effect.
 In other words, $X_{ik}$ represents a NB-distributed random variable with a mean of $\delta_{ik}\mu_{ig}$ and a dispersion of $\varphi_{i}$.
 The size of $\varphi_{i}$ determines the variance of the conditional distribution and represents the magnitude of the cell-to-cell heterogeneity within each plate.
@@ -221,7 +221,7 @@ Note that this evaluation is only possible for methods that compute $p$-values f
 \subsection{Type I error control is lost by all methods}
 The observed type I error rate exceeds the specified threshold in all methods (Figure~\ref{fig:platefail}).
 For all methods except for voom with correlations, the discrepancy between the observed and specified rates is greater than an order of magnitude.
-This liberalness is attributable to the plate effect, rather than any inherent fault with the methods.
+This liberalness is attributable to the plate effect rather than any inherent fault with the methods.
 In the control simulation with $\sigma^2=0$, the observed rates for all methods are substantially closer to the threshold, if not below it.
 These results suggest that DE analyses will perform poorly if the plate effect is simply ignored.
 Loss of type I error control will result in an unacceptable number of false positives in the final set of DE genes.
