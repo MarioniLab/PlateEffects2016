@@ -79,7 +79,7 @@ A linear model was fitted to the log-CPMs and weights for each gene using method
 Sample variances were stabilized by EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function \citep{smyth2005use} to estimate the correlations introduced by the plate effects.
 For each gene, this correlation refers to the strength of the association between the count for each cell and the plate of origin for that cell.
-The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for each cell.
+The consensus correlation across all genes was estimated and incorporated into the linear model by blocking on the plate of origin for all cells.
 DE testing was then performed on this refitted model.
 
 For DESeq2 v1.10.1, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
@@ -165,7 +165,7 @@ A more subtle point concerns the independence of the count sums.
 If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent in a one-way layout.
 This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
 Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
-However, this will not be true if the proportion of each subpopulation is different across replicate plates.
+However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
 In such cases, the mean for each count sum will vary for each plate.
 Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
 This situation is arguably pathological as plates with different subpopulations should not be replicates.
@@ -225,8 +225,7 @@ Indeed, recall that type I error control is maintained in the simulations where 
 \caption{
     Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, 
         for the top genes detected by QL edgeR on summed counts.
-    Each plot contains the expression profile for one gene, where the $y$-axis represents the log-CPMs.
-    Each point represents a cell in the serum (black) or a2i/2i conditions (grey).
+    Each plot contains the expression profile for a gene, where the $y$-axis represents the log-CPMs and each point represents a cell in the serum (black) or a2i/2i conditions (grey).
     A prior of 0.25 was added to each count to avoid undefined log-CPMs from zeroes.
     For simplicity, only cells in one batch are shown for both contrasts.
 }
