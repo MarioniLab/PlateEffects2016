@@ -423,7 +423,7 @@ where $E(s_{ik})=N_k\mu_{ig}$.
 Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
 This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ is not constant.
 Differences in library size between cells on the same plate can lead to similar complications by altering the distribution of $s_{ik} |\delta_{ik}$ in a plate-specific manner.
-Any systematic variability in the mean-variance relationship across plates may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
+Any systematic differences in the mean-variance relationship between plates may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
 
 One solution to this problem uses quantile adjustment \citep{robinson2008small} to generate Poisson-distributed pseudo-counts.
 Assume that the count for each cell is NB-distributed, conditional on the plate effect.
@@ -465,13 +465,13 @@ The observed type I error rate was calculated and averaged across 10 simulation 
 This was repeated for each scenario described above, before and after swapping.
 
 \subsection{Direct and quantile-adjusted summation control type I error rates}
-Both strategies were able to control the type I error close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
-This is despite the presence of differences in the number of cells per plate or the library sizes between cells,
+Both strategies were able to control the type I error rate close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
+This is despite the differences in the number of cells per plate or the library sizes between cells,
     which would be expected to yield differences in the mean-variance relationship in the summed counts.
-The performance of direct summation is attributable to the precision of the count sum when many cells are present on each plate.
+The accuracy of error control with direct summation is attributable to the precision of the count sum when many cells are present on each plate.
 Recall that the counts for cells on the same plate are conditionally independent. 
 This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
-The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \citep{marioni2008rnaseq} that is common to all samples.
+The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \citep{marioni2008rnaseq} that is present in all samples.
 This means that the count sums across all plates will have similar mean-variance relationships, as described above for the pseudo-counts.
 Indeed, the results for direct summation in Figure~\ref{fig:complexplate} are almost identical to those for pseudo-count summation.
 This suggests that any plate-specific differences in the mean-variance relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
