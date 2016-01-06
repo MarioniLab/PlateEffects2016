@@ -517,8 +517,8 @@ Conversely, reduced detection of DE genes by the analyses on summed counts is co
 It should be stressed that differences in the number of DE genes can only be interpreted as a difference in power when the number of false positives are similar.
 This is clearly not the case here -- the previous simulations demonstrate that the analyses on single-cell counts are liberal.
 
-To determine the effect of summation on the gene ranking, genes were sorted based on the $p$-value computed from each method.
-The identities of the top 20, 200 and 2000 genes were compared for analyses using single-cell and summed counts.
+To determine the effect of summation on the gene ranking, genes were sorted based on the $p$-values computed from each method.
+The identities of the top 20, 200 and 2000 genes were compared between analyses using single-cell and summed counts.
 In general, less than half of the top-ranking genes are shared between the two analyses for each method (Table~\ref{tab:realrank}).
 This difference is attributable to changes in variance modelling after summation, to focus on variability between plates rather than between cells.
 These rankings are important as the genes driving the biological differences between groups are expected to exhibit strong DE.
@@ -644,7 +644,7 @@ Funding for the project was provided by Cancer Research UK.
         as well as the corresponding scenarios where replicate plates were swapped between groups.
     Error rates are shown on a log scale and represent the average of 10 simulation iterations.
     Each error bar represents the standard error of the corresponding log-average rate.
-    The threshold of 0.01 is represented by the red dotted line.
+    The threshold of 0.01 is represented by the red dashed line.
 }
 \label{fig:complexplate}
 \end{figure}
@@ -662,14 +662,14 @@ The number of DE genes detected with both counts is also shown.
 \textbf{Comparison} & \textbf{Counts} & \textbf{DESeq2} & \textbf{voom} & \textbf{edgeR} \\
 \hline
 \multirow{3}{*}{2i vs. serum} 
-& Cell & 7419 & 9585 & 7127 \\
-& Sum & 3227 & 1691 & 946 \\
-& Shared & 2948 & 1678 & 946 \\
+& Single-cell & 7419 & 9585 & 7127 \\
+& Summed & 3227 & 1691 & 946 \\
+& Both & 2948 & 1678 & 946 \\
 \hline
 \multirow{3}{*}{a2i vs. serum} 
-& Cell & 6447 & 9202 & 6013 \\
-& Sum & 2004 & 758 & 238 \\
-& Shared & 1876 & 747 & 238 \\
+& Single-cell & 6447 & 9202 & 6013 \\
+& Summed & 2004 & 758 & 238 \\
+& Both & 1876 & 747 & 238 \\
 \hline
 %\multirow{3}{*}{PS vs. NP} 
 %& Cell & 268 & 4862 & 522 \\
