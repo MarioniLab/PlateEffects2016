@@ -93,11 +93,22 @@ for (pv in c(0, 0.5)) {
                     edgeR.collected[[mode]][[it]] <- compute.roc(res$table$PValue)
                 }
             }
-            total.collected[[as.character(scenario * (-1)^flip)]] <- edgeR.collected
+
+            indicator <- as.character(scenario * (-1)^flip)
+            total.collected[[indicator]] <- edgeR.collected
+
+            # Printing out some output as a record.
+            cat(sprintf("Results for PV=%.1f, scenario=%s\n", pv, indicator))
+            cat("\tedgeR raw\n")
+            print(summary(colMeans(do.call(rbind, edgeR.collected$raw))))
+            cat("\tedgeR sum\n")
+            print(summary(colMeans(do.call(rbind, edgeR.collected$sum))))
+            cat("\n")
         }
     }
             
     saveRDS(file=ifelse(pv<1e-8, "without.rds", "with.rds"), total.collected)
+
 }
 
 ##################################################

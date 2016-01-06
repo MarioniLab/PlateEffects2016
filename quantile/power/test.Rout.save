@@ -1,0 +1,288 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ##################################################
+> # Setting up the simulation parameters.
+> 
+> set.seed(10000)
+> 
+> conditions <- rep(c("A", "B"), each=2)
+> nplates <- length(conditions)
+> ngenes <- 10000
+> 
+> all.means <- exp(runif(ngenes, 3, 8))
+> disp <- 0.5 + 100/all.means
+> plate.var <- 0.5
+> 
+> plate.grouping <- factor(conditions)
+> alphas <- c(0.01, 0.002, 0.05)
+> 
+> fc <- 3
+> first.set <- 1:1000
+> second.set <- first.set + 1000
+> combined.set <- c(first.set, second.set)
+> 
+> ##################################################
+> # Odds and ends.
+> 
+> suppressPackageStartupMessages(require(edgeR))
+> 
+> compute.roc <- function(x) {
++     x[is.na(x)] <- 1
++     fn <- x[combined.set]
++     tn <- x[-combined.set]
++     return(findInterval(sort(fn), sort(tn))/length(tn))    
++ }
+> 
+> ##################################################
+> # Running across all options.
+> 
+> for (pv in c(0, 0.5)) { 
++     total.collected <- list()               
++     for (scenario in 1:4) { 
++         for (flip in c(TRUE, FALSE)) {
++             edgeR.collected <- list()
++ 
++             if (scenario==1L) {
++                 lib.sizes <- lapply(c(100, 100, 10, 10), FUN=rep, x=1)
++             } else if (scenario==2L) {
++                 lib.sizes <- rep(list(rep(1, 50)), nplates)
++                 lib.sizes[[1]][1:20] <- lib.sizes[[2]][1:20] <- 5
++             } else if (scenario==3L) {
++                 lib.sizes <- rep(list(rep(1, 50)), nplates)
++                 lib.sizes[[1]][1:10] <- lib.sizes[[2]][1:10] <- 10
++             } else if (scenario==4L) { 
++                 lib.sizes <- rep(list(rep(1, 50)), nplates)
++                 lib.sizes[[1]][1:5] <- lib.sizes[[2]][1:5] <- 20
++             }
++ 
++             if (flip) { 
++                 tmp <- lib.sizes[[2]]
++                 lib.sizes[[2]] <- lib.sizes[[4]]
++                 lib.sizes[[4]] <- tmp
++             }
++  
++             for (it in 1:10) {
++                 mean.per.plate <- all.means * exp(matrix(rnorm(nplates*ngenes, -pv/2, sqrt(pv)), ncol=nplates))
++ 
++                 # Adding balanced 2-fold DE to the first 2000 genes. Don't worry about DE being concentrated at high-abundances,
++                 # the fact that we have a spread of abundances for non-DE genes should mitigate any effects.
++                 mean.per.plate[first.set,conditions=="A"] <- mean.per.plate[first.set,conditions=="A"]*fc
++                 mean.per.plate[second.set,conditions=="B"] <- mean.per.plate[second.set,conditions=="B"]*fc
++ 
++                 collected <- list()
++                 for (x in seq_len(nplates)) {
++                     mean.per.cell <- outer(mean.per.plate[,x], lib.sizes[[x]], "*")
++                     collected[[x]] <- matrix(rnbinom(length(mean.per.cell), mu=mean.per.cell, size=1/disp), nrow=ngenes)
++                 }
++ 
++                 for (mode in c("raw", "sum")) {
++                     if (mode=="raw") {
++                         counts <- do.call(cbind, collected)
++                         cell.grouping <- factor(rep(conditions, lapply(collected, ncol)))
++                         design <- model.matrix(~cell.grouping)
++                     } else {
++                         counts <- do.call(cbind, lapply(collected, rowSums))
++                         design <- model.matrix(~plate.grouping)
++                     }
++                     
++                     # edgeR QL:
++                     y <- DGEList(counts)
++                     y <- calcNormFactors(y)
++                     y <- estimateDisp(y, design)
++                     fit <- glmQLFit(y, design, robust=TRUE)
++                     res <- glmQLFTest(fit)
++                     
++                     edgeR.collected[[mode]][[it]] <- compute.roc(res$table$PValue)
++                 }
++             }
++ 
++             indicator <- as.character(scenario * (-1)^flip)
++             total.collected[[indicator]] <- edgeR.collected
++ 
++             # Printing out some output as a record.
++             cat(sprintf("Results for PV=%.1f, scenario=%s\n", pv, indicator))
++             cat("\tedgeR raw\n")
++             print(summary(colMeans(do.call(rbind, edgeR.collected$raw))))
++             cat("\tedgeR sum\n")
++             print(summary(colMeans(do.call(rbind, edgeR.collected$sum))))
++             cat("\n")
++         }
++     }
++             
++     saveRDS(file=ifelse(pv<1e-8, "without.rds", "with.rds"), total.collected)
++ 
++ }
+Results for PV=0.0, scenario=-1
+	edgeR raw
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000000 0.0007044 0.0000000 0.3811000 
+	edgeR sum
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000000 0.0120000 0.0000125 0.9389000 
+
+Results for PV=0.0, scenario=1
+	edgeR raw
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.020400 0.001041 0.966800 
+	edgeR sum
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000375 0.0185500 0.0018750 0.9691000 
+
+Results for PV=0.0, scenario=-2
+	edgeR raw
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.001307 0.000000 0.686300 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.00000 0.00000 0.00176 0.00000 0.75590 
+
+Results for PV=0.0, scenario=2
+	edgeR raw
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.001469 0.000000 0.486000 
+	edgeR sum
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.001589 0.000000 0.645600 
+
+Results for PV=0.0, scenario=-3
+	edgeR raw
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.000872 0.000000 0.429700 
+	edgeR sum
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.004122 0.000000 0.762100 
+
+Results for PV=0.0, scenario=3
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.00000 0.00000 0.00134 0.00000 0.42260 
+	edgeR sum
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.005254 0.000000 0.891900 
+
+Results for PV=0.0, scenario=-4
+	edgeR raw
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000000 0.0009614 0.0000000 0.3122000 
+	edgeR sum
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000125 0.0125500 0.0001875 0.9054000 
+
+Results for PV=0.0, scenario=4
+	edgeR raw
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000000 0.000000 0.000000 0.001094 0.000000 0.484700 
+	edgeR sum
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000000 0.0000000 0.0000250 0.0147200 0.0005125 0.9049000 
+
+Results for PV=0.5, scenario=-1
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.0000  0.0725  0.2348  0.3213  0.5230  0.9992 
+	edgeR sum
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000025 0.041140 0.165300 0.273200 0.441300 0.998800 
+
+Results for PV=0.5, scenario=1
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04876 0.17670 0.28180 0.45690 0.99810 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.0000  0.0420  0.1718  0.2771  0.4508  0.9988 
+
+Results for PV=0.5, scenario=-2
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04564 0.17040 0.26900 0.42330 0.99800 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.03916 0.15830 0.26590 0.42780 0.99920 
+
+Results for PV=0.5, scenario=2
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04562 0.16820 0.26960 0.42930 0.99900 
+	edgeR sum
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.000025 0.040070 0.156100 0.265600 0.424400 0.998800 
+
+Results for PV=0.5, scenario=-3
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04327 0.16790 0.27020 0.43230 0.99840 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04189 0.16210 0.27150 0.43860 0.99790 
+
+Results for PV=0.5, scenario=3
+	edgeR raw
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000125 0.0430600 0.1699000 0.2700000 0.4320000 0.9980000 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04058 0.16120 0.27060 0.43830 0.99820 
+
+Results for PV=0.5, scenario=-4
+	edgeR raw
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.00000 0.04329 0.16700 0.26950 0.42980 0.99930 
+	edgeR sum
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000125 0.0448200 0.1711000 0.2786000 0.4547000 0.9994000 
+
+Results for PV=0.5, scenario=4
+	edgeR raw
+     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.0000125 0.0436200 0.1701000 0.2705000 0.4334000 0.9981000 
+	edgeR sum
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.0000  0.0457  0.1746  0.2800  0.4510  0.9989 
+
+> 
+> ##################################################
+> # End.
+> 
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] edgeR_3.12.0 limma_3.26.3
+
+loaded via a namespace (and not attached):
+[1] splines_3.2.2   grid_3.2.2      locfit_1.5-9.1  statmod_1.4.22 
+[5] lattice_0.20-33
+> 
+> proc.time()
+    user   system  elapsed 
+9931.373   21.727 9955.556 
