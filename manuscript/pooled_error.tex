@@ -93,18 +93,18 @@ These variables can be technical in origin, such as differences in library prepa
 % Yeah, yeah, indexed FACS, I know. But there's a lot of experimental designs that don't use that.
 
 One common analysis applied to scRNA-seq data involves identifying DE genes between groups of cells.
-This does not strictly require single-cell resolution, and is more conventionally performed with bulk data.
+This does not strictly require single-cell resolution, and is more conventionally performed with bulk RNA-seq data.
 Nonetheless, there are some benefits to using single-cell data in this context.
 Rare cells are more easily sequenced with single-cell protocols, and irrelevant cells from contaminating populations can be screened out before analysis.
-It is also more practical to perform the DE analysis on existing scRNA-seq data compared to generating bulk data exclusively for this purpose.
-The DE analysis itself is typically performed using methods such as edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were designed for bulk data;
+It is also more practical to use existing scRNA-seq data compared to generating bulk data exclusively for a DE analysis.
+The analysis itself is typically performed using methods like edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were originally designed for bulk data;
     or with methods such as Monocle \citep{trapnell2014dynamics} and SCDE \citep{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
 Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more groups of interest.
 
 The presence of plate effects complicates the parametrization of the experimental design in the DE analysis.
 Obviously, such effects are undesirable as they arise via uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
-However, they cannot be easily removed during statistical modelling, since the plate effect is confounded with the groups of interest \citep{hicks2015widespread}.
+However, plate effects cannot be easily removed during statistical modelling since they are confounded with the groups of interest \citep{hicks2015widespread}.
 In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
 Changes in gene expression due to a plate effect will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
