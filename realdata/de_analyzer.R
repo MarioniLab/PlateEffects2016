@@ -144,7 +144,7 @@ for (con in c("ola1", "ola2", "scialdone1")) {
     top.e <- compare.top(e.cell$PValue, e.sum$PValue)
     
     # Easier to put the separators in, as we need "&" at the front and "\\" at the end.
-    write(sprintf("& %s & %i & %i & %i \\\\", c("Cell", "Sum", "Shared"), unlist(all.d), unlist(all.v), unlist(all.e)), file=log.all, append=TRUE)
+    write(sprintf("& %s & %i & %i & %i \\\\", c("Single-cell", "Summed", "Both"), unlist(all.d), unlist(all.v), unlist(all.e)), file=log.all, append=TRUE)
     write(file=log.all, "\\hline", append=TRUE)
     write(sprintf("& %s & %.2f & %.2f & %.2f \\\\", names(top.v), unlist(top.d), unlist(top.v), unlist(top.e)), file=log.top, append=TRUE) 
     write(file=log.top, "\\hline", append=TRUE)
