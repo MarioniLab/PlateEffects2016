@@ -1,0 +1,21 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Plate effects result in false positives in a DE analysis}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Description of the experimental design and analysis strategies}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Simulating plate effects to evaluate analysis methods}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Implementation of DE analysis methods}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Type I error control is lost by all methods}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{Alternative analysis strategies are problematic}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{Improved performance with summation across cells in each plate}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Error control can be restored by summing over cells}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Summation does not compromise DE detection power}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.3}{Justifying summation in a single-cell study}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{Error control does not require variance adjustment}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Direct summation may yield inconsistent mean-variance relationships}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.2}{Simulation design with different numbers and sizes of cells}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.3}{Direct and quantile-adjusted summation control type I error rates}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Summation results in reduced DE detection in real data}{}% 16
+\BOOKMARK [2][-]{subsection.5.1}{Overview of the real data set}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.2}{Numbers and ranking of DE genes are altered upon summation}{section.5}% 18
+\BOOKMARK [1][-]{section.6}{Discussion}{}% 19
+\BOOKMARK [1][-]{section.7}{Software}{}% 20
+\BOOKMARK [1][-]{section.8}{Supplementary Material}{}% 21

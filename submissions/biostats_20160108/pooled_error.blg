@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: pooled_error.aux
+The style file: biorefs.bst
+Database file #1: references.bib
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Warning--no number and no volume in hicks2015widespread
+Warning--page numbers missing in hicks2015widespread
+You've used 25 entries,
+            3361 wiz_defined-function locations,
+            845 strings with 11521 characters,
+and the built_in function-call counts, 19506 in all, are:
+= -- 1563
+> -- 1625
+< -- 1
++ -- 509
+- -- 537
+* -- 2051
+:= -- 3413
+add.period$ -- 101
+call.type$ -- 25
+change.case$ -- 286
+chr.to.int$ -- 25
+cite$ -- 27
+duplicate$ -- 413
+empty$ -- 1051
+format.name$ -- 705
+if$ -- 3630
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 25
+newline$ -- 128
+num.names$ -- 252
+pop$ -- 214
+preamble$ -- 1
+purify$ -- 411
+quote$ -- 0
+skip$ -- 414
+stack$ -- 0
+substring$ -- 1036
+swap$ -- 108
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 400
+warning$ -- 2
+while$ -- 146
+width$ -- 0
+write$ -- 405
+(There were 2 warnings)

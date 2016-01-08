@@ -1,0 +1,197 @@
+\begin{thebibliography}{99}
+
+\bibitem[Anders and Huber(2010)Anders and Huber]{anders2010differential}
+\textsc{Anders, S. and Huber, W.} (2010).
+\newblock {{D}ifferential expression analysis for sequence count data}.
+\newblock {\em Genome Biol.\/}~\textbf{11}(10), R106.
+
+\bibitem[Bates \emph{and others}(2015)Bates, M{\"a}chler, Bolker and
+  Walker]{bates2015fitting}
+\textsc{Bates, D., M{\"a}chler, M., Bolker, B. and Walker, S.} (2015).
+\newblock Fitting linear mixed-effects models using {lme4}.
+\newblock {\em J. Stat. Softw.\/}~\textbf{67}(1), 1--48.
+
+\bibitem[Finak \emph{and others}(2015)Finak, McDavid, Yajima, Deng, Gersuk,
+  Shalek, Slichter, Miller, McElrath, Prlic, Linsley and
+  Gottardo]{finak2015mast}
+\textsc{Finak, G., McDavid, A., Yajima, M., Deng, J., Gersuk, V., Shalek,
+  A.~K., Slichter, C.~K., Miller, H.~W., McElrath, M.~J., Prlic, M., Linsley,
+  P.~S.} \emph{and others}. (2015).
+\newblock {{M}{A}{S}{T}: a flexible statistical framework for assessing
+  transcriptional changes and characterizing heterogeneity in single-cell
+  {R}{N}{A} sequencing data}.
+\newblock {\em Genome Biol.\/}~\textbf{16}, 278.
+
+\bibitem[Gaublomme \emph{and others}(2015)Gaublomme, Yosef, Lee, Gertner, Yang,
+  Wu, Pandolfi, Mak, Satija, Shalek, Kuchroo, Park and
+  Regev]{gaublomme2015single}
+\textsc{Gaublomme, J.~T., Yosef, N., Lee, Y., Gertner, R.~S., Yang, L.~V., Wu,
+  C., Pandolfi, P.~P., Mak, T., Satija, R., Shalek, A.~K., Kuchroo, V.~K.,
+  Park, H.} \emph{and others}. (2015).
+\newblock {{S}ingle-{C}ell {G}enomics {U}nveils {C}ritical {R}egulators of
+  {T}h17 {C}ell {P}athogenicity}.
+\newblock {\em Cell\/}~\textbf{163}(6), 1400--1412.
+
+\bibitem[Hicks \emph{and others}(2015)Hicks, Teng and
+  Irizarry]{hicks2015widespread}
+\textsc{Hicks, S.~C., Teng, M. and Irizarry, R.~A.} (2015).
+\newblock {On the widespread and critical impact of systematic bias and batch
+  effects in single-cell RNA-Seq data}.
+\newblock {\em bioRxiv\/}.
+
+\bibitem[Jaitin \emph{and others}(2014)Jaitin, Kenigsberg, Keren-Shaul,
+  Elefant, Paul, Zaretsky, Mildner, Cohen, Jung, Tanay and
+  Amit]{jaitin2014massively}
+\textsc{Jaitin, D.~A., Kenigsberg, E., Keren-Shaul, H., Elefant, N., Paul, F.,
+  Zaretsky, I., Mildner, A., Cohen, N., Jung, S., Tanay, A.} \emph{and others}.
+  (2014).
+\newblock {{M}assively parallel single-cell {R}{N}{A}-seq for marker-free
+  decomposition of tissues into cell types}.
+\newblock {\em Science\/}~\textbf{343}(6172), 776--779.
+
+\bibitem[Johnson \emph{and others}(2007)Johnson, Li and
+  Rabinovic]{johnson2007adjusting}
+\textsc{Johnson, W.~E., Li, C. and Rabinovic, A.} (2007).
+\newblock {{A}djusting batch effects in microarray expression data using
+  empirical {B}ayes methods}.
+\newblock {\em Biostatistics\/}~\textbf{8}(1), 118--127.
+
+\bibitem[Kharchenko \emph{and others}(2014)Kharchenko, Silberstein and
+  Scadden]{kharchenko2014bayesian}
+\textsc{Kharchenko, P.~V., Silberstein, L. and Scadden, D.~T.} (2014).
+\newblock {{B}ayesian approach to single-cell differential expression
+  analysis}.
+\newblock {\em Nat. Methods\/}~\textbf{11}(7), 740--742.
+
+\bibitem[Klein \emph{and others}(2015)Klein, Mazutis, Akartuna, Tallapragada,
+  Veres, Li, Peshkin, Weitz and Kirschner]{klein2015droplet}
+\textsc{Klein, A.~M., Mazutis, L., Akartuna, I., Tallapragada, N., Veres, A.,
+  Li, V., Peshkin, L., Weitz, D.~A. and Kirschner, M.~W.} (2015).
+\newblock {{D}roplet barcoding for single-cell transcriptomics applied to
+  embryonic stem cells}.
+\newblock {\em Cell\/}~\textbf{161}(5), 1187--1201.
+
+\bibitem[Kolodziejczyk \emph{and others}(2015)Kolodziejczyk, Kim, Tsang,
+  Ilicic, Henriksson, Natarajan, Tuck, Gao, Buhler, Liu, Marioni and
+  Teichmann]{kolod2015single}
+\textsc{Kolodziejczyk, A.~A., Kim, J.~K., Tsang, J.~C., Ilicic, T., Henriksson,
+  J., Natarajan, K.~N., Tuck, A.~C., Gao, X., Buhler, M., Liu, P., Marioni,
+  J.~C.} \emph{and others}. (2015).
+\newblock {{S}ingle {C}ell {R}{N}{A}-{S}equencing of {P}luripotent {S}tates
+  {U}nlocks {M}odular {T}ranscriptional {V}ariation}.
+\newblock {\em Cell Stem Cell\/}~\textbf{17}(4), 471--485.
+
+\bibitem[Kowalczyk \emph{and others}(2015)Kowalczyk, Tirosh, Heckl, Rao, Dixit,
+  Haas, Schneider, Wagers, Ebert and Regev]{kowalczyk2015single}
+\textsc{Kowalczyk, M.~S., Tirosh, I., Heckl, D., Rao, T.~N., Dixit, A., Haas,
+  B.~J., Schneider, R.~K., Wagers, A.~J., Ebert, B.~L. and Regev, A.} (2015).
+\newblock {{S}ingle-cell {R}{N}{A}-seq reveals changes in cell cycle and
+  differentiation programs upon aging of hematopoietic stem cells}.
+\newblock {\em Genome Res.\/}~\textbf{25}(12), 1860--1872.
+
+\bibitem[Law \emph{and others}(2014)Law, Chen, Shi and Smyth]{law2014voom}
+\textsc{Law, C.~W., Chen, Y., Shi, W. and Smyth, G.~K.} (2014).
+\newblock Voom: precision weights unlock linear model analysis tools for
+  rna-seq read counts.
+\newblock {\em Genome Biol.\/}~\textbf{15}, R29.
+
+\bibitem[Love \emph{and others}(2014)Love, Huber and Anders]{love2014moderated}
+\textsc{Love, M.~I., Huber, W. and Anders, S.} (2014).
+\newblock {{M}oderated estimation of fold change and dispersion for
+  {R}{N}{A}-seq data with {D}{E}{S}eq2}.
+\newblock {\em Genome Biol.\/}~\textbf{15}(12), 550.
+
+\bibitem[Lund \emph{and others}(2012)Lund, Nettleton, McCarthy and
+  Smyth]{lund2012detecting}
+\textsc{Lund, S.~P., Nettleton, D., McCarthy, D.~J. and Smyth, G.~K.} (2012).
+\newblock Detecting differential expression in {RNA}-sequence data using
+  quasi-likelihood with shrunken dispersion estimates.
+\newblock {\em Stat. Appl. Genet. Mol. Biol.\/}~\textbf{11}(5), Article 8.
+
+\bibitem[Marioni \emph{and others}(2008)Marioni, Mason, Mane, Stephens and
+  Gilad]{marioni2008rnaseq}
+\textsc{Marioni, J.~C., Mason, C.~E., Mane, S.~M., Stephens, M. and Gilad, Y.}
+  (2008).
+\newblock {{R}{N}{A}-seq: an assessment of technical reproducibility and
+  comparison with gene expression arrays}.
+\newblock {\em Genome Res.\/}~\textbf{18}(9), 1509--1517.
+
+\bibitem[McCarthy \emph{and others}(2012)McCarthy, Chen and
+  Smyth]{mccarthy2012differential}
+\textsc{McCarthy, D.~J., Chen, Y. and Smyth, G.~K.} (2012).
+\newblock Differential expression analysis of multifactor {RNA-Seq} experiments
+  with respect to biological variation.
+\newblock {\em Nucleic Acids Res.\/}~\textbf{40}(10), 4288--4297.
+
+\bibitem[Picelli \emph{and others}(2014)Picelli, Faridani, Bjorklund, Winberg,
+  Sagasser and Sandberg]{picelli2014full}
+\textsc{Picelli, S., Faridani, O.~R., Bjorklund, A.~K., Winberg, G., Sagasser,
+  S. and Sandberg, R.} (2014).
+\newblock {{F}ull-length {R}{N}{A}-seq from single cells using {S}mart-seq2}.
+\newblock {\em Nat Protoc\/}~\textbf{9}(1), 171--181.
+
+\bibitem[Pollen \emph{and others}(2014)Pollen, Nowakowski, Shuga, Wang, Leyrat,
+  Lui, Li, Szpankowski, Fowler, Chen, Ramalingam, Sun, Thu, Norris, Lebofsky,
+  Toppani, Kemp, Wong, Clerkson, Jones, Wu, Knutsson, Alvarado, Wang, Weaver,
+  May, Jones, Unger, Kriegstein and West]{pollen2014low}
+\textsc{Pollen, A.~A., Nowakowski, T.~J., Shuga, J., Wang, X., Leyrat, A.~A.,
+  Lui, J.~H., Li, N., Szpankowski, L., Fowler, B., Chen, P., Ramalingam, N.,
+  Sun, G., Thu, M., Norris, M., Lebofsky, R., Toppani, D., Kemp, D.~W., Wong,
+  M., Clerkson, B., Jones, B.~N., Wu, S., Knutsson, L., Alvarado, B., Wang, J.,
+  Weaver, L.~S., May, A.~P., Jones, R.~C., Unger, M.~A., Kriegstein, A.~R.}
+  \emph{and others}. (2014).
+\newblock {{L}ow-coverage single-cell m{R}{N}{A} sequencing reveals cellular
+  heterogeneity and activated signaling pathways in developing cerebral
+  cortex}.
+\newblock {\em Nat. Biotechnol.\/}~\textbf{32}(10), 1053--1058.
+
+\bibitem[Robinson \emph{and others}(2010)Robinson, McCarthy and
+  Smyth]{robinson2010edgeR}
+\textsc{Robinson, M.~D., McCarthy, D.~J. and Smyth, G.~K.} (2010).
+\newblock {edge{R}: a {B}ioconductor package for differential expression
+  analysis of digital gene expression data}.
+\newblock {\em Bioinformatics\/}~\textbf{26}(1), 139--140.
+
+\bibitem[Robinson and Oshlack(2010)Robinson and Oshlack]{robinson2010scaling}
+\textsc{Robinson, M.~D. and Oshlack, A.} (2010).
+\newblock {{A} scaling normalization method for differential expression
+  analysis of {R}{N}{A}-seq data}.
+\newblock {\em Genome Biol.\/}~\textbf{11}(3), R25.
+
+\bibitem[Robinson and Smyth(2008)Robinson and Smyth]{robinson2008small}
+\textsc{Robinson, M.~D. and Smyth, G.~K.} (2008).
+\newblock {{S}mall-sample estimation of negative binomial dispersion, with
+  applications to {S}{A}{G}{E} data}.
+\newblock {\em Biostatistics\/}~\textbf{9}(2), 321--332.
+
+\bibitem[Smyth(2005)Smyth]{smyth2005limma}
+\textsc{Smyth, G.~K.} (2005).
+\newblock limma: Linear models for microarray data.
+\newblock In: Gentleman, R., Carey, V.~J., Huber, W., Irizarry, R.~A. and
+  Dudoit, S. (editors), {\em Bioinformatics and Computational Biology Solutions
+  Using R and Bioconductor\/}, Statistics for Biology and Health. Springer New
+  York, pp.\  397--420.
+
+\bibitem[Smyth \emph{and others}(2005)Smyth, Michaud and Scott]{smyth2005use}
+\textsc{Smyth, G.~K., Michaud, J. and Scott, H.~S.} (2005).
+\newblock {{U}se of within-array replicate spots for assessing differential
+  expression in microarray experiments}.
+\newblock {\em Bioinformatics\/}~\textbf{21}(9), 2067--2075.
+
+\bibitem[Stegle \emph{and others}(2015)Stegle, Teichmann and
+  Marioni]{stegle2015computational}
+\textsc{Stegle, O., Teichmann, S.~A. and Marioni, J.~C.} (2015).
+\newblock {{C}omputational and analytical challenges in single-cell
+  transcriptomics}.
+\newblock {\em Nat. Rev. Genet.\/}~\textbf{16}(3), 133--145.
+
+\bibitem[Trapnell \emph{and others}(2014)Trapnell, Cacchiarelli, Grimsby,
+  Pokharel, Li, Morse, Lennon, Livak, Mikkelsen and Rinn]{trapnell2014dynamics}
+\textsc{Trapnell, C., Cacchiarelli, D., Grimsby, J., Pokharel, P., Li, S.,
+  Morse, M., Lennon, N.~J., Livak, K.~J., Mikkelsen, T.~S. and Rinn, J.~L.}
+  (2014).
+\newblock {{T}he dynamics and regulators of cell fate decisions are revealed by
+  pseudotemporal ordering of single cells}.
+\newblock {\em Nat. Biotechnol.\/}~\textbf{32}(4), 381--386.
+
+\end{thebibliography}
