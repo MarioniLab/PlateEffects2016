@@ -161,7 +161,7 @@ Any attempt to remove the former will affect detection of genuine DE in the latt
 Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
 
 A common strategy is to ignore the plate effects and treat cells from different plates in the same group as replicates.
-This is most obviously applied in a one-way layout where the groups are clearly defined.
+This is most obviously applied in a one-way layout with clearly defined groups.
 It is also relevant to multi-factor designs with more plates than model coefficients, as these designs will contain some level of replication between plates and thus between their constituent cells.
 DE genes can then be detected using software designed for bulk data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
 %In this manner, the conditional variance between cells on each plate and the variance of $\delta_{ik}$ between plates will be modelled in the final variance estimate.
@@ -254,7 +254,7 @@ This method exhibits the best performance of all tested methods in the presence 
 Nonetheless, voom with correlations is still liberal.
 This is attributable to the difficulties in accurately estimating the consensus correlation when the number of plates is low.
 In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
-This may also be compounded by the inadequacy of the normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
+This may also be compounded by the inadequacy of the Normal model for highly discrete counts, particularly in scRNA-seq where low-abundance genes have many zero counts.
 
 % Discreteness is secondary, as voom itself does fine without a plate effect.
 
