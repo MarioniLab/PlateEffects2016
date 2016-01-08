@@ -158,7 +158,7 @@ Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect
 % Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
 % be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.
 
-As an aside, what happens when each plate contains several biological subpopulations with different gene expression profiles?
+As an aside, what happens when each plate contains several \textit{a priori} undefined biological subpopulations with different gene expression profiles?
 This can be parametrized as $\lambda_{il} = \delta_{ik} \theta_l \mu_{il}$ where $\mu_{il}$ represents the subpopulation-specific mean for gene $i$.
 The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}$ in all expressions.
 A more subtle point concerns the independence of the count sums.
@@ -166,7 +166,7 @@ If the proportion of cells in each subpopulation is the same across replicate pl
 This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
 Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
 However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
-In such cases, the mean for each count sum will vary for each plate.
+In such cases, the mean for each count sum will vary for each plate in a gene-specific manner that cannot be resolved by scaling normalization.
 Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
 This situation is arguably pathological as plates with different subpopulations should not be replicates.
 
