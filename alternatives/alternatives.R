@@ -77,6 +77,7 @@ for (it in 1:10) {
                 full.fit <- glmer.nb(Counts ~ Group + (1|Plate), data=my.data)
                 null.fit <- glmer.nb(Counts ~ (1|Plate), data=my.data)
                 tested <- anova(full.fit, null.fit, test = "Chisq")
+                # see ?glmer, http://glmm.wikidot.com/faq; best option other than bootstrapping (which would be bothersome for so many genes).
                 pvalues[g] <- tested$Pr[2] 
             })
         }
