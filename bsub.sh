@@ -6,6 +6,14 @@ cd quantile/power
 bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save test.R
 cd -
 
+cd variability/power
+bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save power.R
+cd -
+
+cd variability/error
+bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save error.R
+cd -
+
 cd power
 bsub -R "rusage[mem=5000]" -n 1 -e "log.err" -o "log.out" R CMD BATCH --no-save power.R
 cd -
