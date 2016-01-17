@@ -1,4 +1,3 @@
-failsim/*.eps
 manuscript/pooled_error.aux
 manuscript/pooled_error.bbl
 manuscript/pooled_error.blg
@@ -8,8 +7,9 @@ manuscript/pooled_error.dvi
 manuscript/suppmat.aux
 manuscript/suppmat.log
 manuscript/texput.log
-
 manuscript/*.pdf
+
+failsim/*.eps
 
 power/*.eps
 power/*.rds
@@ -23,4 +23,8 @@ quantile/power/*.rds
 realdata/results/
 realdata/top_edgeR_ola1_sum.pdf
 realdata/top_edgeR_ola2_sum.pdf
+
+variability/power/*.eps
+variability/power/*.rds
+variability/error/*.eps
 

@@ -1,0 +1,217 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ##################################################
+> # Setting up the simulation parameters.
+> 
+> set.seed(10000)
+> 
+> conditions <- rep(c("A", "B"), each=3)
+> nplates <- length(conditions)
+> ngenes <- 10000
+> ncells <- 50
+> 
+> all.means <- exp(runif(ngenes, 3, 8))
+> disp <- 0.5 + 100/all.means
+> plate.var <- 0.5
+> 
+> cell.grouping <- factor(rep(conditions, each=ncells))
+> design.all <- model.matrix(~cell.grouping)
+> plate.grouping <- factor(conditions)
+> design.sum <- model.matrix(~plate.grouping)
+> alphas <- c(0.01, 0.002, 0.05)
+> 
+> plate.of.origin <- rep(seq_len(nplates), each=ncells)
+> 
+> ##################################################
+> # Generating the result file.
+> 
+> log.raw <- "temp_raw.txt"
+> if (file.exists(log.raw)) { stop("existing file for raw results") }
+> log.sum <- "temp_sum.txt"
+> if (file.exists(log.sum)) { stop("existing file for summed results") }
+> 
+> save.fun <- function(label, pv, x, log.file) {
++     discard <- is.na(x)
++     totes <- sum(!discard)
++     for (alpha in alphas) {
++         # Protect against NAs (ID'd as outliers by DESeq2).
++         write.table(data.frame(label, pv, alpha, sum(x<=alpha & !discard)/totes), file=log.file, 
++                     sep="\t", append=TRUE, col.names=FALSE, row.names=FALSE, quote=FALSE)
++     }
++ }
+> 
+> ##################################################
+> # Running across all options.
+> 
+> suppressPackageStartupMessages(require(edgeR))
+> suppressPackageStartupMessages(require(DESeq2))
+> suppressPackageStartupMessages(require(monocle))
+> suppressWarnings(suppressPackageStartupMessages(require(MAST)))
+> 
+> for (pv in c(0, plate.var)) {
++     for (it in 1:10) {
++         var.scale <- 2/rchisq(ngenes, df=4)
++         if (pv!=0) {
++             alt.pv <- pv * var.scale
++             alt.disp <- disp
++         } else {
++             alt.pv <- pv
++             alt.disp <- disp * var.scale
++         }
++ 
++         mean.per.plate <- all.means * exp(matrix(rnorm(nplates*ngenes, -pv/2, sqrt(pv)), ncol=nplates))
++         all.counts <- matrix(0L, nrow=ngenes, ncol=ncells*nplates)
++         for (x in seq_len(nplates)) {
++             all.counts[,seq_len(ncells)+ncells*(x-1L)] <- rnbinom(ngenes*ncells, mu=mean.per.plate[,x], size=1/disp)
++         }
++ 
++         for (mode in c("raw", "sum")) {
++             if (mode=="raw") {
++                 counts <- all.counts
++                 design <- design.all
++                 grp <- cell.grouping
++                 log.file <- log.raw
++             } else {
++                 counts <- sumTechReps(all.counts, plate.of.origin)
++                 design <- design.sum
++                 grp <- plate.grouping
++                 log.file <- log.sum
++             }
++ 
++             # edgeR QL:
++             y <- DGEList(counts)
++             y <- calcNormFactors(y)
++             y <- estimateDisp(y, design, prior.df=0)
++             fit <- glmQLFit(y, design, robust=TRUE)
++             res <- glmQLFTest(fit)
++             save.fun("edgeR (QL)", pv, res$table$PValue, log.file)
++ 
++             if (mode=="raw") {
++                 # edgeR LRT:
++                 fit <- glmFit(y, design, dispersion=y$tagwise.dispersion)
++                 res <- glmLRT(fit)
++                 save.fun("edgeR (LRT)", pv, res$table$PValue, log.file)
++             }
++ 
++             # DESeq2
++             suppressMessages(dds <- DESeqDataSetFromMatrix(counts, colData=DataFrame(grp=grp), design = ~grp))
++             suppressMessages(dds <- DESeq(dds))
++             res <- results(dds, c("grp", "A", "B"))
++             save.fun("DESeq2", pv, res$pvalue, log.file)
++ 
++             # voom without correlations
++             v.all <- voom(y, design)
++             fit <- lmFit(v.all, design)
++             fit <- eBayes(fit, robust=TRUE)
++             res <- topTable(fit, n=Inf, sort.by="none", coef=2)
++             save.fun("voom", pv, res$P.Value, log.file)
++ 
++             if (mode=="raw") {
++                 # voom with correlations
++                 dc <- duplicateCorrelation(v.all, design, block=plate.of.origin)
++                 fit <- lmFit(v.all, design, block=plate.of.origin, correlation=dc$consensus)
++                 fit <- eBayes(fit, robust=TRUE)
++                 res <- topTable(fit, n=Inf, sort.by="none", coef=2)
++                 save.fun("voom (cor)", pv, res$P.Value, log.file)
++             }
++ 
++             if (mode=="raw") {
++                 # MAST
++                 oldseed <- .Random.seed
++                 suppressMessages({
++                     cpms <- cpm(counts+1, prior.count=0, log=TRUE, lib.size=colSums(counts))
++                     sca <- FromMatrix('SingleCellAssay', t(cpms), data.frame(wellKey=seq_along(grp)), data.frame(primerid=seq_len(ngenes)))
++                     cData(sca)$cngeneson <- colMeans(counts>0)
++                     cData(sca)$condition <- grp
++                     fit <- zlm.SingleCellAssay(~ condition + cngeneson, sca, method="bayesglm", ebayes=TRUE, ebayesControl=list(method="MLE", model="H1"))
++                     lrt <- lrTest(fit, "condition")
++                     save.fun("MAST", pv, lrt[, "hurdle", "Pr(>Chisq)"], log.file)
++                 })
++                 .Random.seed <- oldseed # Avoid getting different results because of MAST's randomization methods.
++             }
++ 
++             # SAMstrt doesn't report p-values, just "median FDR" estimates.
++             # It also relies on spike-ins, that we don't have here.
++         
++             if (it==1L && mode=="raw") {
++                 # Only running monocle in one iteration, as it takes too long.
++                 cpms <- cpm(counts, prior.count=0)
++                 pdat <- AnnotatedDataFrame(data=data.frame(grp=grp))
++                 sampleNames(pdat) <- colnames(cpms)
++                 HSMM <- new("CellDataSet", exprs=cpms, phenoData=pdat, expressionFamily=negbinomial())
++                 out <- differentialGeneTest(HSMM, fullModelFormulaStr="expression~grp", cores=6) 
++                 save.fun("Monocle", pv, out$pval, log.file)
++             }         
++         }
++     }
++ }
+> 
+> ##################################################
+> # End.
+> 
+> sessionInfo()
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+ [1] splines   parallel  stats4    stats     graphics  grDevices utils    
+ [8] datasets  methods   base     
+
+other attached packages:
+ [1] MAST_0.933                 reshape_0.8.5             
+ [3] monocle_1.4.0              plyr_1.8.3                
+ [5] igraph_1.0.1               VGAM_1.0-0                
+ [7] ggplot2_2.0.0              HSMMSingleCell_0.104.0    
+ [9] DESeq2_1.10.1              RcppArmadillo_0.6.400.2.2 
+[11] Rcpp_0.12.3                SummarizedExperiment_1.0.2
+[13] Biobase_2.30.0             GenomicRanges_1.22.3      
+[15] GenomeInfoDb_1.6.1         IRanges_2.4.6             
+[17] S4Vectors_0.8.7            BiocGenerics_0.16.1       
+[19] edgeR_3.12.0               limma_3.26.5              
+
+loaded via a namespace (and not attached):
+ [1] genefilter_1.52.0    statmod_1.4.23       locfit_1.5-9.1      
+ [4] reshape2_1.4.1       lattice_0.20-33      colorspace_1.2-6    
+ [7] fastICA_1.2-0        chron_2.3-47         survival_2.38-3     
+[10] XML_3.98-1.3         foreign_0.8-66       DBI_0.3.1           
+[13] BiocParallel_1.4.3   RColorBrewer_1.1-2   lambda.r_1.1.7      
+[16] matrixStats_0.50.1   stringr_1.0.0        zlibbioc_1.16.0     
+[19] munsell_0.4.2        combinat_0.0-8       gtable_0.1.2        
+[22] futile.logger_1.4.1  latticeExtra_0.6-26  geneplotter_1.48.0  
+[25] irlba_2.0.0          AnnotationDbi_1.32.3 acepack_1.3-3.3     
+[28] xtable_1.8-0         scales_0.3.0         Hmisc_3.17-1        
+[31] annotate_1.48.0      XVector_0.10.0       abind_1.4-3         
+[34] gridExtra_2.0.0      stringi_1.0-1        grid_3.2.2          
+[37] tools_3.2.2          magrittr_1.5         RSQLite_1.0.0       
+[40] Formula_1.2-1        cluster_2.0.3        futile.options_1.0.0
+[43] Matrix_1.2-3         data.table_1.9.6     rpart_4.1-10        
+[46] nnet_7.3-11         
+> 
+> proc.time()
+     user    system   elapsed 
+43991.552    13.506 45430.461 
