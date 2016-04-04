@@ -21,6 +21,7 @@ for (type in c("raw", "sum")) {
         my.env$counts <- all.counts
         my.env$sample.data <- targets
         my.env$normtype <- "deconvolution"  
+        my.env$clusters <- by.group 
     } else {
         my.env$counts <- sumTechReps(all.counts, targets$Plate)
         my.env$sample.data <- targets[match(colnames(my.env$counts), targets$Plate),]
