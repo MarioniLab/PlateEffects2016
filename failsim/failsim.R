@@ -127,7 +127,7 @@ for (pv in c(0, plate.var)) {
                 cpms <- cpm(counts, prior.count=0)
                 pdat <- AnnotatedDataFrame(data=data.frame(grp=grp))
                 sampleNames(pdat) <- colnames(cpms)
-                HSMM <- new("CellDataSet", exprs=cpms, phenoData=pdat, expressionFamily=negbinomial())
+                HSMM <- newCellDataSet(cellData=cpms, phenoData=pdat)
                 out <- differentialGeneTest(HSMM, fullModelFormulaStr="expression~grp", cores=6) 
                 save.fun("Monocle", pv, out$pval, log.file)
             }         
