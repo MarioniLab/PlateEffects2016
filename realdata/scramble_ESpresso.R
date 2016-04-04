@@ -10,7 +10,7 @@ of.interest <- rowMeans(all.counts) >= 1
 all.counts <- all.counts[of.interest,]
 methods.to.use <- c("QLedgeR", "DESeq2", "voom")
 
-dir.create("ESpresso")
+dir.create("ESpresso", showWarning=FALSE)
 outputfile <- file.path("ESpresso/scrambled.txt")
 if (file.exists(outputfile)) { unlink(outputfile) }
 

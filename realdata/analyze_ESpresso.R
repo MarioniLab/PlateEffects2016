@@ -6,7 +6,7 @@ setwd("../reference")
 source("ESpresso.R")
 setwd(curdir)
 
-dir.create("ESpresso")
+dir.create("ESpresso", showWarning=FALSE)
 of.interest <- rowMeans(all.counts) >= 1
 all.counts <- all.counts[of.interest,]
 methods.to.use <- c("QLedgeR", "DESeq2", "voom")
