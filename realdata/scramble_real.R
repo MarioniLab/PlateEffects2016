@@ -1,35 +1,42 @@
+for (dataset in c("ESpresso")) { 
+
 #######################################################
-# Loading the ESpresso counts and experimental design.
+# Loading the counts and experimental design.
 
 curdir <- getwd()
 setwd("../reference")
-source("ESpresso.R")
+if (dataset=="ESpresso") { 
+    source("ESpresso.R")
+    coefs <- c(3, 4)
+    sample.formula <- ~Batch + Serum
+}
 setwd(curdir)
 
 of.interest <- rowMeans(all.counts) >= 1
 all.counts <- all.counts[of.interest,]
 methods.to.use <- c("QLedgeR", "DESeq2", "voom")
 
-dir.create("ESpresso", showWarning=FALSE)
-outputfile <- file.path("ESpresso/scrambled.txt")
+dir.create(dataset, showWarning=FALSE)
+outputfile <- file.path(dataset, "scrambled.txt")
 if (file.exists(outputfile)) { unlink(outputfile) }
 
-for (shuffle in c('a2i', '2i')) {
-    new.targets <- targets
-    cur.other <- which(shuffle == targets$Serum & targets$Batch == '3')
-    cur.lif <- which('lif' == targets$Serum & targets$Batch == '3')
-    new.targets$Serum[cur.other] <- 'lif'
-    new.targets$Serum[cur.lif] <- shuffle
+# Running through sum and row, while shuffling targets.
 
-    if (shuffle=='2i') {
-        drop.coefficient <- 3
-    } else {
-        drop.coefficient <- 4
+for (scenario in seq_along(coefs)) {
+    new.targets <- targets
+    drop.coefficient <- coefs[scenario]
+
+    if (dataset=="ESpresso") {
+        if (drop.coefficient==3) { shuffle <- '2i' } else { shuffle <- 'a2i' }
+        cur.other <- which(shuffle == targets$Serum & targets$Batch == '3')
+        cur.lif <- which('lif' == targets$Serum & targets$Batch == '3')
+        new.targets$Serum[cur.other] <- 'lif'
+        new.targets$Serum[cur.lif] <- shuffle
     }
 
     for (type in c("raw", "sum")) { 
         my.env <- new.env()
-        my.env$sample.formula <- ~Batch + Serum 
+        my.env$sample.formula <- sample.formula
         my.env$drop.coefficient <- drop.coefficient
 
         if (type=="raw") { 
