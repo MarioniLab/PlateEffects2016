@@ -14,22 +14,32 @@ dir.create("ESpresso", showWarning=FALSE)
 outputfile <- file.path("ESpresso/scrambled.txt")
 if (file.exists(outputfile)) { unlink(outputfile) }
 
-for (extra.term in c('lif', 'a2i', '2i')) {
-    targets$Interaction <- as.integer(extra.term == targets$Serum & targets$Batch == '3')
+for (shuffle in c('a2i', '2i')) {
+    new.targets <- targets
+    cur.other <- which(shuffle == targets$Serum & targets$Batch == '3')
+    cur.lif <- which('lif' == targets$Serum & targets$Batch == '3')
+    new.targets$Serum[cur.other] <- 'lif'
+    new.targets$Serum[cur.lif] <- shuffle
+
+    if (shuffle=='2i') {
+        drop.coefficient <- 3
+    } else {
+        drop.coefficient <- 4
+    }
 
     for (type in c("raw", "sum")) { 
         my.env <- new.env()
-        my.env$sample.formula <- ~Batch + Serum + Interaction
-        my.env$drop.coefficient <- 5
+        my.env$sample.formula <- ~Batch + Serum 
+        my.env$drop.coefficient <- drop.coefficient
 
         if (type=="raw") { 
             my.env$counts <- all.counts
-            my.env$sample.data <- targets
+            my.env$sample.data <- new.targets
             my.env$normtype <- "deconvolution"
             my.env$clusters <- by.group
         } else {
             my.env$counts <- sumTechReps(all.counts, targets$Plate)
-            my.env$sample.data <- targets[match(colnames(my.env$counts), targets$Plate),]
+            my.env$sample.data <- new.targets[match(colnames(my.env$counts), targets$Plate),]
             my.env$norm.type <- "deseq"
         }
    
