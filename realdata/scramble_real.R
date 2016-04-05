@@ -14,7 +14,7 @@ setwd(curdir)
 
 of.interest <- rowMeans(all.counts) >= 1
 all.counts <- all.counts[of.interest,]
-methods.to.use <- c("QLedgeR", "DESeq2", "voom")
+methods.to.use <- c("QLedgeR", "voom", "DESeq2")
 
 dir.create(dataset, showWarning=FALSE)
 outputfile <- file.path(dataset, "scrambled.txt")
@@ -54,13 +54,14 @@ for (scenario in seq_along(coefs)) {
         for (method in names(my.env$obtained)) {
             cur.pval <- my.env$obtained[[method]]
             is.okay <- !is.na(cur.pval)
-            write.table(file=outputfile, data.frame(method, extra.term, type, sum(cur.pval <= 0.01 & is.okay)/sum(is.okay)), 
+            write.table(file=outputfile, data.frame(method, drop.coefficient, type, sum(cur.pval <= 0.01 & is.okay)/sum(is.okay)), 
                   row.names=FALSE, col.names=FALSE, sep="\t", quote=FALSE, append=TRUE)
         }
     }
 }
 
 #######################################################
+}
 
 sessionInfo()
 
