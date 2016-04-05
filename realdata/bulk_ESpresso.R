@@ -14,11 +14,10 @@ library(edgeR)
 summed <- sumTechReps(do.call(data.frame, combined), biolibs)
 rownames(summed) <- refnames
 
-# Removing spike-ins. Also retaining all genes from the spike-in analysis.
-to.keep <- grepl("^ENS", refnames) 
+# Retaining all genes used in the single-cell analysis.
 tmp.env <- new.env()
 load("ESpresso/objects_sum.Rda", envir=tmp.env)
-to.keep <- to.keep & rownames(summed) %in% rownames(tmp.env$y)
+to.keep <- rownames(summed) %in% rownames(tmp.env$y)
 summed <- summed[to.keep,]
 
 # Setting up the analysis.

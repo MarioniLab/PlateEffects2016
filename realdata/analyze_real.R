@@ -17,6 +17,9 @@ of.interest <- rowMeans(all.counts) >= 1
 all.counts <- all.counts[of.interest,]
 methods.to.use <- c("QLedgeR", "DESeq2", "voom")
 
+#######################################################
+# Running through the real data analyses. 
+
 for (type in c("raw", "sum")) { 
     my.env <- new.env()
     my.env$sample.formula <- sample.formula
