@@ -46,7 +46,7 @@ for (type in c("raw", "sum")) {
                     col.names=NA, sep="\t", quote=FALSE)
         close(fhandle)
     }
-    save(y, design, file=file.path(dataset, paste0("objects_", type, ".Rda"))) # The DGEGLM objects are huge, so we'll go without.     
+    save(my.env$y, my.env$design, file=file.path(dataset, paste0("objects_", type, ".Rda"))) # The DGEGLM objects are huge, so we'll go without.     
 
     # Analyzing with voom.
     for (i in seq_along(coefs)) { 
