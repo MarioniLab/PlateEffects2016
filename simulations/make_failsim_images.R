@@ -139,9 +139,7 @@ for (mode in 1:4) {
     # Adding a legend.
     par(mar=c(0.2, 0.1, 5.1, 0.1))
     plot(0, 0, type="n", xaxt="n", yaxt="n", bty="n", ylab="", xlab="")
-    out <- legend("topleft", legend=modes)
-    adj <- (out$text$x + out$rect$left)/2
-    points(adj, out$text$y, pch=pch, col="black", bg=inner.color)
+    legend("topleft", legend=modes, pch=pch, col="black", pt.bg=inner.color)
 
     dev.off()
 }
