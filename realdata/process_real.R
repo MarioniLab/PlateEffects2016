@@ -77,6 +77,54 @@ for (curdir in c("ESpresso")) {
 }
 
 #######################################################
+# Generating a bar plot for the scrambled results.
+
+all.scrambles <- list()
+all.colors <- list()
+leg.contrasts <- list()
+leg.colors <- list()
+
+i <- 1
+for (curdir in c("ESpresso")) {
+    current <- read.table(file.path(curdir, "scrambled.txt"))
+    contrasted <- c("3"="grey80", "4"="grey40")
+    mode <- paste0(current[,1], current[,3])
+    colors <- split(contrasted[as.character(current[,2])], mode)
+    fprs <- split(current[,4], mode)
+
+    all.scrambles[[i]] <- do.call(cbind, fprs)
+    all.colors[[i]] <- do.call(cbind, colors)
+    leg.contrasts[[i]] <- c('2i vs. serum', 'a2i vs. serum')
+    leg.colors[[i]] <- contrasted
+    i <- i + 1
+}
+
+scrambled <- do.call(rbind, all.scrambles)
+colors <- do.call(rbind, all.colors)
+
+# Renaming.
+renamed <- colnames(scrambled)
+renamed <- sub("sum$", "\n(sum)", renamed)
+renamed <- sub("raw$", "\n(single)", renamed)
+renamed <- sub("QLedgeR", "QL edgeR", renamed)
+
+# Plotting.
+setEPS()
+width <- 9
+postscript("all_scrambled.eps", width=width, height=7)
+layout(rbind(c(1,2)), width=c(width-2, 2))
+par(mar=c(6.2, 5.1, 2.1, 0.1))
+
+barplot(scrambled, names.arg=renamed, beside=TRUE, col=colors, ylab="Proportion of genes rejected", 
+        las=2, cex.lab=1.4, cex.axis=1.2, cex.names=1.2)
+abline(h=0.01, col="red", lwd=2, lty=2)
+
+par(mar=c(0.2, 0.1, 5.1, 0.1))
+plot(0, 0, type="n", xaxt="n", yaxt="n", bty="n", ylab="", xlab="")
+legend("topleft", legend=unlist(leg.contrasts), fill=unlist(leg.colors), cex=1.2)
+dev.off()
+
+#######################################################
 
 sessionInfo()
 
