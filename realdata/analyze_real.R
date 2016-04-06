@@ -39,27 +39,30 @@ for (type in c("raw", "sum")) {
     sys.source("../reference/de_analysis.R", envir=my.env)
 
     # Analyzing with edgeR. 
-    for (i in seq_along(coefs)) { 
-        qres <- glmQLFTest(my.env$qfit, coef=coefs[i]) 
+    for (i in coefs) { 
+        qres <- glmQLFTest(my.env$qfit, coef=i) 
         fhandle <- gzfile(file.path(dataset, paste0("edgeR_", i, "_", type, ".tsv.gz")), open="wb")
         write.table(topTags(qres, n=Inf, sort.by="none")$table, file=fhandle,
                     col.names=NA, sep="\t", quote=FALSE)
         close(fhandle)
     }
-    save(my.env$y, my.env$design, file=file.path(dataset, paste0("objects_", type, ".Rda"))) # The DGEGLM objects are huge, so we'll go without.     
+
+    tmp.y <- my.env$y
+    tmp.design <- my.env$design
+    save(tmp.y, tmp.design, file=file.path(dataset, paste0("objects_", type, ".Rda"))) # The DGEGLM objects are huge, so we'll go without.     
 
     # Analyzing with voom.
-    for (i in seq_along(coefs)) { 
-        vres <- topTable(my.env$vfit, n=Inf, sort.by="none", coef=coefs[i])
+    for (i in coefs) { 
+        vres <- topTable(my.env$vfit, n=Inf, sort.by="none", coef=i)
         fhandle <- gzfile(file.path(dataset, paste0("voom_", i, "_", type, ".tsv.gz")), open="wb")
         write.table(vres, file=fhandle, col.names=NA, sep="\t", quote=FALSE)
         close(fhandle)
     }
 
     # Analyzing with DESeq2.
-    for (i in seq_along(coefs)) {
+    for (i in coefs) {
         convec <- integer(ncol(my.env$design))
-        convec[coefs[i]] <- 1
+        convec[i] <- 1
         dres <- results(my.env$dds, convec)
 
         fhandle <- gzfile(file.path(dataset, paste0("DESeq2_", i, "_", type, ".tsv.gz")), open="wb")
