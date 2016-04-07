@@ -76,10 +76,10 @@ For count $Y_{ij}$ of gene $i$ in cell $j$ in plate $k$ of group $g$, we assume 
 \]
 where $\theta_j$ is the cell-specific bias, $\delta_{ik}$ is the plate effect, $\mu_{ig}$ is the expected count in this group, and $\varphi_i$ is the NB dispersion for this gene.
 All counts are assumed to be conditionally independent.
-We denote the random variable for $\delta_{ik}$ as $\Delta_{ik}$, where $\log(\Delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
-This parametrization ensures that $E(\Delta_{ik}) = 1$, i.e., the plate effect averages out across many plates.
-Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) which is independent of $\Delta_{ik}$.
-Thus, the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, as defined.
+We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
+This parametrization ensures that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
+Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) and is independent of $\delta_{ik}$.
+Thus, the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with its definition.
 
 \subsection{Parameter estimation from real data}
 We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
