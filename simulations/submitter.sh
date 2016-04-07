@@ -24,3 +24,5 @@ bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow2.err" -o "ESpresso/log_pow2
 bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow3.err" -o "ESpresso/log_pow3.out" R CMD BATCH --no-save "--args scenario=3 $powargs" power.R ESpresso/power_3.Rout
 bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow4.err" -o "ESpresso/log_pow4.out" R CMD BATCH --no-save "--args scenario=4 $powargs" power.R ESpresso/power_4.Rout
 
+# Results aren't under version control, so they need to be pulled down manually:
+# rsync -azv cruk:lustre/PlateEffects/simulations/ESpresso/ ESpresso/

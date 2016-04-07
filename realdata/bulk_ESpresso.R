@@ -17,7 +17,7 @@ rownames(summed) <- refnames
 # Retaining all genes used in the single-cell analysis.
 tmp.env <- new.env()
 load("ESpresso/objects_sum.Rda", envir=tmp.env)
-to.keep <- rownames(summed) %in% rownames(tmp.env$y)
+to.keep <- rownames(summed) %in% rownames(tmp.env$tmp.y)
 summed <- summed[to.keep,]
 
 # Setting up the analysis.
@@ -37,8 +37,8 @@ methods.to.use <- c("QLedgeR", "DESeq2", "voom")
 sys.source("../reference/de_analysis.R", envir=my.env)
 
 # Analyzing with edgeR. 
-for (i in seq_along(coefs)) { 
-    qres <- glmQLFTest(my.env$qfit, coef=coefs[i]) 
+for (i in coefs) { 
+    qres <- glmQLFTest(my.env$qfit, coef=i) 
     fhandle <- gzfile(paste0("ESpresso/edgeR_", i, "_bulk.tsv.gz"), open="wb")
     write.table(topTags(qres, n=Inf, sort.by="none")$table, file=fhandle,
                 col.names=NA, sep="\t", quote=FALSE)
@@ -46,17 +46,17 @@ for (i in seq_along(coefs)) {
 }
 
 # Analyzing with voom.
-for (i in seq_along(coefs)) { 
-    vres <- topTable(my.env$vfit, n=Inf, sort.by="none", coef=coefs[i])
+for (i in coefs) { 
+    vres <- topTable(my.env$vfit, n=Inf, sort.by="none", coef=i)
     fhandle <- gzfile(paste0("ESpresso/voom_", i, "_bulk.tsv.gz"), open="wb")
     write.table(vres, file=fhandle, col.names=NA, sep="\t", quote=FALSE)
     close(fhandle)
 }
 
 # Analyzing with DESeq2.
-for (i in seq_along(coefs)) {
+for (i in coefs) {
     convec <- integer(ncol(my.env$design))
-    convec[coefs[i]] <- 1
+    convec[i] <- 1
     dres <- results(my.env$dds, convec)
     
     fhandle <- gzfile(paste0("ESpresso/DESeq2_", i, "_bulk.tsv.gz"), open="wb")
