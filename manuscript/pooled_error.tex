@@ -53,15 +53,18 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 
 
 % Supplementary sections
-\newcommand{\suppimplementation}{1}
-\newcommand{\suppquantile}{2}
-\newcommand{\suppmeanvar}{3}
-\newcommand{\supphiddenvar}{4}
-\newcommand{\suppnorm}{5}
+\newcommand{\suppsimulation}{1}
+\newcommand{\suppimplementation}{2}
+\newcommand{\suppquantile}{3}
+\newcommand{\suppmeanvar}{4}
+\newcommand{\supphiddenvar}{5}
+\newcommand{\suppnorm}{6}
 
 % Supplementary figures
-\newcommand{\suppcompsim}{S1}
-\newcommand{\suppexpprof}{S2}
+\newcommand{\suppfailsim}{S1}
+\newcommand{\suppokaysim}{S2}
+\newcommand{\suppcompsim}{S3}
+\newcommand{\suppexpprof}{S4}
 
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
@@ -175,12 +178,13 @@ However, the performance of either strategy has yet to be rigorously assessed on
 \subsection{Testing DE analysis methods on simulated scRNA-seq data}
 We simulated data to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
 We used a NB-log-normal mixture where the counts were conditionally NB-distributed and the plate effect was log-normally distributed.
-Parameters of both distributions were estimated from the real data.
+Parameters of both distributions were estimated from the real data -- see Section~\suppsimulation{} of the Supplementary Materials for details.
+
 DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle, MAST \citep{finak2015mast} and generalized linear mixed models (GLMMs) from the lme4 package \citep{bates2015fitting}.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts for each gene}, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
-The GLMM approach is more general, and uses NB distributions to model counts with random plate and fixed group effects.
+The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
 \end{color}
 
 Each method was applied on the simulated data to test for DE between groups. 
@@ -236,10 +240,16 @@ This is no longer justifiable if only four d.f.\ are available.
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
 This is attributable to the difficulties in accurately estimating the variance of the random effect (for the GLMM approach) or the consensus correlation (for voom) in typical scRNA-seq data sets where the number of plates is low.
-In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
-For voom, this may also be compounded by the inadequacy of the Normal model for highly discrete counts, particularly in scRNA-seq data where low-abundance genes have many zero counts.}
+In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.}
 
 % Discreteness is secondary, as voom itself does fine without a plate effect.
+
+\revised{ 
+We also tested the performance of each method in a variety of simulation scenarios.
+This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
+In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
+This suggests that our results are generally applicable to different scRNA-seq data sets.
+}
 
 \section{Improved performance with summation across cells in each plate}
 
@@ -264,6 +274,7 @@ This makes the data more amenable for analysis with existing methods designed fo
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
 Overconfident estimation of model parameters is avoided due to the presence of independent count sums.
+\revised{Similar results are observed in the alternative simulation scenarios (Supplementary Figure~\suppokaysim{}).}
 Note that some mild liberalness is still observed for edgeR and DESeq2 
     -- this is because the count sums are not NB-distributed which results in some inaccuracy during modelling.
 In contrast, type I error control is fully restored for voom as it is more accurate for large counts and log-normally-distributed plate effects.
