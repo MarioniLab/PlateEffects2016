@@ -74,12 +74,12 @@ For count $Y_{ij}$ of gene $i$ in cell $j$ in plate $k$ of group $g$, we assume 
 \[
     Y_{ij} | \delta_{ik}, \theta_j \sim \mbox{NB}(\delta_{ik}\theta_j\mu_{ig}, \varphi_i)
 \]
-where $\theta_j$ is the cell-specific bias, $\delta_{ik}$ is the plate effect, $\mu_{ig}$ is the expected count in this group, and $\varphi_i$ is the NB dispersion for this gene.
+where $\theta_j$ is the cell-specific bias, $\delta_{ik}$ is the plate effect, $\mu_{ig}$ is the expected read count for this gene in group $g$, and $\varphi_i$ is the NB dispersion for this gene.
 All counts are assumed to be conditionally independent.
 We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
-This parametrization ensures that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
+This parametrization means that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
 Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) and is independent of $\delta_{ik}$.
-Thus, the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with its definition.
+Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary, but simply ensures that the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with the above definition of $\mu_{ig}$.
 
 \subsection{Parameter estimation from real data}
 We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
@@ -88,14 +88,14 @@ Specifically, low-abundance genes with average counts below 1 were filtered out.
 Also, cells were only used if they belonged to a batch that contained all three culture types, i.e., serum, a2i and 2i.
 
 We then estimated the simulation parameters from the data.
-For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} using each culture type as a cluster.
-This yielded size factors that represent estimates of $\theta_j$ (Figure~\ref{subfig:realsize}).
-For the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
+For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} where all cells corresponding to each culture type were defined as a cluster.
+This yielded size factors centered around unity (Figure~\ref{subfig:realsize}) that can be treated as estimates of $\theta_j$. 
+To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
 The resulting coefficient was used to define $\mu_{i0}$, i.e., the expected count of gene $i$ (Figure~\ref{subfig:realmean}).
 For non-DE genes, $\mu_{ig}$ was set to $\mu_{i0}$ for all groups, whereas for DE genes, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some fold change $\psi_{ig}$.
 Finally, we used the estimateDisp function in edgeR to estimate the NB dispersion.
 As the NB distribution is conditional on the plate-specific mean, we treated each plate as a separate group during GLM fitting and dispersion estimation.
-The tagwise estimate was used as $\varphi_i$ for each gene (Figure~\ref{subfig:realdisp}).
+The ``tagwise'' dispersion estimate was used as $\varphi_i$ for each gene (Figure~\ref{subfig:realdisp}).
 
 \begin{figure}[p]
     \begin{minipage}{0.49\textwidth}
@@ -138,7 +138,7 @@ Note that the large number of zeroes in Figure~\ref{subfig:realplate} is likely 
 As an alternative to the NB model, we fitted a zero-inflated NB (ZINB) distribution to the counts for each gene.
 This was done using the zeroinfl function from the pscl package \citep{zeilis2008regression}.
 The plate of origin was used as a factor for the NB component, whereas a common zero component was used for all cells to simplify regression.
-Offsets were defined as log-transformed size factors for all cells.
+Offsets were defined as log-transformed size factors.
 For the NB component, the mean count was computed for each plate and the grand mean $\mu_{i0}'$ across plates was computed for each gene.
 The NB dispersion $\varphi_i'$ and the probability $p'_i$ of belonging to the zero component were also estimated for each gene.
 These values were used to redefine the sampling distribution of $Y_{ij}$ as a ZINB distribution.
@@ -152,8 +152,8 @@ The bias $\theta_j$ for each cell was similarly sampled from the set of size fac
 We then randomly selected 10000 genes from the mESC data set.
 (For assessing type I error control, all genes are non-DE such that the null hypothesis is true for each gene.)
 For each chosen gene, the plate effect $\delta_{ik}$ in plate $k$ was sampled from a log-normal distribution.
-This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ij}$ for each cell in plate $k$.
-We repeated this process for each plate to obtain a matrix of counts for all genes in all cells.
+This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ij}$ for each cell on the plate.
+We repeated this process for each plate to obtain counts for all genes in all cells.
 
 We tested different scenarios by repeating the simulation with modified parameters.
 To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$. 
