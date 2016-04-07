@@ -27,7 +27,7 @@ by.cell$samples$norm.factors <- sf/by.cell$samples$lib.size
 by.cell$samples$norm.factors <- by.cell$samples$norm.factors/exp(mean(log(by.cell$samples$norm.factors))) # Mean-centering for convenience.
 
 pdf(file.path(picdir, "libsizes.pdf"))
-hist(log10(by.cell$samples$lib.size), xlab=expression(Log[10]~"library size"), cex.lab=1.4, cex.axis=1.2, ylab="Number of cells", main="", col="grey80")
+hist(log2(sf), xlab=expression(Log[2]~"size factor"), cex.lab=1.4, cex.axis=1.2, ylab="Number of cells", main="", col="grey80")
 dev.off()
 
 # Estimating the NB dispersion (assuming sufficient residual d.f. to estimate the dispersion without EB shrinkage).
@@ -40,59 +40,62 @@ centered.off <- centered.off - mean(centered.off)
 logmeans <- mglmOneGroup(by.cell$counts, offset=centered.off, dispersion=by.cell$tagwise.dispersion)
 
 pdf(file.path(picdir, "avecounts.pdf"))
-hist(logmeans/log(10), xlab=expression(Log[10]~"average count"), cex.lab=1.4, cex.axis=1.2, ylab="Number of cells", main="", col="grey80")
+hist(logmeans/log(2), xlab=expression(Log[2]~"average count"), cex.lab=1.4, cex.axis=1.2, ylab="Number of cells", main="", col="grey80")
 dev.off()
-
-# Refitting a mean-dispersion trend to the logs.
-ldisp <- log10(by.cell$tagwise.dispersion)
-lfit <- loessFit(x=logmeans, y=ldisp, span=0.1)
 
 pdf(file.path(picdir, "celldisp.pdf"))
 par(mar=c(5.1,4.5,2.1,2.1), cex.axis=1.2, cex.lab=1.4)
+ldisp <- log2(by.cell$tagwise.dispersion)
 med.ldisp <- median(ldisp)
 mad.ldisp <- mad(ldisp)
 dontshow <- ldisp <= med.ldisp - 5*mad.ldisp | ldisp >= med.ldisp + 5*mad.ldisp
-smoothScatter(logmeans[!dontshow]/log(10), ldisp[!dontshow], xlab=expression(Log[10]~"average count"), ylab=expression(Log[10]~"NB dispersion"))
-o <- order(logmeans)
-lines(logmeans[o]/log(10), lfit$fitted[o], col="red", lwd=2)
+smoothScatter(logmeans[!dontshow]/log(2), ldisp[!dontshow], xlab=expression(Log[2]~"average count"), ylab=expression(Log[2]~"NB dispersion"))
 dev.off()
 
-# Estimating the dispersion for the summed counts.
-summed <- sumTechReps(by.cell$counts, by.plate)
-first.in.each <- !duplicated(by.plate)
-design <- refdesign[first.in.each,]
+##############################################
 
-by.sum <- DGEList(summed)
-by.sum <- calcNormFactors(by.sum)
-by.sum <- estimateDisp(by.sum, design)
+# Estimating the plate effect variance.
+library(parallel)
+library(lme4)
+collected <- mclapply(seq_len(nrow(by.cell)), function(i) {
+    output <- NA_real_         
+    try({ 
+        out <- glmer(Counts ~ 0 + refdesign + (1|Plate) + offset(log(sf)), 
+                     data=data.frame(Counts=as.integer(all.counts[i,]), Group=by.group, Plate=by.plate), 
+                     family=negative.binomial(1/by.cell$tagwise[i]))
+        output <- unlist(VarCorr(out))
+    })
+    return(output)
+}, mc.cores=4)
 
-pdf(file.path(picdir, "sumdisp.pdf"))
-ldisp <- log10(by.sum$tagwise.dispersion)
-lfit <- loessFit(x=logmeans, y=ldisp, span=0.1)
-par(mar=c(5.1,4.5,2.1,2.1), cex.axis=1.2, cex.lab=1.4)
-smoothScatter(logmeans/log(10), ldisp, xlab=expression(Log[10]~"average count"), ylab=expression(Log[10]~"NB dispersion"))
-o <- order(logmeans)
-lines(logmeans[o]/log(10), lfit$fitted[o], col="red", lwd=2)
+sigma2 <- mean(unlist(collected), na.rm=TRUE)
+
+pdf(file.path(picdir, "platevar.pdf")) 
+collected2 <- unlist(collected)
+collected2 <- collected2[collected2 <= 3]
+hist(collected2, xlab=expression("Estimated"~sigma^2), cex.lab=1.4, cex.axis=1.2, ylab="Number of genes", main="", col="grey80", breaks=20)
+abline(v=sigma2, col="red", lwd=2, lty=2)
 dev.off()
 
-# Plotting the absolute differences, which represents the reciprocal of the Gamma shape parameter for a NB-Gamma mixture model.
-pdf(file.path(picdir, "rate.pdf"))
-leftover <- by.sum$trended - 10^lfit$fitted/mean(table(by.plate))
-par(mar=c(5.1,4.5,2.1,2.1), cex.axis=1.2, cex.lab=1.4)
-plot(logmeans/log(10), log10(leftover), xlab=expression(Log[10]~"average count"), ylab=expression("\u2013"~Log[10]~"Gamma shape"))
-dev.off()
+## Test code, to see whether this strategy generally works:
+#true.mean <- exp(rnorm(100, 10, 2))
+#assignments <- rep(seq_len(100), each=10)
+#actual.count <- rnbinom(1000, mu=true.mean[assignments], size=2)
+#library(lme4)
+#out <- glmer(Count ~ (1|Assigned), data=data.frame(Count=actual.count, Assigned=assignments), family=negative.binomial(2))
+#unlist(VarCorr(out))
 
 ##############################################
 # Repeating the estimation of the dispersion with ZINB models.
 
-zinb.prop <- numeric(nrow(by.cell))
+zinb.prop <- rep(-Inf, nrow(by.cell))
 zinb.disp <- by.cell$tagwise.dispersion
 zinb.mean <- exp(logmeans)
 
 library(pscl)
 for (i in which(rowSums(by.cell$counts==0)>0)) { 
     try({
-        zfit <- zeroinfl(by.cell$count[i,] ~ 0 + by.plate | 1, dist="negbin")
+        zfit <- zeroinfl(by.cell$count[i,] ~ 0 + by.plate | 1, dist="negbin", offset=log(sf))
         zinb.mean[i] <- mean(exp(zfit$coefficients$count))
         zinb.prop[i] <- zfit$coefficients$zero
         zinb.disp[i] <- 1/zfit$theta
@@ -103,9 +106,10 @@ zinb.prop <- exp(zinb.prop)/(1+exp(zinb.prop))
 ##############################################
 # Constructing sampling functions.
 
-COUNT_FUN_GEN <- function(cell.mu, cell.disp, plate.shape, relative.size, zi.mu, zi.disp, zi.prop) {
+COUNT_FUN_GEN <- function(cell.mu, cell.disp, sigma2, relative.size, zi.mu, zi.disp, zi.prop) {
     relative.size <- relative.size/mean(relative.size) # mean centering. 
-    if (length(unique(c(length(cell.mu), length(cell.disp), length(plate.shape), 
+    sigma2 # evaluating the promise in this environment.
+    if (length(unique(c(length(cell.mu), length(cell.disp), 
                         length(zi.mu), length(zi.disp), length(zi.prop))))!=1L) {
         stop("vector lengths must be the same")
     }
@@ -122,8 +126,8 @@ COUNT_FUN_GEN <- function(cell.mu, cell.disp, plate.shape, relative.size, zi.mu,
 
         plates <- as.factor(plates)
         nplates <- nlevels(plates)
-        cur.shape <- plate.shape[chosen] * mod.shape
-        plate.means <- matrix(rgamma(ngenes*nplates, shape=cur.shape, scale=cur.mean/cur.shape), nrow=ngenes, ncol=nplates)
+        sigma2 <- sigma2/mod.shape
+        plate.means <- cur.mean * matrix(exp(rnorm(ngenes*nplates, mean=-sigma2/2, sd=sqrt(sigma2))), nrow=ngenes, ncol=nplates)
 
         # Adding DE, if so desired (identifies the plates within each group).
         if (nde > 0) {
@@ -158,7 +162,7 @@ COUNT_FUN_GEN <- function(cell.mu, cell.disp, plate.shape, relative.size, zi.mu,
     }
 }
 
-COUNT_GEN <- COUNT_FUN_GEN(cell.mu=exp(logmeans), cell.disp=by.cell$tagwise.dispersion, plate.shape=1/leftover,
+COUNT_GEN <- COUNT_FUN_GEN(cell.mu=exp(logmeans), cell.disp=by.cell$tagwise.dispersion, sigma2=sigma2,
                            relative.size=by.cell$samples$lib.size, zi.mu=zinb.mean, zi.disp=zinb.disp, zi.prop=zinb.prop)
 saveRDS(COUNT_GEN, file=file.path(picdir, "function.rds"))
 
