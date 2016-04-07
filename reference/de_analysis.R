@@ -153,8 +153,8 @@ if ("monocle" %in% methods.to.use) {
 if ("glmer" %in% methods.to.use) {
     my.data <- data.frame(design)
     colnames(my.data) <- paste0("X", seq_len(ncol(design)))
-    full.form <- as.formula(paste("Counts ~ 0 + ", paste(colnames(my.data), collapse="+"), "+ (1|Plate)"))
-    null.form <- as.formula(paste("Counts ~ 0 +", paste(colnames(my.data)[-drop.coefficient], collapse="+"), "+ (1|Plate)"))
+    full.form <- as.formula(paste("Counts ~ 0 + ", paste(colnames(my.data), collapse="+"), "+ (1|Plate) + offset(log(sf))"))
+    null.form <- as.formula(paste("Counts ~ 0 +", paste(colnames(my.data)[-drop.coefficient], collapse="+"), "+ (1|Plate) + offset(log(sf))"))
     my.data$Counts <- 0
     my.data$Plate <- factor(plate.of.origin)
 
