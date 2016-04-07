@@ -69,7 +69,7 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 \section{Details on the simulation design}
 
 \subsection{Overview}
-We simulate counts from a NB-Gamma mixture, where the counts are conditionally NB-distributed and the plate effect is Gamma-distributed.
+We simulate from a NB-log-normal mixture, where the counts are conditionally NB-distributed and the plate effect is log-normally distributed.
 For count $Y_{ij}$ of gene $i$ in cell $j$ in plate $k$ of group $g$, we assume that
 \[
     Y_{ij} | \delta_{ik} \sim \mbox{NB}(\delta_{ik}\theta_j\mu_{ig}, \varphi_i)
@@ -112,7 +112,7 @@ The tagwise estimate was used as $\varphi_i$ for each gene (Figure~\ref{subfig:r
         \label{subfig:realdisp}
     \end{minipage}
     \begin{minipage}{0.49\textwidth}
-%        \includegraphics[width=\textwidth]{../reference/results_ESpresso/platevar.pdf}
+        \includegraphics[width=\textwidth]{../reference/results_ESpresso/platevar.pdf}
         \subcaption[]{}
         \label{subfig:realplate}
     \end{minipage}
@@ -120,7 +120,7 @@ The tagwise estimate was used as $\varphi_i$ for each gene (Figure~\ref{subfig:r
         (\subref{subfig:realsize}) Histogram of size factors across all cells.
         (\subref{subfig:realmean}) Histogram of log-mean counts across all genes.
         (\subref{subfig:realdisp}) Gene-specific dispersion estimates, plotted against the log-means for all genes.
-        (\subref{subfig:realplate}) Histogram of the estimated variances of the plate effect across all genes, where the red line indicates the average estimate.
+        (\subref{subfig:realplate}) Histogram of the estimated variances of the plate effect across all genes, where the red line indicates the average (estimated at 0.32 in this data set).
     }
 \end{figure}
 
@@ -206,12 +206,11 @@ The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with t
 Putative DE genes between groups were identified using the LRT.
 
 \begin{color}{red}
-For GLMMs, the glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
-The group was set as a fixed effect while the plate of origin was set as a random effect for each cell.
+The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
+The group was set as a fixed effect while the plate of origin was set as a random effect.
 Offsets were defined as the log-transformed library sizes.
 To detect DE between groups, the GLMM was refitted using a null design without the group factor.
 A LRT was then performed using the full and null model fits.
-(Assessing significance via bootstrapping is not practical for thousands of genes.) 
 
 For any given set of counts, the same normalization procedure was used for all analyses.
 For simulated data, size factors were defined as mean-adjusted library sizes.
