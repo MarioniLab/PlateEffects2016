@@ -444,7 +444,7 @@ Summation also reduces technical noise and may be a more general strategy to imp
 \label{sec5}
 All software packages except MAST are publicly available from the Bioconductor project (\url{http://bioconductor.org}).
 MAST is available on GitHub at \url{https://github.com/RGLab/MAST}.
-Simulation scripts are available on request from the corresponding authors.
+Simulation scripts are available \revised{at \url{https://github/MarioniLab/PlateEffects2016}}.
 
 \section{Supplementary Material}
 Supplementary Material is available online at \href{http://biostatistics.oxfordjournals.org}{http://biostatistics.oxfordjournals.org}.
@@ -459,7 +459,7 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.6\textwidth]{main_failsim.pdf}
+\includegraphics[height=3.5in]{main_failsim.pdf}
 \end{center}
 \caption{
     Observed type I error rates for each method on simulated data, in the presence or absence of a plate effect.
@@ -473,7 +473,7 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.4\textwidth]{main_okaysim.pdf}
+\includegraphics[height=3.5in]{main_okaysim.pdf}
 \end{center}
 \caption{
     Observed type I error rate for each method after summation in simulations with \revised{and without} a plate effect.
@@ -497,26 +497,6 @@ Funding for the project was provided by Cancer Research UK.
 }
 \label{fig:roc}
 \end{figure}
-
-\begin{figure}[!p]
-\begin{center}
-\includegraphics[width=0.48\textwidth]{quantile_with.pdf}
-%\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_without.pdf} % Doesn't really add any value; didn't put up control before either, so why do it now?
-\end{center}
-\caption{
-    Observed type I error rates for QL edgeR on simulated data with a plate effect, 
-        applied on counts from direct summation (black circles) or summation of quantile-adjusted pseudo-counts (grey diamonds). 
-    Simulations were performed for a number of scenarios, including differing numbers of cells per plate (1);
-        small (2), moderate (3) or large differences (4) in library size within plates;
-        as well as the corresponding scenarios where replicate plates were swapped between groups.
-    Error rates are shown on a log scale and represent the average of 10 simulation iterations.
-    Each error bar represents the standard error of the corresponding log-average rate.
-    The threshold of 0.01 is represented by the red dashed line.
-}
-\label{fig:complexplate}
-\end{figure}
-
-% Probably slightly more conservative than previous QL figure because n=2 here for each group, whereas n=3 before.
 
 \begin{table}[!p]
 \caption{Total number of DE genes detected by each method in each comparison at a FDR of 5\%, using the single-cell or summed counts.
