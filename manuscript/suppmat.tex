@@ -366,11 +366,11 @@ This situation is arguably pathological as plates with \revised{systematic diffe
 % Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
 
 \section{Avoiding zero counts during normalization}
-One particular benefit of using summed counts with existing analysis methods is in the normalization step.
+One benefit of using summed counts with existing analysis methods is in the normalization step.
 Methods like size factor and TMM normalization are based on ratios between counts in different cells, but will be compromised for noisy data that contain many zero counts.
 Summation reduces the incidence of zero counts so that these normalization methods can be properly applied.
 \revised{In particular, the bias of the count sum for each plate is equal to the sum of the cell-specific biases across all cells on the plate (see \cite{lun2016pooling} with $T_j=1$).}
-This will be eliminated by normalization of the sums for valid comparisons between plates.
+This will be eliminated upon normalization, for valid comparisons of count sums between plates.
 
 \begin{figure}[p]
     \begin{center}
