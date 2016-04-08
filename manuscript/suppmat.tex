@@ -248,6 +248,44 @@ This preserves the relative normalization between cells while recovering the sca
         Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
     }
 \end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{extra_power_2.pdf}
+        \subcaption[]{}
+        \label{subfig:noplate}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{extra_power_3.pdf}
+        \subcaption[]{}
+        \label{subfig:bigfc}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{extra_power_4.pdf}
+        \subcaption[]{}
+        \label{subfig:morede}
+    \end{minipage}
+    \end{center}
+    \caption{  
+        ROC curves for each analysis method using single-cell (full) and summed counts (dashed), in simulations with (\subref{subfig:noplate}) no plate effect, (\subref{subfig:bigfc}) larger DE fold changes and (\subref{subfig:morede}) more DE genes. 
+        Curves are shown for DESeq2 (black), voom (grey) and QL edgeR (red).
+        Each curve represents the average of 10 iterations.
+    }
+    \label{fig:altroc}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.6\textwidth]{extra_FDR.pdf}
+    \end{center}
+    \caption{
+        Observed FDRs for each analysis method using single-cell or summed counts in simulations with DE genes and a plate effect (denoted above as ``Plate effect'').
+        Settings for additional simulation scenarios are equivalent to those used in Figure~\ref{fig:altroc}.
+        The red line represents the nominal threshold of 5\%.
+        All values represent the average of 10 simulation iterations, and error bars represent the standard error.
+    }
+\end{figure}
 \end{color}
 
 \section{Implementing the quantile adjustment method}

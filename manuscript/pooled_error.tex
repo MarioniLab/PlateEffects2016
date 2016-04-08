@@ -560,19 +560,19 @@ Funding for the project was provided by Cancer Research UK.
     Observed type I error rate for each method after summation in simulations with \revised{and without} a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
-    \revised{The error rate for each method without summation is also shown for comparison.}
+    \revised{The observed type I error rate for each method without summation is also shown for comparison.}
 }
 \label{fig:platesum}
 \end{figure}
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{power_with.pdf}
-\includegraphics[width=0.48\textwidth]{power_with_zoom.pdf}
+\includegraphics[width=0.48\textwidth]{main_power.pdf}
+\includegraphics[width=0.48\textwidth]{main_power_zoom.pdf}
 \end{center}
 \caption{
     ROC curves for each analysis method on simulated data with a plate effect and genuine DE, for both single-cell (full) and summed counts (dashed).
-    Curves are shown for DESeq2 (black), voom (grey) and edgeR (red).
+    Curves are shown for DESeq2 (black), voom (grey) and \revised{QL} edgeR (red).
     Each curve represents the average result of 10 simulation iterations.
     The full curves are shown on the left, and an enlarged plot focusing on low false positive rates is shown on the right.
 }
