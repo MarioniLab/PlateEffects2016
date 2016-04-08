@@ -55,10 +55,9 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 % Supplementary sections
 \newcommand{\suppsimulation}{1}
 \newcommand{\suppimplementation}{2}
-\newcommand{\suppquantile}{3}
-\newcommand{\suppmeanvar}{4}
-\newcommand{\supphiddenvar}{5}
-\newcommand{\suppnorm}{6}
+\newcommand{\suppmeanvar}{3}
+\newcommand{\supphiddenvar}{4}
+\newcommand{\suppnorm}{5}
 
 % Supplementary figures
 \newcommand{\suppparamsim}{S1}
@@ -316,9 +315,10 @@ This is most obvious with voom where expression is quantified as a (log-)CPM val
 The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
 Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
 This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
-Thirdly, methods like edgeR share information between genes to estimate the dispersion or variance. 
+(See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in conditional variance also improves model accuracy.)
+Thirdly, methods like edgeR, DESeq2 and voom/limma share information between genes to estimate the dispersion or variance. 
 This mitigates the effect of reduced residual d.f. for count sums.
-Finally, the improvement at low false positive rates may be due to the greater suitability of statistical models for count sums.
+Finally, the increase in power at low false positive rates may be due to the greater suitability of statistical models for count sums.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
 \end{color}
 
