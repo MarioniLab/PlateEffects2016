@@ -61,10 +61,11 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 \newcommand{\suppnorm}{6}
 
 % Supplementary figures
-\newcommand{\suppfailsim}{S1}
-\newcommand{\suppokaysim}{S2}
-\newcommand{\suppcompsim}{S3}
-\newcommand{\suppexpprof}{S4}
+\newcommand{\suppparamsim}{S1}
+\newcommand{\suppfailsim}{S2}
+\newcommand{\suppokaysim}{S3}
+\newcommand{\suppcompsim}{S4}
+\newcommand{\suppexpprof}{S5}
 
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
@@ -178,9 +179,10 @@ However, the performance of either strategy has yet to be rigorously assessed on
 
 \begin{color}{red}
 \subsection{Testing DE analysis methods on simulated scRNA-seq data}
-We simulated data to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
-We used a NB-log-normal mixture where the counts were conditionally NB-distributed and the plate effect was log-normally distributed.
-Parameters of both distributions were estimated from the real data -- see Section~\suppsimulation{} of the Supplementary Materials for details.
+We designed simulations to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
+We generated counts for 50-100 cells in each plate, for an experiment containing three plates in each of two groups.
+Counts for each cell were conditionally NB-distributed and the plate effect was log-normally distributed.
+Parameters of both distributions were estimated from real data -- see Supplementary Figure~\suppparamsim{}, Section~\suppsimulation{} of the Supplementary Materials for details.
 
 DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle, MAST \citep{finak2015mast} and generalized linear mixed models (GLMMs) from the lme4 package \citep{bates2015fitting}.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
@@ -197,7 +199,7 @@ edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lun
 Similarly, the analysis with voom was repeated after estimating the correlation between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
-In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
+In \revised{this simulation}, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
 Any rejections of the null represent type I errors, i.e., false positives.
 For a specified type I error rate $\alpha = 0.01$, the observed error rate was defined as the proportion of all genes with a $p$-value below $\alpha$.
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
@@ -538,11 +540,10 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{failsim_with_raw.pdf}
-\includegraphics[width=0.48\textwidth]{failsim_without_raw.pdf}
+\includegraphics[width=0.6\textwidth]{main_failsim.pdf}
 \end{center}
 \caption{
-    Observed type I error rates for each method on simulated data, in the presence (left) or absence (right) of a plate effect.
+    Observed type I error rates for each method on simulated data, in the presence or absence of a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
     The threshold of 0.01 is represented by the red dashed line.
@@ -553,12 +554,13 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{failsim_with_sum.pdf}
+\includegraphics[width=0.4\textwidth]{main_okaysim.pdf}
 \end{center}
 \caption{
-    Observed type I error rate for each method after summation in simulations with a plate effect.
+    Observed type I error rate for each method after summation in simulations with \revised{and without} a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
+    \revised{The error rate for each method without summation is also shown for comparison.}
 }
 \label{fig:platesum}
 \end{figure}

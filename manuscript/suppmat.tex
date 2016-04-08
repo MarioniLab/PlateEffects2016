@@ -223,6 +223,33 @@ The conversion was performed by scaling each size factor by the average of the o
 This preserves the relative normalization between cells while recovering the scale of the original library sizes.
 \end{color}
 
+\begin{color}{red}
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.8\textwidth]{extra_failsim.pdf}
+    \end{center}
+    \caption{    
+        Observed type I error rates for each method on simulated data upon halving the variability of the plate effect; increasing the variability in the number of cells per plate; increasing the variability in library sizes across cells; using a ZINB distribution to sample counts; and increasing the number of plates in each group.
+        Error rates are shown on a log scale and represent the average across 10 simulation iterations.
+        Each error bar represents the standard error of the log-average rate.
+        The threshold of 0.01 is represented by the red dashed line.
+        Only one iteration was used for Monocle due to its long running time.
+    }
+    \label{fig:extrafail}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{extra_okaysim.pdf}
+    \end{center}
+    \caption{   
+        Observed type I error rate for each method after summation in a variety of simulation scenarios (see Figure~\ref{fig:extrafail}).
+        Error rates are shown on a log scale and represent the average across 10 simulation iterations.
+        Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
+    }
+\end{figure}
+\end{color}
+
 \section{Implementing the quantile adjustment method}
 The quantile adjustment method models the conditional distribution of each count as a NB distribution.
 All cells within a single plate are defined as a separate group in a one-way layout.
