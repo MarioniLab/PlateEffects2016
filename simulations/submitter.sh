@@ -12,6 +12,7 @@ bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail3.err" -o "ESpresso/log_fai
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail4.err" -o "ESpresso/log_fail4.out" R CMD BATCH --no-save "--args scenario=4 $failargs" failsim.R ESpresso/failsim_4.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail5.err" -o "ESpresso/log_fail5.out" R CMD BATCH --no-save "--args scenario=5 $failargs" failsim.R ESpresso/failsim_5.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail6.err" -o "ESpresso/log_fail6.out" R CMD BATCH --no-save "--args scenario=6 $failargs" failsim.R ESpresso/failsim_6.Rout
+bsub -R "rusage[mem=10000]" -n 6 -e "ESpresso/log_fail7.err" -o "ESpresso/log_fail7.out" R CMD BATCH --no-save "--args scenario=7 $failargs" failsim.R ESpresso/failsim_7.Rout
 
 for logfile in $(find ESpresso/ | grep "log_pow")
 do

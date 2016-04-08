@@ -15,9 +15,7 @@ save.fun <- function(label, pv, x, log.file) {
 ##################################################
 # Setting up the simulation parameters.
 
-conditions <- rep(c("A", "B"), each=3)
 ngenes <- 10000
-nplates <- length(conditions)
 
 args <- commandArgs(trailingOnly = TRUE)
 seed <- 10000
@@ -45,6 +43,7 @@ mod.shape <- 1 # Defaults.
 ncell.range <- c(50, 100)
 mod.lib.fun <- function(n) 1
 zinb <- FALSE
+conditions <- rep(c("A", "B"), each=3)
 
 if (scenario==2L) {
     mod.shape <- 2 # half the plate effect.
@@ -56,7 +55,11 @@ if (scenario==2L) {
     mod.lib.fun <- function(n) 2^rnorm(n, mean=0, sd=0.5) # increased range of library sizes.
 } else if (scenario==6L) {
     zinb <- TRUE # zero-inflated NB simulation.
+} else if (scenario==7) {
+    conditions <- rep(c("A", "B"), each=6)
 }
+
+nplates <- length(conditions)
 
 ##################################################
 # Actually running it.

@@ -2,6 +2,7 @@
 \usepackage{graphicx}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage[labelfont=bf]{caption}
+\usepackage{subcaption}
 \usepackage{color}
 \usepackage{xcite}
 \usepackage{amsmath}
@@ -64,13 +65,123 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 
 %\onehalfspacing
 
+\begin{color}{red}
+\section{Details on the simulation design}
+
+\subsection{Overview}
+We simulate from a NB-log-normal mixture, where the counts are conditionally NB-distributed and the plate effect is log-normally distributed.
+For count $Y_{ij}$ of gene $i$ in cell $j$ in plate $k$ of group $g$, we assume that
+\[
+    Y_{ij} | \delta_{ik}, \theta_j \sim \mbox{NB}(\delta_{ik}\theta_j\mu_{ig}, \varphi_i)
+\]
+where $\theta_j$ is the cell-specific bias, $\delta_{ik}$ is the plate effect, $\mu_{ig}$ is the expected read count for this gene in group $g$, and $\varphi_i$ is the NB dispersion for this gene.
+All counts are assumed to be conditionally independent.
+We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
+This parametrization means that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
+Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) and is independent of $\delta_{ik}$.
+Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary, but simply ensures that the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with the above definition of $\mu_{ig}$.
+
+\subsection{Parameter estimation from real data}
+We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
+This required some pre-processing to remove irrelevant genes and cells from the data prior to parameter estimation.
+Specifically, low-abundance genes with average counts below 1 were filtered out.
+Also, cells were only used if they belonged to a batch that contained all three culture types, i.e., serum, a2i and 2i.
+
+We then estimated the simulation parameters from the data.
+For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} where all cells corresponding to each culture type were defined as a cluster.
+This yielded size factors centered around unity (Figure~\ref{subfig:realsize}) that can be treated as estimates of $\theta_j$. 
+To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
+The resulting coefficient was used to define $\mu_{i0}$, i.e., the expected count of gene $i$ (Figure~\ref{subfig:realmean}).
+For non-DE genes, $\mu_{ig}$ was set to $\mu_{i0}$ for all groups, whereas for DE genes, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some fold change $\psi_{ig}$.
+Finally, we used the estimateDisp function in edgeR to estimate the NB dispersion.
+As the NB distribution is conditional on the plate-specific mean, we treated each plate as a separate group during GLM fitting and dispersion estimation.
+The ``tagwise'' dispersion estimate was used as $\varphi_i$ for each gene (Figure~\ref{subfig:realdisp}).
+
+\begin{figure}[p]
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=\textwidth]{../reference/results_ESpresso/libsizes.pdf}
+        \subcaption[]{}
+        \label{subfig:realsize}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=\textwidth]{../reference/results_ESpresso/avecounts.pdf}
+        \subcaption[]{}
+        \label{subfig:realmean}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=\textwidth]{../reference/results_ESpresso/celldisp.pdf}
+        \subcaption[]{}
+        \label{subfig:realdisp}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=\textwidth]{../reference/results_ESpresso/platevar.pdf}
+        \subcaption[]{}
+        \label{subfig:realplate}
+    \end{minipage}
+    \caption{Estimates of the simulation parameters from the mESC data set.
+        (\subref{subfig:realsize}) Histogram of size factors across all cells.
+        (\subref{subfig:realmean}) Histogram of log-mean counts across all genes.
+        (\subref{subfig:realdisp}) Gene-specific dispersion estimates, plotted against the log-means for all genes.
+        (\subref{subfig:realplate}) Histogram of the estimated variances of the plate effect across all genes, where the red line indicates the average (estimated at 0.32 in this data set).
+    }
+\end{figure}
+
+To estimate the variability of the plate effect, we fitted a GLMM to the counts for each gene using the glmer function in the lme4 package \citep{bates2015fitting}.
+We set the culture type and batch as fixed effects, the plate of origin as a random effect, and log-size factor as the offset for each cell.
+The distribution family was set to a NB distribution, where the ``theta'' parameter was defined as $\varphi_i^{-1}$ for gene $i$.
+After fitting, the estimated variance of the random effect was obtained with the VarCorr function (Figure~\ref{subfig:realplate}).
+As the NB model uses a log link function, the estimate represents the variance of the log-transformed plate effect and can then be used as $\sigma^2$ in our simulation.
+However, the gene-specific estimate is not stable with small numbers of plates.
+We improve precision by using the average estimate across all genes as $\sigma^2$.
+Note that the large number of zeroes in Figure~\ref{subfig:realplate} is likely caused by applying non-negativity constraints to unstable estimates, and does not indicate that the true variance of the plate effect is zero for those genes. 
+
+As an alternative to the NB model, we fitted a zero-inflated NB (ZINB) distribution to the counts for each gene.
+This was done using the zeroinfl function from the pscl package \citep{zeilis2008regression}.
+The plate of origin was used as a factor for the NB component, whereas a common zero component was used for all cells to simplify regression.
+Offsets were defined as log-transformed size factors.
+For the NB component, the mean count was computed for each plate and the grand mean $\mu_{i0}'$ across plates was computed for each gene.
+The NB dispersion $\varphi_i'$ and the probability $p'_i$ of belonging to the zero component were also estimated for each gene.
+These values were used to redefine the sampling distribution of $Y_{ij}$ as a ZINB distribution.
+Specifically, the mean of the NB component was set to $\delta_k\theta_j\mu_{i0}'$, the dispersion was set to $\varphi_i'$ and the zero probability was set to $p'_i$.
+(For simplicity, we do not consider DE when simulating ZINB counts.)
+
+\subsection{Defining simulation scenarios}
+We simulated data for a scRNA-seq experiment with two groups of three plates.
+The number of cells on each plate was sampled from a Uniform$(50, 100)$ distribution.
+The bias $\theta_j$ for each cell was similarly sampled from the set of size factor estimates.
+We then randomly selected 10000 genes from the mESC data set.
+(For assessing type I error control, all genes are non-DE such that the null hypothesis is true for each gene.)
+For each chosen gene, the plate effect $\delta_{ik}$ in plate $k$ was sampled from a log-normal distribution.
+This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ij}$ for each cell on the plate.
+We repeated this process for each plate to obtain counts for all genes in all cells.
+
+We tested different scenarios by repeating the simulation with modified parameters.
+To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$. 
+Similarly, we set $\sigma^2=0$ to eliminate the plate effect altogether.
+We increased the variability in the number of cells per plate, by sampling the number per plate from a Uniform$(20, 100)$ distribution.
+We also increased the variability in the size factors, by multiplying each size factor by $2^{S_j}$ where $S_j \sim \mbox{Normal}(0, 0.25)$.
+Finally, we replaced the NB distribution with a ZINB distribution for count sampling, where parameters for the latter were estimated from real data.
+
+To evaluate power and FDR control, we repeated the simulation with incorporation of DE genes.
+We chose a random subset of $G$ genes for which DE was to be introduced.
+This was then partitioned into two further subsets of equal size.
+The first subset was upregulated in the first group such that $\psi_{i1} = \sqrt{\psi_0} = \psi_{i2}^{-1}$ for each gene $i$ in this subset.
+The $\psi_0$ term represents the overall fold change between groups and is set to some value greater than unity.
+By comparison, the second subset of genes was downregulated such that $\psi_{i2} = \sqrt{\psi_0} = \psi_{i1}^{-1}$ for each gene.
+We performed these simulations with $\psi_0 =3$ and $G=2000$ by default.
+However, we also tested additional scenarios, such as setting $\sigma^2=0$ to eliminate the plate effect; increasing $\psi_0$ to 6 to obtain stronger DE fold changes; or increasing $G$ to 4000 to obtain more DE genes.
+
+In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation) to avoid introducing composition bias \citep{robinson2010scaling}.
+This means that library size normalization can be used in all analyses of the simulated data.
+Thus, any difference in performance cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
+This is an important subtlety, as bulk normalization methods to remove composition bias fare poorly on single-cell data with many zeroes \citep{lun2016pooling}.
+\end{color}
+
 \section{Details on the implementation of the DE analysis methods}
 For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
-In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, 
-    and the trended NB dispersion was used to fit a generalized linear model (GLM) for each gene \citep{mccarthy2012differential}.
-The GLM deviance was used to estimate the QL dispersion for each gene, 
-    which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
-DE testing between groups was performed using the QL F-test.
+In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, and the trended NB dispersion was used to fit a \revised{GLM} for each gene \citep{mccarthy2012differential}.
+The GLM deviance was used to estimate the QL dispersion for each gene, which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
+DE testing between groups was performed using the QL F-test \revised{with the shrunken dispersions}.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
@@ -87,11 +198,6 @@ A normal prior was applied to the log-dispersions for all genes, and the maximum
 The estimated dispersion was used to fit a GLM to the counts for each gene.
 DE testing was performed between groups using the Wald test.
 
-For edgeR and voom, normalization was performed prior to modelling using the trimmed mean of M-values (TMM) method \citep{robinson2010scaling}.
-For DESeq2, normalization was performed using the size factor method \citep{anders2010differential}.
-This step is not strictly necessary for analyses of simulated data, given that library-specific biases have not been introduced and all cells have the same library size.
-Nonetheless, normalization is included as part of the standard analysis and will be used for real data.
-
 For Monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
@@ -100,6 +206,22 @@ For each gene, a hurdle model was fitted to the log-CPMs across all cells.
 The group was used as the factor of interest and the proportion of genes with non-zero counts in each library was used as an additional covariate \citep{finak2015mast}.
 The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 Putative DE genes between groups were identified using the LRT.
+
+\begin{color}{red}
+The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
+The group was set as a fixed effect while the plate of origin was set as a random effect.
+Offsets were defined as the log-transformed library sizes.
+To detect DE between groups, the GLMM was refitted using a null design without the group factor.
+A LRT was then performed using the full and null model fits.
+
+For any given set of counts, the same normalization procedure was used for all analyses.
+For simulated data, size factors were defined as mean-adjusted library sizes.
+For real single-cell data, size factors were computed with the deconvolution method.
+For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
+In each scenario, size factors were either used directly (e.g., DESeq2), or converted into effective library sizes to compute offsets or CPM values.
+The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
+This preserves the relative normalization between cells while recovering the scale of the original library sizes.
+\end{color}
 
 \section{Implementing the quantile adjustment method}
 The quantile adjustment method models the conditional distribution of each count as a NB distribution.
