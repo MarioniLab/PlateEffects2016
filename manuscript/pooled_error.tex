@@ -64,8 +64,10 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 \newcommand{\suppparamsim}{S1}
 \newcommand{\suppfailsim}{S2}
 \newcommand{\suppokaysim}{S3}
-\newcommand{\suppcompsim}{S4}
-\newcommand{\suppexpprof}{S5}
+\newcommand{\supppowerroc}{S4}
+\newcommand{\supppowerfdr}{S5}
+\newcommand{\suppcompsim}{S6}
+\newcommand{\suppexpprof}{S7}
 
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
@@ -295,24 +297,30 @@ This is achieved through the appropriate consideration of the model uncertainty 
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
 In a DE analysis, the average expression of each gene is computed for each group and then compared between two or more groups.
 This is true regardless of whether those groups contain replicate cells or replicate plates. 
-(Scenarios involving differing numbers or sizes of cells per plate will be considered in the next section.)
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
-This can be demonstrated with a simulation containing DE genes between groups.
-DE was introduced for 1000 randomly selected genes by setting $\mu_{ig_1} = 3\mu_{i0}$ for group $g_1$ i.e., a 3-fold increase in expression in the first group.
-This was repeated for a separate set of 1000 genes by setting $\mu_{ig_2} = 3\mu_{i0}$ for group $g_2$.
-The balanced addition of DE genes ensures that composition biases \citep{robinson2010scaling} are not introduced between groups.
-For all other genes, $\mu_{ig_1}=\mu_{ig_2}=\mu_{i0}$.
-Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
-Simulated data were then generated with a plate effect, i.e., $\sigma^2=0.5$.
-
-Analyses with DESeq2, QL edgeR and voom were performed on the simulated data using either the single-cell or summed counts.
-A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
-For each method, the ROC curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
+\begin{color}{red}
+To demonstrate, we repeated the simulations after introducing DE genes between groups.
+We used the various analysis methods with either the single-cell counts (i.e., ignoring the plate effect) or summed counts to detect known DE genes.
+For each method, the receiver-operating characteristic (ROC) curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
 This indicates that detection power at any given false positive rate is not compromised by summation.
 In fact, at low false positive rates, a modest increase was observed in the true positive rate of each analysis with summed counts compared to its single-cell counterpart.
-This improvement may be due to the greater suitability of the statistical models for large summed counts.
+Similar results were observed in additional simulation scenarios involving no plate effect, stronger DE fold changes and more DE genes (Supplementary Figure~\supppowerroc{}).
+Moreover, the observed FDR was only controlled below the nominal 5\% threshold when summation was used (Supplementary Figure~\supppowerfdr{}).
+This is consistent with the loss of error control when the plate effect is ignored.
+
+The comparable performance of analyses with and without summation is driven by several factors. 
+Firstly, as previously discussed, the (expected) DE log-fold change is the same regardless of whether the average expression in each group is computed over cells or over plates. 
+Secondly, summation reduces the conditional variance of the count sum relative to its size.
+This is most obvious with voom where expression is quantified as a (log-)CPM value.
+The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
+Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches Poisson.
+This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
+Thirdly, methods like edgeR share information between genes to estimate the dispersion or variance. 
+This mitigates the effect of reduced residual d.f. for count sums.
+Finally, the improvement in power observed at low false positive rates may be due to the greater suitability of statistical models for large summed counts.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
+\end{color}
 
 \subsection{Justifying summation in a single-cell study}
 Despite the obvious improvement in performance, the summation strategy may not have unqualified appeal.
