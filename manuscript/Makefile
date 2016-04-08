@@ -1,6 +1,6 @@
 all: pooled_error.pdf suppmat.pdf
 
-pooled_error.pdf: pooled_error.tex main_failsim.pdf main_okaysim.pdf main_power.pdf quantile_with.pdf main_power_zoom.pdf references.bib
+pooled_error.pdf: pooled_error.tex main_failsim.pdf main_okaysim.pdf main_power.pdf main_power_zoom.pdf main_swapped.pdf references.bib
 	pdflatex pooled_error.tex
 	bibtex pooled_error
 	pdflatex pooled_error.tex
@@ -36,7 +36,7 @@ extra_power_4.pdf: ../simulations/ESpresso/results_power/ROC_4.eps
 extra_FDR.pdf: ../simulations/ESpresso/results_power/FDR.eps
 	epstopdf $< -o=$@
 
-quantile_with.pdf: ../quantile/with.eps
+main_swapped.pdf: ../realdata/all_scrambled.eps
 	epstopdf $< -o=$@
 
 suppmat.pdf: suppmat.tex pooled_error.pdf extra_failsim.pdf extra_okaysim.pdf extra_power_2.pdf extra_power_3.pdf extra_power_4.pdf extra_FDR.pdf \
