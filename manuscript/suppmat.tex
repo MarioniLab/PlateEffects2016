@@ -89,7 +89,7 @@ Also, cells were only used if they belonged to a batch that contained all three 
 
 We then estimated the simulation parameters from the data.
 For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} where all cells corresponding to each culture type were defined as a cluster.
-This yielded size factors centered around unity (Figure~\ref{subfig:realsize}) that can be treated as estimates of $\theta_j$. 
+This yielded size factors centered around unity (Figure~\ref{subfig:realsize}), which can be treated as estimates of $\theta_j$ for all cells.
 To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
 The resulting coefficient was used to define $\mu_{i0}$, i.e., the expected count of gene $i$ (Figure~\ref{subfig:realmean}).
 For non-DE genes, $\mu_{ig}$ was set to $\mu_{i0}$ for all groups, whereas for DE genes, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some fold change $\psi_{ig}$.
@@ -174,7 +174,7 @@ However, we also tested additional scenarios, such as setting $\sigma^2=0$ to el
 In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation) to avoid introducing composition bias \citep{robinson2010scaling}.
 This means that library size normalization can be used in all analyses of the simulated data.
 Thus, any difference in performance cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
-This is an important subtlety, as bulk normalization methods to remove composition bias fare poorly on single-cell data with many zeroes \citep{lun2016pooling}.
+This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data that contain many zero counts \citep{lun2016pooling}.
 \end{color}
 
 \section{Details on the implementation of the DE analysis methods}
