@@ -242,20 +242,20 @@ For example, the use of edgeR with the LRT assumes that sufficient residual d.f.
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
 
-\revised{The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
+\begin{color}{red}
+The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
 This is attributable to the difficulties in accurately estimating the variance of the random effect (for the GLMM approach) or the consensus correlation (for voom) in typical scRNA-seq data sets where the number of plates is low.
-In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.}
+In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
 
 % Discreteness is secondary, as voom itself does fine without a plate effect.
 
-\revised{ 
 We also tested the performance of each method in a variety of simulation scenarios.
 This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
 In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
 This suggests that our results are generally applicable to different scRNA-seq data sets.
-}
+\end{color}
 
 \section{Improved performance with summation across cells in each plate}
 
@@ -314,11 +314,11 @@ Firstly, as previously discussed, the (expected) DE log-fold change is the same 
 Secondly, summation reduces the conditional variance of the count sum relative to its size.
 This is most obvious with voom where expression is quantified as a (log-)CPM value.
 The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
-Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches Poisson.
+Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
 This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
 Thirdly, methods like edgeR share information between genes to estimate the dispersion or variance. 
 This mitigates the effect of reduced residual d.f. for count sums.
-Finally, the improvement in power observed at low false positive rates may be due to the greater suitability of statistical models for large summed counts.
+Finally, the improvement at low false positive rates may be due to the greater suitability of statistical models for count sums.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
 \end{color}
 
