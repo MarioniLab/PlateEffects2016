@@ -34,7 +34,9 @@ COUNT_GEN <- readRDS(file.path(indir, "function.rds"))
 print(outdir)
 dir.create(outdir, showWarning=FALSE)
 log.raw <- file.path(outdir, sprintf("raw_%i.txt", scenario))
+if (file.exists(log.raw)) { unlink(log.raw) }
 log.sum <- file.path(outdir, sprintf("sum_%i.txt", scenario))
+if (file.exists(log.sum)) { unlink(log.sum) }
 
 ##################################################
 # Setting up scenario-specific parameters.

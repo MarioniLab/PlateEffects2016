@@ -144,15 +144,17 @@ Gene specificity is motivated by biological variability between replicate popula
 Denote the observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ as $Y_{ij}$.
 Define $\delta_{ik}$ as the plate-specific effect for gene $i$; $\theta_j$ as the cell-specific bias; and $\mu_{ig}$ as the expected read count in group $g$.
 Assume that $\delta_{ik}$ for each plate is independently sampled from some distribution of positive values with non-zero variance.
-In the following text, we refer to $\mbox{var}(Y_{ij}|\delta_{ik},\theta_j)$ as the conditional variance of the count.
-Similarly, the conditional expectation is defined as
+This is reasonable as each plate contains cells from an independent population and is processed independently.
+Similarly, $Y_{ij}$ is sampled independently for each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_j$.
+In the following text, we refer to $\mbox{var}(Y_{ij}|\delta_{ik},\theta_j)$ as the conditional variance, while the conditional expectation is defined as
 \[
     E(Y_{ij}|\delta_{ik},\theta_j) = \delta_{ik}\theta_j\mu_{ig} \;.
 \]
 This expression represents the impact of plate effects on the data.
-For each gene, the mean for all cells on each plate is scaled by a different value of $\delta_{ik}$, leading to systematic differences between plates.
+For each gene, the mean for all cells is scaled by a plate-dependent value of $\delta_{ik}$, leading to systematic differences between plates.
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
-This is because normalization computes a single scaling factor for each cell to correct for $\theta_j$ -- in contrast, the plate effect varies across genes and cannot be removed by a single factor.
+This is because normalization computes a single scaling factor for each cell to adjust for variable $\theta_j$.
+In contrast, the plate effect varies across genes and cannot be removed by a single factor.
 \end{color}
 
 % Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
@@ -208,12 +210,12 @@ Note that this evaluation is only possible for methods that compute $p$-values f
 
 \subsection{Type I error control is lost by all methods}
 The observed type I error rate exceeds the specified threshold in all methods (Figure~\ref{fig:platefail}).
-For all methods except for voom with correlations, the discrepancy between the observed and specified rates is greater than an order of magnitude.
+\revised{For most methods}, the discrepancy between the observed and specified rates is greater than an order of magnitude.
 This liberalness is attributable to the plate effect rather than any inherent fault with the methods.
-In the control simulation with $\sigma^2=0$, the observed rates for all methods are substantially closer to the threshold, if not below it.
+When the simulations are repeated without any plate effect, the observed rates for all methods are substantially closer to the \revised{specified level}, if not below it.
 These results suggest that DE analyses will perform poorly if the plate effect is simply ignored.
 Loss of type I error control will result in an unacceptable number of false positives in the final set of DE genes.
-This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
+%This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
 
 Loss of error control is caused by plate-induced dependencies in the statistical model.
 In the one-way layout, the count of each gene in each cell is modelled by a distribution with a group-specific mean.
