@@ -413,29 +413,26 @@ For genes with more contributing cells, cell-to-cell variability will be hidden 
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets but are typically ignored during the DE analysis.
-Simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
+\revised{Our} simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
 In this article, a solution is presented involving the summation of counts across all cells on each plate for each gene.
 The count sums can then be used in a DE analysis, effectively treating plates as individual samples.
 This restores type I error control and avoids the detection of excessive false positives.
-Variance adjustment of the counts is not required prior to summation, even when the numbers or sizes of cells differ across or within plates.
 Summation prior to DE analyses also affects the biological conclusions of a real scRNA-seq study, 
-    by decreasing the size of the DE lists and by changing the ranking of DE genes.
+by decreasing the size of the DE lists and \revised{improving the ranking of relevant genes relative to a conventional single-cell analysis}.
 
-It is possible to resolve plate effects at the single-cell level with careful experimental design.
-Ideally, cells should be arranged onto plates such that each plate contains cells from multiple biological groups.
-DE comparisons can then be performed within plates such that any plate effect cancels out.
-For such experimental designs, summation has fewer benefits as the group is no longer confounded by the plate of origin.
-The latter can be included as a blocking factor in the linear model for the single-cell counts, 
-    to explicitly regress out the plate effect without removing genuine DE between groups.
-This avoids any loss of type I error control due to hidden dependencies between cells.
-Nonetheless, summation can still be applied to all cells of the same group on each plate.
-This increases the count size and decreases technical noise for greater compatibility with existing \revised{analysis} methods.
-It reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells (100-1000).
-Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) is unchanged.
+\revised{We note that there are some situations where summation has fewer advantages.}
+For example, cells can be arranged onto plates such that each plate contains cells from multiple biological groups.
+\revised{DE comparisons can then be performed directly between cells on the same plate, avoiding problems from technical variability in processing between plates. 
+This mitigates the plate effect (though an equivalent ``population effect'' may be observed whereby expression is systematically different for all cells from the same replicate animal or cell culture) and reduces the need for summation.
+In experiments involving one plate in each group, summation will yield only one count sum per group.
+This cannot be easily analyzed by existing methods as the variance within each group cannot be modelled without replication.
+A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
+That said, the latter analysis is only valid under the assumption that no plate effect exists -- to verify this assumption, one would have to generate data from replicate plates, such that summation would become applicable.}    
 
-In general, experimental designs involving one group per plate are more common due to practical and logistical considerations.
-For these designs, the best way to handle plate effects is to simply increase the number of plates.
-This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and resources.
+In general, experimental designs involving \revised{several plates nested in each group are most common.
+These provide the necessary replication across populations while being easier to generate than plates of mixed groups.}
+For \revised{such} designs, the best way to handle plate effects is to simply increase the number of plates.
+This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{experimental} resources.
 The choice of the number of plates is analogous to that of biological replicates in bulk RNA-seq experiments.
 This suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
