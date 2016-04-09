@@ -57,7 +57,7 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 \newcommand{\suppimplementation}{2}
 \newcommand{\suppmeanvar}{3}
 \newcommand{\supphiddenvar}{4}
-\newcommand{\suppnorm}{5}
+\newcommand{\suppnorm}{2.2}
 
 % Supplementary figures
 \newcommand{\suppparamsim}{S1}
@@ -373,7 +373,7 @@ These methods were chosen as they could be applied on both the single-cell count
 Prior to analysis, low-abundance genes (defined as those with an average count below 1 across all cells) were filtered out.
 Sample-level quality control was not applied as low-quality cells had already been removed.
 \revised{Each analysis method was applied with and without summation, to detect DE genes between 2i and serum or between a2i and serum.
-For all methods, normalization was performed using the deconvolution method for the single-cell counts \citep{lun2016pooling} or the DESeq method for the summed counts for each plate \citep{anders2010differential}.
+In each analysis, normalization was performed using the deconvolution method for the single-cell counts \citep{lun2016pooling} or the DESeq method for the summed counts for each plate \citep{anders2010differential} -- see Section~\suppnorm{} of the Supplementary Materials for more details on these normalization strategies.
 The set of DE genes detected at a FDR of 5\% was then reported for each method.}
 
 \subsection{Numbers and ranking of DE genes are altered upon summation}
@@ -429,8 +429,7 @@ The latter can be included as a blocking factor in the linear model for the sing
     to explicitly regress out the plate effect without removing genuine DE between groups.
 This avoids any loss of type I error control due to hidden dependencies between cells.
 Nonetheless, summation can still be applied to all cells of the same group on each plate.
-This increases the count sizes and decreases technical noise for greater compatibility with existing methods like edgeR
-    (especially during normalization -- see Section~\suppnorm{} of the Supplementary Materials).
+This increases the count size and decreases technical noise for greater compatibility with existing \revised{analysis} methods.
 It reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells (100-1000).
 Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) is unchanged.
 
@@ -446,7 +445,6 @@ This complements other aspects of the data analysis that use single-cell counts,
 Summation also reduces technical noise and may be a more general strategy to improve data quality when many cells are available.
 
 \section{Software}
-\label{sec5}
 All software packages except MAST are publicly available from the Bioconductor project (\url{http://bioconductor.org}).
 MAST is available on GitHub at \url{https://github.com/RGLab/MAST}.
 Simulation scripts are available \revised{at \url{https://github/MarioniLab/PlateEffects2016}}.

@@ -177,7 +177,9 @@ Thus, any difference in performance cannot be attributed to a difference in norm
 This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data that contain many zero counts \citep{lun2016pooling}.
 \end{color}
 
-\section{Details on the implementation of the DE analysis methods}
+\section{Detailed description of the DE analysis}
+
+\subsection{Implementation of the analysis methods}
 For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, and the trended NB dispersion was used to fit a \revised{GLM} for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
@@ -207,20 +209,28 @@ The group was used as the factor of interest and the proportion of genes with no
 The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 Putative DE genes between groups were identified using the LRT.
 
-\begin{color}{red}
-The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
+\revised{The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
 The group was set as a fixed effect while the plate of origin was set as a random effect.
 Offsets were defined as the log-transformed library sizes.
 To detect DE between groups, the GLMM was refitted using a null design without the group factor.
-A LRT was then performed using the full and null model fits.
+A LRT was then performed using the full and null model fits.}
 
+\subsection{Explanation of the normalization strategy}
+\begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
 For simulated data, size factors were defined as mean-adjusted library sizes.
+This is possible due to the presence of balanced DE, as previously described.
 For real single-cell data, size factors were computed with the deconvolution method.
+To mitigate any DE, cells were clustered into relevant clusters (e.g., by culture type in the mESC data set) prior to normalization.
 For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
 In each scenario, size factors were either used directly (e.g., DESeq2), or converted into effective library sizes to compute offsets or CPM values.
 The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
 This preserves the relative normalization between cells while recovering the scale of the original library sizes.
+
+It is worth elaborating on what normalization actually does to the count sums.
+For each plate, the bias in the count sum is equal to the sum of the cell-specific biases across all cells on the plate.
+This is based on the pooling normalization framework in \cite{lun2016pooling}, after a slight modification by setting $t_j$ to 1 for each cell $j$.
+Normalization on the count sums will subsequently eliminate this plate-specific bias, such that there will be no systematic differences in the count sums of non-DE genes between plates.
 \end{color}
 
 \begin{color}{red}
@@ -364,13 +374,6 @@ This situation is arguably pathological as plates with \revised{systematic diffe
 
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
 % Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
-
-\section{Avoiding zero counts during normalization}
-One benefit of using summed counts with existing analysis methods is in the normalization step.
-Methods like size factor and TMM normalization are based on ratios between counts in different cells, but will be compromised for noisy data that contain many zero counts.
-Summation reduces the incidence of zero counts so that these normalization methods can be properly applied.
-\revised{In particular, the bias of the count sum for each plate is equal to the sum of the cell-specific biases across all cells on the plate (see \cite{lun2016pooling} with $T_j=1$).}
-This will be eliminated upon normalization, for valid comparisons of count sums between plates.
 
 \begin{figure}[p]
 \begin{center}
