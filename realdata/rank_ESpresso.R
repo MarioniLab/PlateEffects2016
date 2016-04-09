@@ -14,6 +14,8 @@ of.interest <- c("Prdm1", "Bmp4", "Ccnf", "Cdh1", "Dnmt3a", "Dnmt3l", "Dppa4", "
                  "Nr0b1", "Nr5a2", "Pou5f1", "Otx2", "Pfkm", "Pfkp", "Prdm14", "Rarg", "Sall1", "Sall4", "Smarcd1", "Sox2",
                  "Dppa3", "Suz12", "Tdgf1", "Tead1", "Tert", "Tet1", "Tet2", "Tfap2c", "Tfcp2l1", "Utf1", "Zfp42")
 
+contrasted <- c("3"="red", "4"="blue")
+
 #################################################
 
 sum3 <- read.table("ESpresso/edgeR_3_sum.tsv.gz", header=TRUE)
@@ -48,13 +50,16 @@ y4 <- r2 - r1
 setEPS()
 postscript("ESpresso/real_ranks.eps")
 par(mar=c(5.1, 5.1, 2.1, 2.1))
-plot(x3, y3, xlim=c(0, 250), ylim=c(-2100, 2100), xlab="Minimum rank", ylab="Rank difference (single - sum)", 
-     col="red", pch=16, cex.lab=1.4, cex.axis=1.2)
-text(x3, y3, of.interest, col="red", pos=4, cex=0.8)
+plot(0, 0, xlim=c(0, 250), ylim=c(-500, 2200), xlab="Minimum rank", ylab="Rank difference (single - sum)", type="n", cex.lab=1.4, cex.axis=1.2)
+rect(-100, -100, 500, 100, col="grey90", border=NA)
+box()
 
-points(x4, y4, pch=16, col="blue")
+points(x3, y3, pch=16, col=contrasted["3"])
+text(x3, y3, of.interest, col=contrasted["3"], pos=4, cex=0.8)
+
+points(x4, y4, pch=16, col=contrasted["4"])
 chosen <- of.interest %in% c("Tfcp2l1", "Nr0b1", "Klf2", "Nanog", "Pfkp")
-text(x4, y4, of.interest, col="blue", pos=ifelse(chosen, 3, 4), cex=0.8)
+text(x4, y4, of.interest, col=contrasted["4"], pos=ifelse(chosen, 3, 4), cex=0.8)
 
-legend("bottomright", legend=c("2i vs. serum", "a2i vs. serum"), pch=16, col=c("red", "blue"))
+legend("topleft", legend=c("2i vs. serum", "a2i vs. serum"), pch=16, col=contrasted)
 dev.off()
