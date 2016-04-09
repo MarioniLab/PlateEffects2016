@@ -189,6 +189,7 @@ DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts for each gene}, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
+(In particular, Monocle was designed to detect DE across a pseudotemporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
 The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
 \end{color}
 
