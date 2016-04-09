@@ -39,8 +39,11 @@ extra_FDR.pdf: ../simulations/ESpresso/results_power/FDR.eps
 main_swapped.pdf: ../realdata/all_scrambled.eps
 	epstopdf $< -o=$@
 
+extra_rankings.pdf: ../realdata/ESpresso/real_ranks.eps
+	epstopdf $< -o=$@
+
 suppmat.pdf: suppmat.tex pooled_error.pdf extra_failsim.pdf extra_okaysim.pdf extra_power_2.pdf extra_power_3.pdf extra_power_4.pdf extra_FDR.pdf \
-			quantile_schematic.pdf realdata_top_edgeR_ola1_sum.pdf realdata_top_edgeR_ola2_sum.pdf
+		extra_rankings.pdf realdata_top_edgeR_ola1_sum.pdf realdata_top_edgeR_ola2_sum.pdf
 	pdflatex suppmat.tex
 
 quantile_schematic.pdf: ../quantile/sim_schematic.pdf

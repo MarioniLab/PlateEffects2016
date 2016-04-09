@@ -373,6 +373,19 @@ Summation reduces the incidence of zero counts so that these normalization metho
 This will be eliminated upon normalization, for valid comparisons of count sums between plates.
 
 \begin{figure}[p]
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{extra_rankings.pdf}
+\end{center}
+\caption{
+    Difference in ranks between single-cell and summed analyses, for key pluripotency factors listed in Figure S5 of \cite{kolod2015single}.
+    For each comparison between culture types, the rank for each gene was obtained from the DE list of QL edgeR using either summed or single-cell counts.
+    A positive difference in ranks means that the gene is lower ranked (i.e., further down the DE list) in the single-cell analysis compared to the summed analysis.
+    The minimum rank is the smaller rank from either analysis, and represents the ``best'' position of each gene.
+    The grey bar marks a difference in ranks of $\pm100$.
+}
+\end{figure}
+
+\begin{figure}[p]
     \begin{center}
         \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
         \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}

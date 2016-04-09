@@ -65,7 +65,7 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 \newcommand{\suppokaysim}{S3}
 \newcommand{\supppowerroc}{S4}
 \newcommand{\supppowerfdr}{S5}
-\newcommand{\suppcompsim}{S6}
+\newcommand{\supprealrank}{S6}
 \newcommand{\suppexpprof}{S7}
 
 \section{Introduction}
@@ -394,6 +394,7 @@ This difference is attributable to changes in variance modelling after summation
 These rankings are important as the genes driving the biological differences between groups are expected to exhibit strong DE.
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
+\revised{Indeed, key pluripotency factors characterized by \cite{kolod2015single} are more highly ranked in analyses using summed counts compared to single-cell counts (Supplementary Figure~\supprealrank{}).}
 
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
@@ -535,8 +536,8 @@ The number of DE genes detected with both counts is also shown.
     \includegraphics[width=0.8\textwidth]{main_swapped.pdf}
 \end{center}
 \caption{
-    Proportion of genes with DE $p$-values below the nominal threshold of 0.01 (red line) for the 2i vs. serum and a2i vs. serum comparisons, after applying each analysis method with and without summation to the label-swapped data.
-    Proportions represent type I error rates as all null hypotheses are true.
+    Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
+    Each proportions represents a type I error rate as the null hypothesis is true for each gene.
 }
 \label{fig:realswap}
 \end{figure}
