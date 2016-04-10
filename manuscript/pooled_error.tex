@@ -430,13 +430,14 @@ This cannot be easily analyzed by existing methods as the variance within each g
 A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
 That said, the latter analysis is only valid under the assumption that no plate effect exists -- to verify this assumption, one would have to generate data from replicate plates, such that summation would become applicable.}    
 
-In general, experimental designs involving \revised{several plates nested in each group are most common.
-These provide the necessary replication across populations while being easier to generate than plates of mixed groups.}
+In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
+This provides the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
 For \revised{such} designs, the best way to handle plate effects is to simply increase the number of plates.
-This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{experimental} resources.
+This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{requiring more experimental} resources.
 The choice of the number of plates is analogous to that of biological replicates in bulk RNA-seq experiments.
 This suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
+\revised{Summation also reduces the computational time required for the DE analysis -- only a small number of plates need to be processed, instead of hundreds or thousands of cells -- which may be useful in large data sets.}
 
 Summation is a simple but effective approach to overcome the problem of plate effects in a DE analysis. 
 This complements other aspects of the data analysis that use single-cell counts, e.g., in cell clustering or to identify highly variable genes.
