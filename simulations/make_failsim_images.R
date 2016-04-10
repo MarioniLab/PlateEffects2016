@@ -9,6 +9,7 @@ extractor <- function(fname) {
     out <- read.table(file.path(out.dir, fname), sep="\t", stringsAsFactors=FALSE)
     chosen <- out[,3]==threshold
     out <- out[chosen,]
+    out[,4] <- pmax(out[,4], 0.01) # for visualization purposes, to avoid undefined logs.
     out <- split(log10(out[,4]), out[,1])
     all.means <- sapply(out, FUN=mean)
     all.se <- sqrt(sapply(out, FUN=var)/lengths(out))
@@ -20,7 +21,11 @@ renamed <- c(DESeq2="DESeq2", edgeR="edgeR", glmer="GLMM", MAST="MAST", monocle=
 #########################################################################################
 # First, making the centrepiece for the raw results.
 
-for (mode in 1:4) { 
+for (mode in 1:4) {
+    devfun <- function(fname, ...) {
+        setEPS()
+        postscript(fname, ...)
+    } 
 
     if (mode==1L) {
         # Main figure for raw results.
@@ -55,7 +60,8 @@ for (mode in 1:4) {
         inner.color <- c("black", "white", "black", "white", "black")
 
         modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation", "More plates")
-        out.pic <- file.path(out.dir, "supp_raw.eps")
+        out.pic <- file.path(out.dir, "supp_raw.pdf")
+        devfun <- pdf
         width <- 11
         height <- 7
     } else if (mode==3L) {
@@ -96,7 +102,8 @@ for (mode in 1:4) {
         inner.color <- c("black", "white", "black", "white", "black")
 
         modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation", "More plates")
-        out.pic <- file.path(out.dir, "supp_sum.eps")
+        out.pic <- file.path(out.dir, "supp_sum.pdf")
+        devfun <- pdf
         width <- 7
         height <- 7
     }
@@ -105,8 +112,7 @@ for (mode in 1:4) {
     coords[1,] <- coords[1,] + 1
     coords[] <- cumsum(coords)
 
-    setEPS()
-    postscript(out.pic, width=width, height=height)
+    devfun(out.pic, width=width, height=height)
     layout(rbind(c(1,2)), width=c(width-1.5, 1.5))
     par(mar=c(6.2, 4.1, 2.1, 1.1))
 

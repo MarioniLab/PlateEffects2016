@@ -47,8 +47,7 @@ y4 <- r2 - r1
 #################################################
 # Plotting.
 
-setEPS()
-postscript("ESpresso/real_ranks.eps")
+pdf("ESpresso/real_ranks.pdf")
 par(mar=c(5.1, 5.1, 2.1, 2.1))
 plot(0, 0, xlim=c(0, 250), ylim=c(-500, 2200), xlab="Minimum rank", ylab="Rank difference (single - sum)", type="n", cex.lab=1.4, cex.axis=1.2)
 rect(-100, -100, 500, 100, col="grey90", border=NA)

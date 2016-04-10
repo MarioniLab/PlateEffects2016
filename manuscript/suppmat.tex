@@ -236,7 +236,7 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
 \begin{color}{red}
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.8\textwidth]{extra_failsim.pdf}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_failsim/supp_raw.pdf}
     \end{center}
     \caption{    
         Observed type I error rates for each method on simulated data upon halving the variability of the plate effect; increasing the variability in the number of cells per plate; increasing the variability in library sizes across cells; using a ZINB distribution to sample counts; and increasing the number of plates in each group.
@@ -250,7 +250,7 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.5\textwidth]{extra_okaysim.pdf}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_failsim/supp_sum.pdf}
     \end{center}
     \caption{   
         Observed type I error rate for each method after summation in a variety of simulation scenarios (see Figure~\ref{fig:extrafail}).
@@ -262,17 +262,17 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
 \begin{figure}[p]
     \begin{center}
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{extra_power_2.pdf}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_2.pdf}
         \subcaption[]{}
         \label{subfig:noplate}
     \end{minipage}
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{extra_power_3.pdf}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_3.pdf}
         \subcaption[]{}
         \label{subfig:bigfc}
     \end{minipage}
     \begin{minipage}{0.32\textwidth}
-        \includegraphics[width=\textwidth]{extra_power_4.pdf}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_4.pdf}
         \subcaption[]{}
         \label{subfig:morede}
     \end{minipage}
@@ -287,7 +287,7 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=0.6\textwidth]{extra_FDR.pdf}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_power/FDR.pdf}
     \end{center}
     \caption{
         Observed FDRs for each analysis method using single-cell or summed counts in simulations with DE genes and a plate effect (denoted above as ``Plate effect'').
@@ -377,7 +377,7 @@ This situation is arguably pathological as plates with \revised{systematic diffe
 
 \begin{figure}[p]
 \begin{center}
-    \includegraphics[width=0.6\textwidth]{extra_rankings.pdf}
+    \includegraphics[width=0.6\textwidth]{../realdata/ESpresso/real_ranks.pdf}
 \end{center}
 \caption{
     Difference in ranks between single-cell and summed analyses, for key pluripotency factors listed in Figure S5 of \cite{kolod2015single}.
@@ -390,8 +390,8 @@ This situation is arguably pathological as plates with \revised{systematic diffe
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}
+        \includegraphics[width=\textwidth]{../realdata/ESpresso/top_edgeR_3_sum.pdf}
+        \includegraphics[width=\textwidth]{../realdata/ESpresso/top_edgeR_4_sum.pdf}
     \end{center}
 \caption{
     Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, 
