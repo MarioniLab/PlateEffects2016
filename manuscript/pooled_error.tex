@@ -12,10 +12,11 @@ accepted for publication November 1, 2010}
 \title{Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data}
 
 % List of authors, with corresponding author marked by asterisk
-\author{AARON T. L. LUN$^{1,\ast}$, JOHN C. MARIONI$^{1,2,\ast}$ \\[4pt]
+\author{AARON T. L. LUN$^{1,\ast}$, JOHN C. MARIONI$^{1,2,3\ast}$ \\[4pt]
     % Author addresses
     \textit{$^1$Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom;
-$^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom}
+$^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom;
+$^3$Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom}
     \\[2pt]
     % E-mail address for correspondence
 {aaron.lun@cruk.cam.ac.uk, marioni@ebi.ac.uk}}
@@ -55,16 +56,18 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 % Supplementary sections
 \newcommand{\suppsimulation}{1}
 \newcommand{\suppimplementation}{2}
-\newcommand{\suppquantile}{3}
-\newcommand{\suppmeanvar}{4}
-\newcommand{\supphiddenvar}{5}
-\newcommand{\suppnorm}{6}
+\newcommand{\suppmeanvar}{3}
+\newcommand{\supphiddenvar}{4}
+\newcommand{\suppnorm}{2.2}
 
 % Supplementary figures
-\newcommand{\suppfailsim}{S1}
-\newcommand{\suppokaysim}{S2}
-\newcommand{\suppcompsim}{S3}
-\newcommand{\suppexpprof}{S4}
+\newcommand{\suppparamsim}{S1}
+\newcommand{\suppfailsim}{S2}
+\newcommand{\suppokaysim}{S3}
+\newcommand{\supppowerroc}{S4}
+\newcommand{\supppowerfdr}{S5}
+\newcommand{\supprealrank}{S6}
+\newcommand{\suppexpprof}{S7}
 
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
@@ -178,14 +181,16 @@ However, the performance of either strategy has yet to be rigorously assessed on
 
 \begin{color}{red}
 \subsection{Testing DE analysis methods on simulated scRNA-seq data}
-We simulated data to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
-We used a NB-log-normal mixture where the counts were conditionally NB-distributed and the plate effect was log-normally distributed.
-Parameters of both distributions were estimated from the real data -- see Section~\suppsimulation{} of the Supplementary Materials for details.
+We designed simulations to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
+We generated counts for 50-100 cells in each plate, for an experiment containing three plates in each of two groups.
+Counts for each cell were conditionally NB-distributed and the plate effect was log-normally distributed.
+Parameters of both distributions were estimated from real data -- see Supplementary Figure~\suppparamsim{}, Section~\suppsimulation{} of the Supplementary Materials for details.
 
 DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle, MAST \citep{finak2015mast} and generalized linear mixed models (GLMMs) from the lme4 package \citep{bates2015fitting}.
 edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
 edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts for each gene}, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
+(In particular, Monocle was designed to detect DE across a pseudotemporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
 The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
 \end{color}
 
@@ -197,7 +202,7 @@ edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lun
 Similarly, the analysis with voom was repeated after estimating the correlation between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
-In all analyses, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
+In \revised{this simulation}, the null hypothesis is true for each gene $i$ as $\mu_{ig}$ is constant for all $g$.
 Any rejections of the null represent type I errors, i.e., false positives.
 For a specified type I error rate $\alpha = 0.01$, the observed error rate was defined as the proportion of all genes with a $p$-value below $\alpha$.
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
@@ -238,20 +243,20 @@ For example, the use of edgeR with the LRT assumes that sufficient residual d.f.
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
 
-\revised{The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
+\begin{color}{red}
+The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
 This is attributable to the difficulties in accurately estimating the variance of the random effect (for the GLMM approach) or the consensus correlation (for voom) in typical scRNA-seq data sets where the number of plates is low.
-In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.}
+In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
 
 % Discreteness is secondary, as voom itself does fine without a plate effect.
 
-\revised{ 
 We also tested the performance of each method in a variety of simulation scenarios.
 This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
 In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
 This suggests that our results are generally applicable to different scRNA-seq data sets.
-}
+\end{color}
 
 \section{Improved performance with summation across cells in each plate}
 
@@ -293,24 +298,31 @@ This is achieved through the appropriate consideration of the model uncertainty 
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
 In a DE analysis, the average expression of each gene is computed for each group and then compared between two or more groups.
 This is true regardless of whether those groups contain replicate cells or replicate plates. 
-(Scenarios involving differing numbers or sizes of cells per plate will be considered in the next section.)
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
-This can be demonstrated with a simulation containing DE genes between groups.
-DE was introduced for 1000 randomly selected genes by setting $\mu_{ig_1} = 3\mu_{i0}$ for group $g_1$ i.e., a 3-fold increase in expression in the first group.
-This was repeated for a separate set of 1000 genes by setting $\mu_{ig_2} = 3\mu_{i0}$ for group $g_2$.
-The balanced addition of DE genes ensures that composition biases \citep{robinson2010scaling} are not introduced between groups.
-For all other genes, $\mu_{ig_1}=\mu_{ig_2}=\mu_{i0}$.
-Values of $\lambda_{ik}$ for each $k$ were defined as previously described, based on $\mu_{ig_1}$ and $\mu_{ig_2}$ for each gene.
-Simulated data were then generated with a plate effect, i.e., $\sigma^2=0.5$.
-
-Analyses with DESeq2, QL edgeR and voom were performed on the simulated data using either the single-cell or summed counts.
-A receiver-operating-characteristic (ROC) curve was constructed for each analysis by defining the true and false positive rates as the proportion of DE and non-DE genes that were detected, respectively.
-For each method, the ROC curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
+\begin{color}{red}
+To demonstrate, we repeated the simulations after introducing DE genes between groups.
+We used the various analysis methods with either the single-cell counts (i.e., ignoring the plate effect) or summed counts to detect known DE genes.
+For each method, the receiver-operating characteristic (ROC) curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
 This indicates that detection power at any given false positive rate is not compromised by summation.
 In fact, at low false positive rates, a modest increase was observed in the true positive rate of each analysis with summed counts compared to its single-cell counterpart.
-This improvement may be due to the greater suitability of the statistical models for large summed counts.
+Similar results were observed in additional simulation scenarios involving no plate effect, stronger DE fold changes and more DE genes (Supplementary Figure~\supppowerroc{}).
+Moreover, the observed FDR was only controlled below the nominal 5\% threshold when summation was used (Supplementary Figure~\supppowerfdr{}).
+This is consistent with the loss of error control when the plate effect is ignored.
+
+The comparable performance of analyses with and without summation is driven by several factors. 
+Firstly, as previously discussed, the (expected) DE log-fold change is the same regardless of whether the average expression in each group is computed over cells or over plates. 
+Secondly, summation reduces the conditional variance of the count sum relative to its size.
+This is most obvious with voom where expression is quantified as a (log-)CPM value.
+The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
+Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
+This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
+(See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in conditional variance also improves model accuracy.)
+Thirdly, methods like edgeR, DESeq2 and voom/limma share information between genes to estimate the dispersion or variance. 
+This mitigates the effect of reduced residual d.f. for count sums.
+Finally, the increase in power at low false positive rates may be due to the greater suitability of statistical models for count sums.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
+\end{color}
 
 \subsection{Justifying summation in a single-cell study}
 Despite the obvious improvement in performance, the summation strategy may not have unqualified appeal.
@@ -334,103 +346,15 @@ Note that summation across cells in scRNA-seq data is not without precedent.
     which increases the count size and avoids unstable estimates of the DE fold change.
 However, the use of summation to restore type I error control in the presence of plate effects has not yet been addressed in the literature.
 
-\section{Error control does not require variance adjustment}
-
-\subsection{Direct summation may yield inconsistent mean-variance relationships}
-The simulation used in the previous section describes a situation involving the same number of libraries of the same size on each plate.
-As a result, the count sums for all plates are identically distributed for any given gene.
-This is statistically convenient as it simplifies the modelling procedure.
-However, more realistic data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
-In such scenarios, the count sum for each plate will not be identically distributed.
-The most obvious difference is observed in the magnitude of the count sum between different plates
-    -- this leads to a consistent fold-difference in the expression of all genes on one plate relative to another,
-    and can be overcome by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
-The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
-Briefly, the variance of a random variable can be expressed as a function of its mean.
-Most parametric models assume that this function is the same for all observations of a given gene.
-For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
-Plate-specific differences in the relationship may compromise the accuracy of these methods when applied to the count sums.
-
-To illustrate, consider the NB-based simulation framework described in the previous section.
-Let $s_{ik}$ be the count sum for gene $i$ in plate $k$.
-Denote the conditional mean of $s_{ik}$ as $E(s_{ik}|\delta_{ik})=N_k \delta_{ik}\mu_{ig} = \rho_{ik}$, where $N_k$ is the number of cells in plate $k$.
-The sum of independently and identically NB-distributed random variables is itself NB-distributed \citep{robinson2008small}, 
-    such that $s_{ik} |\delta_{ik} \sim \mbox{NB}(\rho_{ik}, \varphi_{i}/N_k)$.
-The conditional variance of $s_{ik}$ can then be written as
-\[
-    \mbox{var}(s_{ik} |\delta_{ik}) = \rho_{ik} + \frac{\varphi_{i}}{N_k}\rho_{ik}^2 \;.
-\]
-As $\delta_{ik}$ is independent of the other parameters, the total variance of $s_{ik}$ can be written as
-\begin{align*}
-    \mbox{var}(s_{ik}) &= (N_k\mu_{ig})^2\mbox{var}(\delta_{ik}) + N_k\mu_{ig} + \varphi_{i} N_k\mu_{ig}^2 E(\delta_{ik}^2) \nonumber \\ 
-                       &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \frac{\varphi_{i}}{N_k} E(s_{ik})^2 E(\delta_{ik}^2) 
-\end{align*}
-where $E(s_{ik})=N_k\mu_{ig}$. 
-Here, the $\mbox{var}(\delta_{ik})$, $E(\delta_{ik}^2)$ and $\varphi_{i}$ terms are constant for each $i$.
-This means that the mean-variance relationship of $s_{ik}$ will not be identical across plates when $N_k$ is not constant.
-Differences in library size between cells on the same plate can lead to similar complications by altering the distribution of $s_{ik} |\delta_{ik}$ in a plate-specific manner.
-Any systematic differences in the mean-variance relationship between plates may affect the performance of the summation strategy when the numbers or sizes of cells vary between or within plates.
-
-One solution to this problem uses quantile adjustment \citep{robinson2008small} to generate Poisson-distributed pseudo-counts.
-Assume that the count for each cell is NB-distributed, conditional on the plate effect.
-Each count is converted into a Poisson-distributed pseudo-count by matching the percentile of the NB distribution to that of a Poisson distribution with the same mean.
-This exploits the fact that the sum of independently Poisson-distributed variates is itself Poisson-distributed.
-The mean-variance relationship of the pseudo-count sum $\tilde{s}_{ik}$ is then
-\[
-    \mbox{var}(\tilde{s}_{ik}) = E(\tilde{s}_{ik})^2 \mbox{var}(\delta_{ik}) + E(\tilde{s}_{ik}) 
-\]
-such that it will be identical for all $k$, regardless of the number and size of libraries in each plate.
-The DE analysis can subsequently be performed using standard methods like edgeR or DESeq2, without any need to consider plate-specific differences in the relationships.
-More details on the implementation of this approach can be found in Section~\suppquantile{} of the Supplementary Materials.
-
-\subsection{Simulation design with different numbers and sizes of cells}
-The performances of direct and quantile-adjusted summation were evaluated with more complex simulations involving different numbers of cells and library sizes per plate.
-Simulated data were generated using the previously described model (i.e., NB-distributed counts and log-normal plate effects), with some modifications.
-Briefly, the conditional distribution of $y_{ij}$ was redefined as a NB distribution with mean $\lambda_{ij} = \delta_{ik}\theta_{j}\mu_{ig}$.
-The $\theta_{j}$ term represents the relative library size for each cell $j$ and is set to unity unless otherwise specified.
-The experimental design was also modified such that only two replicate plates were present for each biological group (see below).
-
-To assess the effect of different numbers of cells, data were simulated for 10 cells in all plates of one group and 100 cells in all plates of the other group (Supplementary Figure~\suppcompsim{}).
-Library sizes were kept constant for all cells in this scenario.
-To assess the effect of library size, the number of cells per plate was kept constant at 50.
-Three scenarios were tested, by setting $\theta_j=5$ for 20 cells in each plate of one group (all plates in the other group were unchanged);
-    $\theta_j=10$ for 10 cells; and $\theta_j=20$ for 5 cells.
-In all cases, library sizes were only modified for a fraction of cells and in a subset of plates.
-This subtlety is necessary because the mean-variance relationship will be the same between plates if there is a consistent increase in the library size for all cells on a plate, 
-    or if there is an increase in the library size for the same proportion of cells on all plates.
-
-The use of two plates in each group also allows the simulated data set to be permuted.
-Plates can be swapped between groups such that each group contains replicate plates with differing numbers of cells (in the first scenario)
-    or cells with different library sizes (in the other scenarios).
-This generates new scenarios where the differences between plates are present within groups, 
-    complementing the original scenarios where the differences are present between groups.
-
-Direct and quantile-adjusted summation were applied on the simulated data by summing the counts or pseudo-counts for all cells in each plate.
-The resulting (pseudo-)count sums were tested for DE between groups, using the QL framework in edgeR as a representative of the bulk analysis methods.
-The observed type I error rate was calculated and averaged across 10 simulation iterations.
-This was repeated for each scenario described above, before and after swapping.
-
-\subsection{Direct and quantile-adjusted summation control type I error rates}
-Both strategies were able to control the type I error rate close to the specified threshold in all scenarios (Figure~\ref{fig:complexplate}).
-This is despite the differences in the number of cells per plate or the library sizes between cells,
-    which would be expected to yield differences in the mean-variance relationship in the summed counts.
-The accuracy of error control with direct summation is attributable to the precision of the count sum when many cells are present on each plate.
-Recall that the counts for cells on the same plate are conditionally independent. 
-This suggests that cell-specific technical noise and biological heterogeneity will average out when counts are summed across many cells on a plate.
-The conditional variance of the count sum will then approach the variance of a Poisson distribution, due to sequencing noise \citep{marioni2008rnaseq} that is present in all samples.
-This means that the count sums across all plates will have similar mean-variance relationships, as described above for the pseudo-counts.
-Indeed, the results for direct summation in Figure~\ref{fig:complexplate} are almost identical to those for pseudo-count summation.
-This suggests that any plate-specific differences in the mean-variance relationships will not affect model performance, and that quantile adjustment prior to summation is unnecessary.
-A more mathematical explanation of this behaviour can be found in Section~\suppmeanvar{} of the Supplementary Materials.
-
 \section{Summation results in reduced DE detection in real data}
 
-\subsection{Overview of the real data set}
-To determine the relevance of the simulation results, DE analyses with single-cell and summed counts were performed on real scRNA-seq data from a study of mouse embryonic stem cells (mESCs) cultured under three different serum conditions \citep{kolod2015single}.
-This data set contains multiple C1 chips across several batches for each serum condition, where all mESCs on each chip correspond to a single condition (serum, 2i, or a2i). 
+\subsection{Overview of the real data set and its analysis}
+To determine the relevance of the simulation results, DE analyses with single-cell and summed counts were performed on real scRNA-seq data from a study of mouse embryonic stem cells (mESCs) \revised{grown under three different types of culture conditions} \citep{kolod2015single}.
+This data set contains multiple C1 chips across several batches for each culture type, where all mESCs on each chip correspond to a single culture type (serum, 2i, or a2i). 
 Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}.
-To simplify the analysis, counts were only used from cells in the two batches where all three serum conditions were represented.
-To account for the batch effect, the experimental design was parametrized as an additive model with serum-specific expression terms and batch-specific blocking factors.
+To simplify the analysis, counts were only used from cells in the two batches where all three culture types were represented.
+\revised{This resulted in 60-90 cells from each of six plates (three culture types in each of two batches)}.
+To account for the batch effect, the experimental design was parametrized as an additive model with culture-specific expression terms and batch-specific blocking factors.
 
 % Note that Kim used ComBat to remove batch effects, not plate effects.
 % Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
@@ -449,19 +373,21 @@ These methods were chosen as they could be applied on both the single-cell count
 %In each data set, low-quality cells were removed if they had library sizes below 10$^5$ reads or more than 10\% of reads assigned to mitochondrial genes.
 Prior to analysis, low-abundance genes (defined as those with an average count below 1 across all cells) were filtered out.
 Sample-level quality control was not applied as low-quality cells had already been removed.
-Each analysis method was then implemented as previously described, to detect DE genes between 2i and serum or between a2i and serum.
-The total number of DE genes detected at a FDR of 5\% was counted for each method, with and without summation.
-The number of DE genes detected in both approaches was also counted.
+\revised{Each analysis method was applied with and without summation, to detect DE genes between 2i and serum or between a2i and serum.
+In each analysis, normalization was performed using the deconvolution method for the single-cell counts \citep{lun2016pooling} or the DESeq method for the summed counts for each plate \citep{anders2010differential} -- see Section~\suppnorm{} of the Supplementary Materials for more details on these normalization strategies.
+The set of DE genes detected at a FDR of 5\% was then reported for each method.}
 
 \subsection{Numbers and ranking of DE genes are altered upon summation}
 In all comparisons, the number of DE genes detected with summed counts was substantially smaller than that detected with single-cell counts (Table~\ref{tab:realnum}).
 In fact, the DE list from the former was generally a subset of that from the latter.
 However, this does not mean that DE analyses with single-cell counts provide more power.
-Recall that the single-cell analyses fail to maintain type I error control in the simulations.
+\revised{To assess specificity, we repeated each comparison after swapping the culture labels of the samples being compared in one batch.
+Each group now contains one sample from each culture type, such that no DE genes should be present between groups.
+We observed that only the methods using summation were able to control the type I error rate below the specified threshold (Figure~\ref{fig:realswap}).
+(Some conservativeness is expected as genuine DE between culture types inflates the variances upon swapping.)
+In contrast, the single-cell analyses are liberal to a degree that is consistent with the simulations.
 This suggests that the increased numbers in Table~\ref{tab:realnum} correspond to detection of false positives rather than genuine DE genes.
-Conversely, reduced detection of DE genes by the analyses on summed counts is consistent with more accurate error control.
-It should be stressed that differences in the number of DE genes can only be interpreted as a difference in power when the number of false positives are similar.
-This is clearly not the case here -- the previous simulations demonstrate that the analyses on single-cell counts are liberal.
+}   
 
 To determine the effect of summation on the gene ranking, genes were sorted based on the $p$-values computed from each method.
 The identities of the top 20, 200 and 2000 genes were compared between analyses using single-cell and summed counts.
@@ -470,6 +396,7 @@ This difference is attributable to changes in variance modelling after summation
 These rankings are important as the genes driving the biological differences between groups are expected to exhibit strong DE.
 Thus, the top-ranking genes are typically prioritized for further interpretation and investigation.
 Changes to the ranking indicate that summation will affect the biological conclusions that are taken from the analysis.
+\revised{Indeed, key pluripotency factors characterized by \cite{kolod2015single} are more highly ranked in analyses using summed counts compared to single-cell counts (Supplementary Figure~\supprealrank{}).}
 
 One potential criticism of summation is that the variability between cells is hidden in the count sum.
 One might expect that genes with DE driven by a few outlier cells would be ranked highly, as they would not be penalized by a large cell-to-cell variance estimate.
@@ -487,43 +414,39 @@ For genes with more contributing cells, cell-to-cell variability will be hidden 
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets but are typically ignored during the DE analysis.
-Simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
+\revised{Our} simulations indicate that this strategy is not statistically rigorous and will result in loss of type I error control. 
 In this article, a solution is presented involving the summation of counts across all cells on each plate for each gene.
 The count sums can then be used in a DE analysis, effectively treating plates as individual samples.
 This restores type I error control and avoids the detection of excessive false positives.
-Variance adjustment of the counts is not required prior to summation, even when the numbers or sizes of cells differ across or within plates.
 Summation prior to DE analyses also affects the biological conclusions of a real scRNA-seq study, 
-    by decreasing the size of the DE lists and by changing the ranking of DE genes.
+by decreasing the size of the DE lists and \revised{improving the ranking of relevant genes relative to a conventional single-cell analysis}.
 
-It is possible to resolve plate effects at the single-cell level with careful experimental design.
-Ideally, cells should be arranged onto plates such that each plate contains cells from multiple biological groups.
-DE comparisons can then be performed within plates such that any plate effect cancels out.
-For such experimental designs, summation has fewer benefits as the group is no longer confounded by the plate of origin.
-The latter can be included as a blocking factor in the linear model for the single-cell counts, 
-    to explicitly regress out the plate effect without removing genuine DE between groups.
-This avoids any loss of type I error control due to hidden dependencies between cells.
-Nonetheless, summation can still be applied to all cells of the same group on each plate.
-This increases the count sizes and decreases technical noise for greater compatibility with existing methods like edgeR
-    (especially during normalization -- see Section~\suppnorm{} of the Supplementary Materials).
-It reduces computational work as the sample size is defined from the number of plates ($<$ 10), not the number of cells (100-1000).
-Power is preserved upon summation as the nature of the DE comparison (i.e., between group averages) is unchanged.
+\revised{We note that there are some situations where summation has fewer advantages.}
+For example, cells can be arranged onto plates such that each plate contains cells from multiple biological groups.
+\revised{DE comparisons can then be performed directly between cells on the same plate, avoiding problems from technical variability in processing between plates. 
+This mitigates the plate effect (though an equivalent ``population effect'' may be observed whereby expression is systematically different for all cells from the same replicate animal or cell culture) and reduces the need for summation.
+In experiments involving one plate in each group, summation will yield only one count sum per group.
+This cannot be easily analyzed by existing methods as the variance within each group cannot be modelled without replication.
+A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
+That said, the latter analysis is only valid under the assumption that no plate effect exists -- to verify this assumption, one would have to generate data from replicate plates, such that summation would become applicable.}    
 
-In general, experimental designs involving one group per plate are more common due to practical and logistical considerations.
-For these designs, the best way to handle plate effects is to simply increase the number of plates.
-This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of time and resources.
+In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
+This provides the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
+For \revised{such} designs, the best way to handle plate effects is to simply increase the number of plates.
+This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{requiring more experimental} resources.
 The choice of the number of plates is analogous to that of biological replicates in bulk RNA-seq experiments.
 This suggests that 3-4 plates per group should be sufficient in most cases.
 The number of cells is less important, though there should be enough cells per plate to obtain stable count sums.
+\revised{Summation also reduces the computational time required for the DE analysis -- only a small number of plates need to be processed, instead of hundreds or thousands of cells -- which may be useful in large data sets.}
 
 Summation is a simple but effective approach to overcome the problem of plate effects in a DE analysis. 
 This complements other aspects of the data analysis that use single-cell counts, e.g., in cell clustering or to identify highly variable genes.
 Summation also reduces technical noise and may be a more general strategy to improve data quality when many cells are available.
 
 \section{Software}
-\label{sec5}
 All software packages except MAST are publicly available from the Bioconductor project (\url{http://bioconductor.org}).
 MAST is available on GitHub at \url{https://github.com/RGLab/MAST}.
-Simulation scripts are available on request from the corresponding authors.
+Simulation scripts are available \revised{at \url{https://github/MarioniLab/PlateEffects2016}}.
 
 \section{Supplementary Material}
 Supplementary Material is available online at \href{http://biostatistics.oxfordjournals.org}{http://biostatistics.oxfordjournals.org}.
@@ -538,11 +461,10 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{failsim_with_raw.pdf}
-\includegraphics[width=0.48\textwidth]{failsim_without_raw.pdf}
+\includegraphics[height=3.5in]{main_failsim.pdf}
 \end{center}
 \caption{
-    Observed type I error rates for each method on simulated data, in the presence (left) or absence (right) of a plate effect.
+    Observed type I error rates for each method on simulated data, in the presence or absence of a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
     The threshold of 0.01 is represented by the red dashed line.
@@ -553,49 +475,30 @@ Funding for the project was provided by Cancer Research UK.
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{failsim_with_sum.pdf}
+\includegraphics[height=3.5in]{main_okaysim.pdf}
 \end{center}
 \caption{
-    Observed type I error rate for each method after summation in simulations with a plate effect.
+    Observed type I error rate for each method after summation in simulations with \revised{and without} a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
+    \revised{The observed type I error rate for each method without summation is also shown for comparison.}
 }
 \label{fig:platesum}
 \end{figure}
 
 \begin{figure}[!p]
 \begin{center}
-\includegraphics[width=0.48\textwidth]{power_with.pdf}
-\includegraphics[width=0.48\textwidth]{power_with_zoom.pdf}
+\includegraphics[width=0.48\textwidth]{main_power.pdf}
+\includegraphics[width=0.48\textwidth]{main_power_zoom.pdf}
 \end{center}
 \caption{
     ROC curves for each analysis method on simulated data with a plate effect and genuine DE, for both single-cell (full) and summed counts (dashed).
-    Curves are shown for DESeq2 (black), voom (grey) and edgeR (red).
+    Curves are shown for DESeq2 (black), voom (grey) and \revised{QL} edgeR (red).
     Each curve represents the average result of 10 simulation iterations.
     The full curves are shown on the left, and an enlarged plot focusing on low false positive rates is shown on the right.
 }
 \label{fig:roc}
 \end{figure}
-
-\begin{figure}[!p]
-\begin{center}
-\includegraphics[width=0.48\textwidth]{quantile_with.pdf}
-%\includegraphics[width=0.48\textwidth,trim=0mm 0mm 0mm 10mm,clip]{quantile_without.pdf} % Doesn't really add any value; didn't put up control before either, so why do it now?
-\end{center}
-\caption{
-    Observed type I error rates for QL edgeR on simulated data with a plate effect, 
-        applied on counts from direct summation (black circles) or summation of quantile-adjusted pseudo-counts (grey diamonds). 
-    Simulations were performed for a number of scenarios, including differing numbers of cells per plate (1);
-        small (2), moderate (3) or large differences (4) in library size within plates;
-        as well as the corresponding scenarios where replicate plates were swapped between groups.
-    Error rates are shown on a log scale and represent the average of 10 simulation iterations.
-    Each error bar represents the standard error of the corresponding log-average rate.
-    The threshold of 0.01 is represented by the red dashed line.
-}
-\label{fig:complexplate}
-\end{figure}
-
-% Probably slightly more conservative than previous QL figure because n=2 here for each group, whereas n=3 before.
 
 \begin{table}[!p]
 \caption{Total number of DE genes detected by each method in each comparison at a FDR of 5\%, using the single-cell or summed counts.
@@ -605,17 +508,17 @@ The number of DE genes detected with both counts is also shown.
 \begin{center}
 \begin{tabular}{l l r r r}
 \hline
-\textbf{Comparison} & \textbf{Counts} & \textbf{DESeq2} & \textbf{voom} & \textbf{edgeR} \\
+\textbf{Comparison} & \textbf{Counts} & \textbf{DESeq2} & \textbf{voom} & \textbf{QL edgeR} \\
 \hline
 \multirow{3}{*}{2i vs. serum} 
-& Single-cell & 7419 & 9585 & 7127 \\
-& Summed & 3227 & 1691 & 946 \\
-& Both & 2948 & 1678 & 946 \\
+& Single-cell & 6243 & 9458 & 7123 \\
+& Summed & 3014 & 1710 & 955 \\
+& Both & 2488 & 1698 & 955 \\
 \hline
 \multirow{3}{*}{a2i vs. serum} 
-& Single-cell & 6447 & 9202 & 6013 \\
-& Summed & 2004 & 758 & 238 \\
-& Both & 1876 & 747 & 238 \\
+& Single-cell & 5378 & 8850 & 6031 \\
+& Summed & 1688 & 774 & 245 \\
+& Both & 1487 & 763 & 245 \\
 \hline
 %\multirow{3}{*}{PS vs. NP} 
 %& Cell & 268 & 4862 & 522 \\
@@ -626,6 +529,17 @@ The number of DE genes detected with both counts is also shown.
 \end{center}
 \end{table}
 
+\begin{figure}[!p]
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{main_swapped.pdf}
+\end{center}
+\caption{
+    Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
+    Each proportions represents a type I error rate as the null hypothesis is true for each gene.
+}
+\label{fig:realswap}
+\end{figure}
+
 \begin{table}[!p]
 \caption{Proportion of the top-ranking DE genes shared between analyses using the single-cell or summed counts.
 Top genes were defined as those with the smallest 20, 200, or 2000 $p$-values in each comparison.
@@ -634,17 +548,17 @@ Top genes were defined as those with the smallest 20, 200, or 2000 $p$-values in
 \begin{center}
 \begin{tabular}{l l r r r}
 \hline
-\textbf{Comparison} & \textbf{Top} & \textbf{DESeq2} & \textbf{voom} & \textbf{edgeR} \\
+\textbf{Comparison} & \textbf{Top} & \textbf{DESeq2} & \textbf{voom} & \textbf{QL edgeR} \\
 \hline
 \multirow{3}{*}{2i vs. serum} 
-& 20 & 0.10 & 0.05 & 0.20 \\
-& 200 & 0.25 & 0.43 & 0.35 \\
-& 2000 & 0.49 & 0.60 & 0.60 \\
+& 20 & 0.15 & 0.05 & 0.15 \\
+& 200 & 0.27 & 0.43 & 0.35 \\
+& 2000 & 0.49 & 0.60 & 0.61 \\
 \hline
 \multirow{3}{*}{a2i vs. serum} 
-& 20 & 0.30 & 0.15 & 0.20 \\
-& 200 & 0.26 & 0.54 & 0.31 \\
-& 2000 & 0.46 & 0.58 & 0.61 \\
+& 20 & 0.25 & 0.20 & 0.20 \\
+& 200 & 0.30 & 0.53 & 0.30 \\
+& 2000 & 0.48 & 0.60 & 0.63 \\
 \hline
 %\multirow{3}{*}{PS vs. NP} 
 %& 20 & 0.35 & 0.30 & 0.35 \\

@@ -89,7 +89,7 @@ Also, cells were only used if they belonged to a batch that contained all three 
 
 We then estimated the simulation parameters from the data.
 For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} where all cells corresponding to each culture type were defined as a cluster.
-This yielded size factors centered around unity (Figure~\ref{subfig:realsize}) that can be treated as estimates of $\theta_j$. 
+This yielded size factors centered around unity (Figure~\ref{subfig:realsize}), which can be treated as estimates of $\theta_j$ for all cells.
 To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
 The resulting coefficient was used to define $\mu_{i0}$, i.e., the expected count of gene $i$ (Figure~\ref{subfig:realmean}).
 For non-DE genes, $\mu_{ig}$ was set to $\mu_{i0}$ for all groups, whereas for DE genes, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some fold change $\psi_{ig}$.
@@ -174,10 +174,12 @@ However, we also tested additional scenarios, such as setting $\sigma^2=0$ to el
 In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation) to avoid introducing composition bias \citep{robinson2010scaling}.
 This means that library size normalization can be used in all analyses of the simulated data.
 Thus, any difference in performance cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
-This is an important subtlety, as bulk normalization methods to remove composition bias fare poorly on single-cell data with many zeroes \citep{lun2016pooling}.
+This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data that contain many zero counts \citep{lun2016pooling}.
 \end{color}
 
-\section{Details on the implementation of the DE analysis methods}
+\section{Detailed description of the DE analysis}
+
+\subsection{Implementation of the analysis methods}
 For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, and the trended NB dispersion was used to fit a \revised{GLM} for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
@@ -207,41 +209,109 @@ The group was used as the factor of interest and the proportion of genes with no
 The fitting method was set to ``bayesglm'' and EB shrinkage was turned on with the ``MLE'' method and the ``H1'' model.
 Putative DE genes between groups were identified using the LRT.
 
-\begin{color}{red}
-The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
+\revised{The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
 The group was set as a fixed effect while the plate of origin was set as a random effect.
 Offsets were defined as the log-transformed library sizes.
 To detect DE between groups, the GLMM was refitted using a null design without the group factor.
-A LRT was then performed using the full and null model fits.
+A LRT was then performed using the full and null model fits.}
 
+\subsection{Explanation of the normalization strategy}
+\begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
 For simulated data, size factors were defined as mean-adjusted library sizes.
+This is possible due to the presence of balanced DE, as previously described.
 For real single-cell data, size factors were computed with the deconvolution method.
+To mitigate any DE, cells were clustered into relevant clusters (e.g., by culture type in the mESC data set) prior to normalization.
 For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
 In each scenario, size factors were either used directly (e.g., DESeq2), or converted into effective library sizes to compute offsets or CPM values.
 The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
 This preserves the relative normalization between cells while recovering the scale of the original library sizes.
+
+It is worth elaborating on what normalization actually does to the count sums.
+For each plate, the bias in the count sum is equal to the sum of the cell-specific biases across all cells on the plate.
+This is based on the pooling normalization framework in \cite{lun2016pooling}, after a slight modification by setting $t_j$ to 1 for each cell $j$.
+Normalization on the count sums will subsequently eliminate this plate-specific bias, such that there will be no systematic differences in the count sums of non-DE genes between plates.
 \end{color}
 
-\section{Implementing the quantile adjustment method}
-The quantile adjustment method models the conditional distribution of each count as a NB distribution.
-All cells within a single plate are defined as a separate group in a one-way layout.
-For each gene, means are estimated for all cells by fitting a GLM to the counts for that gene.
-The mean for each cell accounts for its library size as well as any gene- and plate-specific effects.
-A gene-specific NB dispersion is also estimated using the Cox-Reid adjusted profile likelihood in edgeR \citep{mccarthy2012differential}.
-The count for each cell is modelled by a NB distribution with the estimated mean and dispersion.
-The percentile corresponding to each count is computed, and the matching quantile for a Poisson distribution with the same mean is identified \citep{robinson2008small}.
-This quantile is used as the Poisson-distributed pseudo-count for each cell.
+\begin{color}{red}
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_failsim/supp_raw.pdf}
+    \end{center}
+    \caption{    
+        Observed type I error rates for each method on simulated data upon halving the variability of the plate effect; increasing the variability in the number of cells per plate; increasing the variability in library sizes across cells; using a ZINB distribution to sample counts; and increasing the number of plates in each group.
+        Error rates are shown on a log scale and represent the average across 10 simulation iterations.
+        Each error bar represents the standard error of the log-average rate.
+        The threshold of 0.01 is represented by the red dashed line.
+        Only one iteration was used for Monocle due to its long running time.
+    }
+    \label{fig:extrafail}
+\end{figure}
 
-This method depends on stable estimation of the mean for each cell and the dispersion for each gene.
-The latter should not be an issue as there should be sufficient residual d.f. across all cells to obtain a precise dispersion estimate.
-Note that the previously mentioned problems with residual d.f. overestimation are not applicable here.
-Dependencies caused by plate effects are avoided as plate-specific expression is explicitly modelled in the one-way layout.
-For the means, stable estimation can be ensured by having sufficient cells per plate.
-This is usually the case given that low-quality plates with very few cells would be removed.
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_failsim/supp_sum.pdf}
+    \end{center}
+    \caption{   
+        Observed type I error rate for each method after summation in a variety of simulation scenarios (see Figure~\ref{fig:extrafail}).
+        Error rates are shown on a log scale and represent the average across 10 simulation iterations.
+        Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
+    }
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_2.pdf}
+        \subcaption[]{}
+        \label{subfig:noplate}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_3.pdf}
+        \subcaption[]{}
+        \label{subfig:bigfc}
+    \end{minipage}
+    \begin{minipage}{0.32\textwidth}
+        \includegraphics[width=\textwidth]{../simulations/ESpresso/results_power/ROC_4.pdf}
+        \subcaption[]{}
+        \label{subfig:morede}
+    \end{minipage}
+    \end{center}
+    \caption{  
+        ROC curves for each analysis method using single-cell (full) and summed counts (dashed), in simulations with (\subref{subfig:noplate}) no plate effect, (\subref{subfig:bigfc}) larger DE fold changes and (\subref{subfig:morede}) more DE genes. 
+        Curves are shown for DESeq2 (black), voom (grey) and QL edgeR (red).
+        Each curve represents the average of 10 iterations.
+    }
+    \label{fig:altroc}
+\end{figure}
+
+\begin{figure}[p]
+    \begin{center}
+        \includegraphics[height=4in]{../simulations/ESpresso/results_power/FDR.pdf}
+    \end{center}
+    \caption{
+        Observed FDRs for each analysis method using single-cell or summed counts in simulations with DE genes and a plate effect (denoted above as ``Plate effect'').
+        Settings for additional simulation scenarios are equivalent to those used in Figure~\ref{fig:altroc}.
+        The red line represents the nominal threshold of 5\%.
+        All values represent the average of 10 simulation iterations, and error bars represent the standard error.
+    }
+\end{figure}
+\end{color}
 
 \section{Summation and plate-specific mean variance relationships}
-The robustness of direct summation to differences in the number or size of cells per plate can be explained by examining the mean-variance relationship of the simulated data.
+\revised{Data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
+This means that the count sum for each plate will not be identically distributed.
+The most obvious difference is observed in the magnitude of the count sum between different plates with different numbers of cells or library sizes per cell.
+This leads to a consistent fold-difference in the expression of all genes on one plate relative to another, and can be simply resolved by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
+The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
+Briefly, the variance of a random variable can be expressed as a function of its mean.
+Most parametric models assume that this function is the same for all observations of a given gene.
+For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
+However, if the count sum for each plate has a different relationship, the accuracy of these methods may be compromised.}
+
+\revised{In practice, differences in library sizes across cells and/or numbers of cells across plates do not seem to negatively affect the performance of methods on summed counts.
+Power and error control are maintained in our simulations with variable library sizes and cell numbers.}
+The robustness of summation can be explained by examining the mean-variance relationship of the simulated data.
 Assume that the cells on plate $k$ can be partitioned into $L_k$ subpopulations.
 Each subpopulation $l$ contains $N_l$ cells and differs from the other subpopulations by the library size modifier $\theta_l$.
 Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of subpopulation $l$.
@@ -270,8 +340,9 @@ If $N_l$ increases in each of $s$ subpopulations, the limit becomes
 for positive values of $\theta_j$ and $\mu_{ig}$.
 This means that, for any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
-Summation will be similarly robust to plate-specific values for the NB dispersion.
-Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect as the plate-specific term approaches zero.
+Summation will be similarly robust to plate-specific values for the NB dispersion \revised{or subpopulation-specific values for the mean count.
+Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$, or $\mu_{ig}$ with some subpopulation-specific expression $\mu_{il}$, will have little effect as the plate-specific term approaches zero.}
+
 %While this result is described for discrete subpopulations of cells with the same $\theta_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\theta_l$) by considering an arbitrarily large $L_k$ on the plate.
 
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
@@ -279,21 +350,6 @@ Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$ will have little effect
 
 % Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
 % be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.
-
-As an aside, what happens when each plate contains several \textit{a priori} undefined biological subpopulations with different gene expression profiles?
-This can be parametrized as $\lambda_{il} = \delta_{ik} \theta_l \mu_{il}$ where $\mu_{il}$ represents the subpopulation-specific mean for gene $i$.
-The above result is unaffected as one can easily replace $\mu_{ig}$ by $\mu_{il}$ in all expressions.
-A more subtle point concerns the independence of the count sums.
-If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be independent in a one-way layout.
-This is because the count sum for each plate in a given group will have the same expectation, i.e., $\sum_l N_l\theta_l \mu_{il}$.
-Each count sum can be considered to be independently sampled from a distribution with this mean, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
-However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
-In such cases, the mean for each count sum will vary for each plate in a gene-specific manner that cannot be resolved by scaling normalization.
-Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
-This situation is arguably pathological as plates with different subpopulations should not be replicates.
-
-% It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
-% Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
 
 \section{Benefits of hiding the variability between cells}
 If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
@@ -307,42 +363,35 @@ In contrast, cells are not expected to be similar due to biological heterogeneit
 Large cell-to-cell variability has no bearing on the reliability of DE between populations when many cells are present.
 For example, if the subpopulation structure is the same in each replicate plate, one would have a situation with large variability between cells in different subpopulations but reproducible count sums across plates.
 
-\section{Avoiding zero counts during normalization}
-One particular benefit of using summed counts with existing analysis methods is in the normalization step.
-Methods like size factor and TMM normalization are based on ratios between counts in different cells,
-    but will be compromised for noisy data that contain many zero and near-zero counts.
-For example, size factor normalization constructs an average reference library by taking the geometric mean of all counts for each gene, 
-    and normalizes each library against this reference by computing the median ratio of the count to the geometric mean across all genes.
-In the presence of many zeroes, the geometric mean itself becomes zero such that many ratios will be undefined.
-Even if a more stable average is used (e.g., the arithmetic mean), the median ratio for many libraries will be equal to zero if more than 50\% of the counts of that library are zero.
-This is not a sensible scaling factor for normalizing expression values.
-Summation reduces the incidence of zero counts so that these normalization methods can be properly applied.
-In particular, normalization of the summed counts will remove any plate-specific differences that affect each gene in the same manner, 
-    e.g., differences in capture efficiency or sequencing depth between plates.
-Removal of cell-specific biases within each plate is not required as these will average out when many cells are summed together.
-Indeed, recall that type I error control is maintained in the simulations where the library size differs across cells.
+\revised{On a related note, the subpopulation structure can also affect the independence of the count sums.}
+If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be \revised{correctly modelled as independent values} in a one-way layout.
+This is because the count sum for each plate in a given group will have the same expectation \revised{after adjusting for total library size of each plate}.
+Each count sum can be considered to be independently sampled from a distribution with this \revised{expectation}, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
+However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
+In such cases, the mean for each count sum will vary for each plate in a gene-specific manner that cannot be resolved by scaling normalization.
+Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
+This situation is arguably pathological as plates with \revised{systematic differences in the subpopulation structure} should not be \revised{treated as} replicates.
 
-% And if it doesn't average out, then it will be considered to be a plate-specific difference and removed anyway.
-
-%%% FIGURES %%%
+% It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
+% Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
 
 \begin{figure}[p]
-    \begin{center}
-        \includegraphics[width=\textwidth]{quantile_schematic.pdf}
-    \end{center}
-    \caption{
-        Simulation scenarios with different number of cells per plate and different library sizes per cell.
-        Each scenario is represented by two plates where the set-up for each plate is used for all plates in group $g_1$ or $g_2$.
-        Scenario 1 contains different numbers of cells, while scenarios 2 to 4 contain plates with different library sizes between cells.
-        The relative library size $\theta_j$ of each cell is indicated by the colour of the well.
-    }
-    \label{fig:compsim}
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{../realdata/ESpresso/real_ranks.pdf}
+\end{center}
+\caption{
+    Difference in ranks between single-cell and summed analyses, for key pluripotency factors listed in Figure S5 of \cite{kolod2015single}.
+    For each comparison between culture types, the rank for each gene was obtained from the DE list of QL edgeR using either summed or single-cell counts.
+    A positive difference in ranks means that the gene is lower ranked (i.e., further down the DE list) in the single-cell analysis compared to the summed analysis.
+    The minimum rank is the smaller rank from either analysis, and represents the ``best'' position of each gene.
+    The grey bar marks a difference in ranks of $\pm100$.
+}
 \end{figure}
 
 \begin{figure}[p]
     \begin{center}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola1_sum.pdf}
-        \includegraphics[width=\textwidth]{realdata_top_edgeR_ola2_sum.pdf}
+        \includegraphics[width=\textwidth]{../realdata/ESpresso/top_edgeR_3_sum.pdf}
+        \includegraphics[width=\textwidth]{../realdata/ESpresso/top_edgeR_4_sum.pdf}
     \end{center}
 \caption{
     Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, 
@@ -356,7 +405,5 @@ Indeed, recall that type I error control is maintained in the simulations where 
 
 % The second kolod comparison is the only one with decent DE for all methods,
 % which is why it's being used here.
-
-
  
 \end{document}

@@ -1,37 +1,30 @@
 all: pooled_error.pdf suppmat.pdf
 
-pooled_error.pdf: pooled_error.tex failsim_without_raw.pdf failsim_with_raw.pdf failsim_with_sum.pdf power_with.pdf quantile_with.pdf power_with_zoom.pdf references.bib
+pooled_error.pdf: pooled_error.tex main_failsim.pdf main_okaysim.pdf main_power.pdf main_power_zoom.pdf main_swapped.pdf references.bib
 	pdflatex pooled_error.tex
 	bibtex pooled_error
 	pdflatex pooled_error.tex
 	pdflatex pooled_error.tex 
 
-failsim_without_raw.pdf: ../failsim/without_raw.eps
+main_failsim.pdf: ../simulations/ESpresso/results_failsim/main_raw.eps
 	epstopdf $< -o=$@
 
-failsim_with_raw.pdf: ../failsim/with_raw.eps
+main_okaysim.pdf: ../simulations/ESpresso/results_failsim/main_sum.eps
 	epstopdf $< -o=$@
 
-failsim_with_sum.pdf: ../failsim/with_sum.eps
+main_power.pdf: ../simulations/ESpresso/results_power/ROC_1.eps
 	epstopdf $< -o=$@
 
-power_with.pdf: ../power/with.eps
+main_power_zoom.pdf: ../simulations/ESpresso/results_power/ROC_zoom_1.eps
 	epstopdf $< -o=$@
 
-power_with_zoom.pdf: ../power/with_zoom.eps
+main_swapped.pdf: ../realdata/all_scrambled.eps
 	epstopdf $< -o=$@
 
-quantile_with.pdf: ../quantile/with.eps
-	epstopdf $< -o=$@
-
-suppmat.pdf: suppmat.tex pooled_error.pdf quantile_schematic.pdf realdata_top_edgeR_ola1_sum.pdf realdata_top_edgeR_ola2_sum.pdf
+suppmat.pdf: suppmat.tex pooled_error.pdf \
+		../simulations/ESpresso/results_failsim/supp_raw.pdf ../simulations/ESpresso/results_failsim/supp_sum.pdf \
+		../simulations/ESpresso/results_power/ROC_2.pdf ../simulations/ESpresso/results_power/ROC_3.pdf ../simulations/ESpresso/results_power/ROC_4.pdf ../simulations/ESpresso/results_power/FDR.pdf \
+		../realdata/ESpresso/real_ranks.pdf ../realdata/ESpresso/top_edgeR_3_sum.pdf ../realdata/ESpresso/top_edgeR_4_sum.pdf
+	pdflatex suppmat.tex
 	pdflatex suppmat.tex
 
-quantile_schematic.pdf: ../quantile/sim_schematic.pdf
-	cp $< $@
-
-realdata_top_edgeR_ola1_sum.pdf: ../realdata/top_edgeR_ola1_sum.pdf
-	cp $< $@
-
-realdata_top_edgeR_ola2_sum.pdf: ../realdata/top_edgeR_ola2_sum.pdf
-	cp $< $@

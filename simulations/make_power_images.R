@@ -12,21 +12,33 @@ for (mode in 1:4) {
         raw.roc[[method]] <- colMeans(do.call(rbind, cur.roc[[method]]$raw))
         sum.roc[[method]] <- colMeans(do.call(rbind, cur.roc[[method]]$sum))
     }
+
+    # Switching modes between saving to main file or supplementaries.
+    if (mode==1L) {
+        suffix <- "eps"
+        devfun <- function(fname, ...) {
+            setEPS()
+            postscript(fname, ...)
+        }
+        zoom.options <- c(FALSE, TRUE)
+    } else {
+        suffix <- "pdf"
+        devfun <- pdf
+        zoom.options <- FALSE
+    }
     
-    for (zoom in c(FALSE, TRUE)) {
+    for (zoom in zoom.options) {
         if (!zoom) {
             xup <- 1
             yup <- 1
-            fname <- file.path(out.dir, paste0("ROC_", mode, ".eps"))
+            fname <- file.path(out.dir, paste0("ROC_", mode, ".", suffix))
         } else {
-            if (mode!=1) { break }
             xup <- 0.1
             yup <- 0.7
-            fname <- file.path(out.dir, paste0("ROC_zoom_", mode, ".eps"))
+            fname <- file.path(out.dir, paste0("ROC_zoom_", mode, ".", suffix))
         }
 
-        setEPS()
-        postscript(fname)
+        devfun(fname)
         par(mar=c(6.1, 5.1, 2.1, 1.1))
         plot(0,0, type="n", xlab="False positive rate", ylab="True positive rate", cex.axis=1.2, cex.lab=1.4, xlim=c(0, xup), ylim=c(0, yup))
         for (method in names(raw.roc)) { 
@@ -51,6 +63,7 @@ for (mode in 1:4) {
 
 extractor <- function(fname) {
     out <- read.table(file.path(out.dir, fname), sep="\t", stringsAsFactors=FALSE)
+    out[,3] <- pmax(out[,3], 0.01) # for visualization purposes, to avoid undefined logs.
     out <- split(log10(out[,3]), out[,1])
     all.means <- sapply(out, FUN=mean)
     all.se <- sqrt(sapply(out, FUN=var)/lengths(out))
@@ -94,9 +107,8 @@ coords <- matrix(1, nrow=nrow(all.means), ncol=ncol(all.means))
 coords[1,] <- coords[1,] + 1
 coords[] <- cumsum(coords)
 
-setEPS()
 width <- 9
-postscript(file.path(out.dir, "FDR.eps"), width=width, height=7)
+pdf(file.path(out.dir, "FDR.pdf"), width=width, height=7)
 layout(rbind(c(1,2)), width=c(width-1.5, 1.5))
 par(mar=c(6.2, 4.1, 2.1, 1.1))
 

@@ -9,6 +9,7 @@ extractor <- function(fname) {
     out <- read.table(file.path(out.dir, fname), sep="\t", stringsAsFactors=FALSE)
     chosen <- out[,3]==threshold
     out <- out[chosen,]
+    out[,4] <- pmax(out[,4], 0.01) # for visualization purposes, to avoid undefined logs.
     out <- split(log10(out[,4]), out[,1])
     all.means <- sapply(out, FUN=mean)
     all.se <- sqrt(sapply(out, FUN=var)/lengths(out))
@@ -20,7 +21,11 @@ renamed <- c(DESeq2="DESeq2", edgeR="edgeR", glmer="GLMM", MAST="MAST", monocle=
 #########################################################################################
 # First, making the centrepiece for the raw results.
 
-for (mode in 1:4) { 
+for (mode in 1:4) {
+    devfun <- function(fname, ...) {
+        setEPS()
+        postscript(fname, ...)
+    } 
 
     if (mode==1L) {
         # Main figure for raw results.
@@ -43,18 +48,21 @@ for (mode in 1:4) {
         raw4 <- extractor("raw_4.txt")
         raw5 <- extractor("raw_5.txt")
         raw6 <- extractor("raw_6.txt")
+        raw7 <- extractor("raw_7.txt")
         
         stopifnot(identical(names(raw2$mean), names(raw4$mean)))
         stopifnot(identical(names(raw2$mean), names(raw5$mean)))
         stopifnot(identical(names(raw2$mean), names(raw6$mean)))
-        all.means <- rbind(raw2$mean, raw4$mean, raw5$mean, raw6$mean)
-        all.se <- rbind(raw2$se, raw4$se, raw5$se, raw6$se)
-        pch <- c(22, 22, 24, 24)
-        inner.color <- c("black", "white", "black", "white")
+        stopifnot(identical(names(raw2$mean), names(raw7$mean)))
+        all.means <- rbind(raw2$mean, raw4$mean, raw5$mean, raw6$mean, raw7$mean)
+        all.se <- rbind(raw2$se, raw4$se, raw5$se, raw6$se, raw7$se)
+        pch <- c(22, 22, 24, 24, 23)
+        inner.color <- c("black", "white", "black", "white", "black")
 
-        modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation")
-        out.pic <- file.path(out.dir, "supp_raw.eps")
-        width <- 10
+        modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation", "More plates")
+        out.pic <- file.path(out.dir, "supp_raw.pdf")
+        devfun <- pdf
+        width <- 11
         height <- 7
     } else if (mode==3L) {
         # Main figure for summed results.
@@ -82,18 +90,21 @@ for (mode in 1:4) {
         sum4 <- extractor("sum_4.txt")
         sum5 <- extractor("sum_5.txt")
         sum6 <- extractor("sum_6.txt")
-        
+        sum7 <- extractor("sum_7.txt")
+ 
         stopifnot(identical(names(sum2$mean), names(sum4$mean)))
         stopifnot(identical(names(sum2$mean), names(sum5$mean)))
         stopifnot(identical(names(sum2$mean), names(sum6$mean)))
-        all.means <- rbind(sum2$mean, sum4$mean, sum5$mean, sum6$mean)
-        all.se <- rbind(sum2$se, sum4$se, sum5$se, sum6$se)
-        pch <- c(22, 22, 24, 24)
-        inner.color <- c("black", "white", "black", "white")
+        stopifnot(identical(names(sum2$mean), names(sum7$mean)))
+        all.means <- rbind(sum2$mean, sum4$mean, sum5$mean, sum6$mean, sum7$mean)
+        all.se <- rbind(sum2$se, sum4$se, sum5$se, sum6$se, sum7$se)
+        pch <- c(22, 22, 24, 24, 23)
+        inner.color <- c("black", "white", "black", "white", "black")
 
-        modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation")
-        out.pic <- file.path(out.dir, "supp_sum.eps")
-        width <- 6
+        modes <- c("Half effect", "Variable cells", "Variable sizes", "Zero inflation", "More plates")
+        out.pic <- file.path(out.dir, "supp_sum.pdf")
+        devfun <- pdf
+        width <- 7
         height <- 7
     }
 
@@ -101,8 +112,7 @@ for (mode in 1:4) {
     coords[1,] <- coords[1,] + 1
     coords[] <- cumsum(coords)
 
-    setEPS()
-    postscript(out.pic, width=width, height=height)
+    devfun(out.pic, width=width, height=height)
     layout(rbind(c(1,2)), width=c(width-1.5, 1.5))
     par(mar=c(6.2, 4.1, 2.1, 1.1))
 
