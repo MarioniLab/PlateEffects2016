@@ -20,12 +20,16 @@ ngenes <- 10000
 args <- commandArgs(trailingOnly = TRUE)
 seed <- 10000
 scenario <- 1L
+niter <- 10L
+do.long <- TRUE
 for (i in seq_along(args)){
     eval(parse(text=args[[i]]))
 }
 scenario <- as.integer(scenario)
 print(scenario)
 print(seed)
+print(niter)
+print(do.long)
 
 # Input/output files.
 print(indir)
@@ -67,7 +71,7 @@ nplates <- length(conditions)
 # Actually running it.
 
 set.seed(seed)
-for (it in 1:10) {
+for (it in seq_len(niter)) {
     ncells <- round(runif(nplates, ncell.range[1], ncell.range[2]))
     plate.of.origin <- rep(seq_len(nplates), ncells)
     simulated <- COUNT_GEN(plate.of.origin, ngenes, mod.shape=mod.shape, mod.lib=mod.lib.fun(sum(ncells)), zinb=zinb)
@@ -88,7 +92,7 @@ for (it in 1:10) {
 
             log.file <- log.raw            
             methods.to.use <- c("edgeR", "voom", "voomcor", "QLedgeR", "DESeq2", "MAST")
-            if (it==1L) { methods.to.use <- c(methods.to.use, "monocle", "glmer") }
+            if (do.long && it==1L) { methods.to.use <- c(methods.to.use, "monocle", "glmer") }
         } else {
             my.env$counts <- sumTechReps(all.counts, plate.of.origin)
             my.env$sample.data <- data.frame(group=plate.grouping)

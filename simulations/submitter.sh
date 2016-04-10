@@ -1,5 +1,8 @@
 mkdir ESpresso
 
+###########################
+# Error simulations
+
 for logfile in $(find ESpresso/ | grep "log_fail")
 do
     rm $logfile
@@ -12,7 +15,28 @@ bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail3.err" -o "ESpresso/log_fai
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail4.err" -o "ESpresso/log_fail4.out" R CMD BATCH --no-save "--args scenario=4 $failargs" failsim.R ESpresso/failsim_4.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail5.err" -o "ESpresso/log_fail5.out" R CMD BATCH --no-save "--args scenario=5 $failargs" failsim.R ESpresso/failsim_5.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail6.err" -o "ESpresso/log_fail6.out" R CMD BATCH --no-save "--args scenario=6 $failargs" failsim.R ESpresso/failsim_6.Rout
-bsub -R "rusage[mem=10000]" -n 6 -e "ESpresso/log_fail7.err" -o "ESpresso/log_fail7.out" R CMD BATCH --no-save "--args scenario=7 $failargs" failsim.R ESpresso/failsim_7.Rout
+
+# This takes intolerably long on a single run, so I'm going to split it up across many cores.
+tmpdir=ESpresso/tmp7
+mkdir $tmpdir
+for i in {1..10}
+do
+    if [ $i -eq 1 ]
+    then
+        ncores=6
+        longrun=TRUE
+    else
+        ncores=1
+        longrun=FALSE
+    fi
+    mkdir $tmpdir/$i
+    bsub -R "rusage[mem=10000]" -n $ncores -e "${tmpdir}/log_fail7_${i}.err" -o "${tmpdir}/log_fail7_${i}.out" \
+        R CMD BATCH --no-save "--args seed=${i}0000 scenario=7 niter=1 do.long=${longrun} indir='../reference/results_ESpresso' outdir='ESpresso/${tmpdir}/${i}'"\
+        failsim.R $tmpdir/failsim_7_${i}.Rout
+done
+
+############################
+# Power simulations.
 
 for logfile in $(find ESpresso/ | grep "log_pow")
 do
