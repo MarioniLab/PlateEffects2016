@@ -428,7 +428,9 @@ This mitigates the plate effect (though an equivalent ``population effect'' may 
 In experiments involving one plate in each group, summation will yield only one count sum per group.
 This cannot be easily analyzed by existing methods as the variance within each group cannot be modelled without replication.
 A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
-That said, the latter analysis is only valid under the assumption that no plate effect exists -- to verify this assumption, one would have to generate data from replicate plates, such that summation would become applicable.}    
+That said, the latter analysis is only valid under the assumption that no plate effect exists.
+This is because the variance estimate only accounts for variability within plates, not between plates.
+To verify this assumption, one would have to generate data from replicate plates such that summation would become applicable.}    
 
 In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
 This provides the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
