@@ -118,14 +118,13 @@ Changes in gene expression due to a plate effect will be indistinguishable from 
 Any attempt to remove the former will compromise the detection of the latter.
 This problem is still present in data sets with small numbers (e.g., 2-3) of plates in each group, 
     where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
-\revised{Many studies ignore plate effects during the DE analysis and treat} all cells from the same group as replicates, e.g., \cite{kolod2015single}.
-This strategy \revised{is} not statistically rigorous as the variability across cells on the same plate will not be modelled properly.
+\revised{Many studies ignore plate effects and treat cells as replicates during the DE analysis, such that the variance is estimated across cells in each group \citep{kolod2015single, kowalczyk2015single, kumar2014deconstructing, trapnell2014dynamics}}.
+This strategy \revised{is} not statistically rigorous as the variability across plates will not be modelled properly.
 
-% Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches
-% Gaublomme's paper has multiple C1 chips for CNS/LN across batches (the DE test is done with empirical subpopulations, but still ignores the plate effect as it uses a one-way layout - those populations are also associated with CNS/LN identity, see Figure 2 of their paper).
-% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. There's definitely replicate mice, but it's not explicit that they're put on separate plates.
-% Trapnell and Finak use data sets with one plate per condition, so that's not entirely what we're looking for.
-% Avraham's data set seems a bit mixed; there's multiple timepoints per plate, so it's not entirely clear what's happening.
+% Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches.
+% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. Presumably we have two plates here, though it's unclear whether they contain cells from two replicate mice. They split the plate comparisons for the old mice, but they just do one comparison for the young mice, and presumably this involves cells from both plates being treated as replicates.
+% Kumar's paper just has two plates for the serum+LIF condition, so it's fair game.
+% Monocle identifies DE across a pseudo-temporal ordering but cells are treated as replicates here, so again, fair game.
 
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
@@ -433,7 +432,7 @@ This is because the variance estimate only accounts for variability within plate
 To verify this assumption, one would have to generate data from replicate plates such that summation would become applicable.}    
 
 In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
-This provides the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
+This generates the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
 For \revised{such} designs, the best way to handle plate effects is to simply increase the number of plates.
 This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{requiring more experimental} resources.
 The choice of the number of plates is analogous to that of biological replicates in bulk RNA-seq experiments.
