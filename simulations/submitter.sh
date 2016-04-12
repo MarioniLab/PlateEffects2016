@@ -36,6 +36,14 @@ do
         failsim.R $tmpdir/failsim_7_${i}.Rout
 done
 
+rm ESpresso/results_failsim/*_7.txt
+tmpdir=ESpresso/tmp7
+for i in {1..10}
+do
+    cat ${tmpdir}/${i}/raw_7.txt >> ESpresso/results_failsim/raw_7.txt
+    cat ${tmpdir}/${i}/sum_7.txt >> ESpresso/results_failsim/sum_7.txt
+done
+
 ############################
 # Power simulations.
 

@@ -9,7 +9,7 @@ extractor <- function(fname) {
     out <- read.table(file.path(out.dir, fname), sep="\t", stringsAsFactors=FALSE)
     chosen <- out[,3]==threshold
     out <- out[chosen,]
-    out[,4] <- pmax(out[,4], 0.01) # for visualization purposes, to avoid undefined logs.
+    out[,4] <- pmax(out[,4], 1e-8) # for visualization purposes, to avoid undefined logs.
     out <- split(log10(out[,4]), out[,1])
     all.means <- sapply(out, FUN=mean)
     all.se <- sqrt(sapply(out, FUN=var)/lengths(out))
