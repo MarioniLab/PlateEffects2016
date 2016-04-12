@@ -116,10 +116,10 @@ However, plate effects cannot be easily removed during statistical modelling sin
 In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
 Changes in gene expression due to a plate effect will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
-This problem is still present in data sets with small numbers (e.g., 2-3) of plates in each group, 
+This problem is still present in data sets with \revised{a few plates} (e.g., 2-3) in each group, 
     where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
-\revised{Many studies ignore plate effects and treat cells as replicates during the DE analysis, such that the variance is estimated across cells in each group \citep{kolod2015single, kowalczyk2015single, kumar2014deconstructing, trapnell2014dynamics}}.
-This strategy \revised{is} not statistically rigorous as the variability across plates will not be modelled properly.
+\revised{Many studies ignore the plate effects and treat cells directly as replicates in the DE analysis, such that the variance is estimated across cells in each group \citep{kolod2015single, kowalczyk2015single, kumar2014deconstructing}}.
+This strategy \revised{is} not statistically rigorous as the variability \revised{due to systematic differences between plates} will not be modelled properly.
 
 % Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches.
 % Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. Presumably we have two plates here, though it's unclear whether they contain cells from two replicate mice. They split the plate comparisons for the old mice, but they just do one comparison for the young mice, and presumably this involves cells from both plates being treated as replicates.
