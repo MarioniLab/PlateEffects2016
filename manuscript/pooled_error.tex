@@ -248,7 +248,7 @@ This is because they explicitly account for the dependencies between cells on th
 Nonetheless, both methods are still liberal.
 This is attributable to the difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in typical data sets with small numbers of replicate plates.
 In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
-Note that voom mitigates the effect of imprecise estimation with few plates, by sharing information across genes to obtain a consensus value -- however, this will introduce biases when the true correlation varies between genes.
+For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value -- however, this will introduce biases when the true correlation varies between genes.
 
 % See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
 % However, voom doesn't improve with more plates in \suppfailsim{}.
