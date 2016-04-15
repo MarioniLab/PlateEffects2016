@@ -246,10 +246,15 @@ This is no longer justifiable if only four d.f.\ are available.
 The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
-This is attributable to the difficulties in accurately estimating the variance of the random effect (for the GLMM approach) or the consensus correlation (for voom) in typical scRNA-seq data sets where the number of plates is low.
+This is attributable to the difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in typical data sets with small numbers of replicate plates.
 In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
+Note that voom mitigates the effect of imprecise estimation with few plates, by sharing information across genes to obtain a consensus value -- however, this will introduce biases when the true correlation varies between genes.
 
-% Discreteness is secondary, as voom itself does fine without a plate effect.
+% See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
+% However, voom doesn't improve with more plates in \suppfailsim{}.
+% I suspect it's a closely related reason; that voom needs to estimate a consensus correlation, and that's not appropriate in these simulations.
+% In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
+% Note that discreteness is secondary, as voom itself does fine without a plate effect.
 
 We also tested the performance of each method in a variety of simulation scenarios.
 This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
