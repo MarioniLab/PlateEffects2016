@@ -2,19 +2,23 @@ set.seed(0)
 require(limma)
 
 # Batch-blocked:
-for (x in 1:3) {
+for (x in 1:4) {
+    gvar <- 1
     if (x==1L) { 
         treatment <- factor(rep(1:2, each=30))
         batch <- factor(rep(1:6, each=10))
     } else if (x==2L) { 
         treatment <- factor(rep(1:2, each=150))
         batch <- factor(rep(1:6, each=50))
+    } else if (x==3L) {
+        treatment <- factor(rep(1:2, each=100))
+        batch <- factor(rep(1:20, each=10))
     } else {
         treatment <- factor(rep(1:2, each=100))
         batch <- factor(rep(1:20, each=10))
+        gvar <- 5/rchisq(10000, 5)
     }
 
-    gvar <- 1
     design <- model.matrix(~treatment)
 
     for (sd in c(1:3)) { 
@@ -29,15 +33,20 @@ for (x in 1:3) {
         fit <- eBayes(fit, robust=TRUE)
         res <- topTable(fit, coef=ncol(design), sort.by="none", n=Inf)
 
-        # Using the true value.
-        alt.fit <- lmFit(dummy, design, block=batch, correlation=truth)
-        alt.fit <- eBayes(alt.fit, robust=TRUE)
-        alt.res <- topTable(alt.fit, coef=ncol(design), sort.by="none", n=Inf)
+        # Using the true value (unless there is none).
+        if (x!=4) {
+            alt.fit <- lmFit(dummy, design, block=batch, correlation=truth)
+            alt.fit <- eBayes(alt.fit, robust=TRUE)
+            alt.res <- topTable(alt.fit, coef=ncol(design), sort.by="none", n=Inf)
+        }
 
         cat(sprintf("Scenario is %s, sd is %i", x, sd), "\n")
-        cat(sprintf("Consensus is %.5f, truth is %.5f", cor$consensus, truth), "\n")
+        cat(sprintf("Consensus is %.5f, truth is %.5f", cor$consensus, mean(truth)), "\n")
         cat(sprintf("Type I error at 1%% for consensus is %.5f", sum(res$P.Value<=0.01)/10000), "\n")
-        cat(sprintf("Type I error at 1%% for truth is %.5f", sum(alt.res$P.Value<=0.01)/10000), "\n")
+        if (x!=4) { 
+            cat(sprintf("Type I error at 1%% for truth is %.5f", sum(alt.res$P.Value<=0.01)/10000), "\n")
+        }
     }
+    cat("\n")
 }
 
