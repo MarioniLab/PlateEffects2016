@@ -19,6 +19,7 @@ bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail6.err" -o "ESpresso/log_fai
 # This takes intolerably long on a single run, so I'm going to split it up across many cores.
 tmpdir=ESpresso/tmp7
 mkdir $tmpdir
+rm $tmpdir/*.err $tmpdir/*.out
 for i in {1..10}
 do
     if [ $i -eq 1 ]
@@ -31,8 +32,16 @@ do
     fi
     mkdir $tmpdir/$i
     bsub -R "rusage[mem=10000]" -n $ncores -e "${tmpdir}/log_fail7_${i}.err" -o "${tmpdir}/log_fail7_${i}.out" \
-        R CMD BATCH --no-save "--args seed=${i}0000 scenario=7 niter=1 do.long=${longrun} indir='../reference/results_ESpresso' outdir='ESpresso/${tmpdir}/${i}'"\
+        R CMD BATCH --no-save "--args seed=${i}0000 scenario=7 niter=1 do.long=${longrun} indir='../reference/results_ESpresso' outdir='${tmpdir}/${i}'"\
         failsim.R $tmpdir/failsim_7_${i}.Rout
+done
+
+rm ESpresso/results_failsim/*_7.txt
+tmpdir=ESpresso/tmp7
+for i in {1..10}
+do
+    cat ${tmpdir}/${i}/raw_7.txt >> ESpresso/results_failsim/raw_7.txt
+    cat ${tmpdir}/${i}/sum_7.txt >> ESpresso/results_failsim/sum_7.txt
 done
 
 ############################

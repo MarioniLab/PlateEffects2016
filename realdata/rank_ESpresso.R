@@ -30,6 +30,7 @@ r2 <- rank(raw3$PValue)[ribo.raw]
 
 x3 <- pmin(r1, r2)
 y3 <- r2 - r1
+mat3 <- cbind(c(sum(r1 <= 250), sum(r1 > 250)), c(sum(r2 <= 250), sum(r2 > 250)))
 
 sum4 <- read.table("ESpresso/edgeR_4_sum.tsv.gz", header=TRUE)
 raw4 <- read.table("ESpresso/edgeR_4_raw.tsv.gz", header=TRUE)
@@ -43,6 +44,9 @@ r1 <- rank(sum4$PValue)[ribo.sum]
 r2 <- rank(raw4$PValue)[ribo.raw]
 x4 <- pmin(r1, r2)
 y4 <- r2 - r1
+mat4 <- cbind(c(sum(r1 <= 250), sum(r1 > 250)), c(sum(r2 <= 250), sum(r2 > 250)))
+
+fisher.test(mat3 + mat4)  # pooling to get more power.
 
 #################################################
 # Plotting.
@@ -62,3 +66,5 @@ text(x4, y4, of.interest, col=contrasted["4"], pos=ifelse(chosen, 3, 4), cex=0.8
 
 legend("topleft", legend=c("2i vs. serum", "a2i vs. serum"), pch=16, col=contrasted)
 dev.off()
+
+

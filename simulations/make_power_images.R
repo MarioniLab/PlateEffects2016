@@ -1,5 +1,6 @@
 cur.dir <- "ESpresso"
 out.dir <- file.path(cur.dir, "results_power")
+renamed <- c(DESeq2="DESeq2", QLedgeR="QL edgeR", voom="voom")
 
 #########################################################################################
 # First, making the ROC plots.
@@ -50,7 +51,7 @@ for (mode in 1:4) {
         
         if (mode <= 2L && !zoom) {
             # Adding a legend.
-            all.names <- c(names(raw.roc), names(sum.roc))
+            all.names <- renamed[c(names(raw.roc), names(sum.roc))]
             renames <- paste0(all.names, " (", rep(c("single", "sum"), c(length(raw.roc), length(sum.roc))), ")")
             legend("bottomright", lwd=2, lty=rep(1:2, each=length(raw.roc)), legend=renames, col=colors[all.names], cex=1.2)
         }

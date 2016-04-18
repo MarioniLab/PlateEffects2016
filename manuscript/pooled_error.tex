@@ -46,7 +46,7 @@ In this article, we demonstrate that failing to consider plate effects in the st
 A solution is proposed whereby counts are summed from all cells in each plate and the count sums for all plates are used in the DE analysis.
 This restores type I error control in the presence of plate effects without compromising detection power in simulated data.
 Summation is also robust to varying numbers and library sizes of cells on each plate.
-Similar results are observed in DE analyses of real data where the use of count sums instead of single-cell counts leads to a different number and ranking of DE genes.
+Similar results are observed in DE analyses of real data where the use of count sums instead of single-cell counts \revised{improves specificity and the ranking of relevant genes}.
 This suggests that summation can assist in maintaining statistical rigour in DE analyses of scRNA-seq data with plate effects.
 }
 {Single-cell RNA sequencing; Differential expression; Plate effects; Summation.}
@@ -91,11 +91,11 @@ If replicate populations are present in a group, a separate plate is typically u
 
 The experimental design described above is motivated largely by practicality.
 It is logistically simpler to track and process cells when each plate corresponds to one population of one group, compared to partitioning the plate into different groups.
-For example, FACS is typically performed such that all cells on a plate are obtained with the same gates, i.e., from the same subpopulation.
+For example, FACS is typically performed such that all cells on a plate are obtained \revised{by gating on a single} subpopulation.
 In the C1, cells are captured randomly in reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
 Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
-However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect for all cells on each plate but a variable effect across different plates. 
-These variables can be technical in origin, such as differences in library preparation or sequencing efficiency between plates; 
+However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect \revised{on observed expression} for all cells on each plate but a variable effect across different plates. 
+These variables can be technical in origin, such as differences in library preparation or sequencing between plates; 
     or biological, due to inherent variability in gene expression across replicate populations on different plates.
 
 % Yeah, yeah, indexed FACS, I know. But there's a lot of experimental designs that don't use that.
@@ -116,23 +116,22 @@ However, plate effects cannot be easily removed during statistical modelling sin
 In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
 Changes in gene expression due to a plate effect will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
-This problem is still present in data sets with small numbers (e.g., 2-3) of plates in each group, 
+This problem is still present in data sets with \revised{a few plates} (e.g., 2-3) in each group, 
     where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
-\revised{Many studies ignore plate effects during the DE analysis and treat} all cells from the same group as replicates, e.g., \cite{kolod2015single}.
-This strategy \revised{is} not statistically rigorous as the variability across cells on the same plate will not be modelled properly.
+\revised{Many studies ignore the plate effects and treat cells directly as replicates in the DE analysis, such that the variance is estimated across cells in each group \citep{kolod2015single, kowalczyk2015single, kumar2014deconstructing}}.
+This strategy \revised{is} not statistically rigorous as the variability \revised{due to systematic differences between plates} will not be modelled properly.
 
-% Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches
-% Gaublomme's paper has multiple C1 chips for CNS/LN across batches (the DE test is done with empirical subpopulations, but still ignores the plate effect as it uses a one-way layout - those populations are also associated with CNS/LN identity, see Figure 2 of their paper).
-% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. There's definitely replicate mice, but it's not explicit that they're put on separate plates.
-% Trapnell and Finak use data sets with one plate per condition, so that's not entirely what we're looking for.
-% Avraham's data set seems a bit mixed; there's multiple timepoints per plate, so it's not entirely clear what's happening.
+% Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches.
+% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. Presumably we have two plates here, though it's unclear whether they contain cells from two replicate mice. They split the plate comparisons for the old mice, but they just do one comparison for the young mice, and presumably this involves cells from both plates being treated as replicates.
+% Kumar's paper just has two plates for the serum+LIF condition, so it's fair game.
+% Monocle identifies DE across a pseudo-temporal ordering but cells are treated as replicates here, so again, fair game.
 
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
 This was caused by dependencies between cells on the same plate which compromised inferences from the fitted model.
-To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
+To avoid detection of spurious DE, a summation approach \revised{was} proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
 This restored control of type I error across a range of simulation scenarios without compromising DE detection power.
-Similar effects were observed in real data where summation resulted in substantial changes in the number and ranking of DE genes.
+Similar effects were observed in real data where summation \revised{improved detection specificity and the ranking of relevant genes}.
 
 \section{Plate effects result in false positives in a DE analysis}
 
@@ -144,7 +143,7 @@ Further assume that a plate effect exists in the data set, whereby the expressio
 Gene specificity is motivated by biological variability between replicate populations\revised{, where uncontrolled differences in cell culturing or animal treatment can affect expression in a gene-dependent manner.}
 
 \begin{color}{red}
-Denote the observed read count for gene $i$ in cell $j$ in plate $k$ of group $g$ as $Y_{ij}$.
+Denote the read count for gene $i$ in cell $j$ in plate $k$ of group $g$ as $Y_{ij}$.
 Define $\delta_{ik}$ as the plate-specific effect for gene $i$; $\theta_j$ as the cell-specific bias; and $\mu_{ig}$ as the expected read count in group $g$.
 Assume that $\delta_{ik}$ for each plate is independently sampled from some distribution of positive values with non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
@@ -247,10 +246,15 @@ This is no longer justifiable if only four d.f.\ are available.
 The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
-This is attributable to the difficulties in accurately estimating the variance of the random effect (for the GLMM approach) or the consensus correlation (for voom) in typical scRNA-seq data sets where the number of plates is low.
+This is attributable to the difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in typical data sets with small numbers of replicate plates.
 In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
+For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value -- however, this will introduce biases when the true correlation varies between genes.
 
-% Discreteness is secondary, as voom itself does fine without a plate effect.
+% See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
+% However, voom doesn't improve with more plates in \suppfailsim{}.
+% I suspect it's a closely related reason; that voom needs to estimate a consensus correlation, and that's not appropriate in these simulations.
+% In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
+% Note that discreteness is secondary, as voom itself does fine without a plate effect.
 
 We also tested the performance of each method in a variety of simulation scenarios.
 This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
@@ -308,13 +312,13 @@ This indicates that detection power at any given false positive rate is not comp
 In fact, at low false positive rates, a modest increase was observed in the true positive rate of each analysis with summed counts compared to its single-cell counterpart.
 Similar results were observed in additional simulation scenarios involving no plate effect, stronger DE fold changes and more DE genes (Supplementary Figure~\supppowerroc{}).
 Moreover, the observed FDR was only controlled below the nominal 5\% threshold when summation was used (Supplementary Figure~\supppowerfdr{}).
-This is consistent with the loss of error control when the plate effect is ignored.
+This is consistent with the loss of error control when plate effects are ignored.
 
 The comparable performance of analyses with and without summation is driven by several factors. 
 Firstly, as previously discussed, the (expected) DE log-fold change is the same regardless of whether the average expression in each group is computed over cells or over plates. 
 Secondly, summation reduces the conditional variance of the count sum relative to its size.
 This is most obvious with voom where expression is quantified as a (log-)CPM value.
-The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
+The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to its expectation for a large number of conditionally independent cells.
 Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
 This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
 (See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in conditional variance also improves model accuracy.)
@@ -428,10 +432,12 @@ This mitigates the plate effect (though an equivalent ``population effect'' may 
 In experiments involving one plate in each group, summation will yield only one count sum per group.
 This cannot be easily analyzed by existing methods as the variance within each group cannot be modelled without replication.
 A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
-That said, the latter analysis is only valid under the assumption that no plate effect exists -- to verify this assumption, one would have to generate data from replicate plates, such that summation would become applicable.}    
+That said, the latter analysis is only valid under the assumption that no plate effect exists.
+This is because the variance estimate only accounts for variability within plates, not between plates.
+To verify this assumption, one would have to generate data from replicate plates such that summation would become applicable.}    
 
 In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
-This provides the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
+This generates the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
 For \revised{such} designs, the best way to handle plate effects is to simply increase the number of plates.
 This provides more residual d.f. to precisely estimate the plate-to-plate variability after summation, albeit at the cost of \revised{requiring more experimental} resources.
 The choice of the number of plates is analogous to that of biological replicates in bulk RNA-seq experiments.
@@ -453,7 +459,8 @@ Supplementary Material is available online at \href{http://biostatistics.oxfordj
 
 \section*{Acknowledgments}
 The authors thank Antonio Scialdone and Jong Kyoung Kim for advice regarding the real data analyses and for helpful comments on the manuscript.
-Funding for the project was provided by Cancer Research UK.
+\revised{ATLL and JCM were supported by core funding from Cancer Research UK (award no. A17197).
+JCM was also supported by core funding from EMBL.}
 {\it Conflict of Interest}: None declared.
 
 \bibliographystyle{biorefs}
@@ -467,8 +474,8 @@ Funding for the project was provided by Cancer Research UK.
     Observed type I error rates for each method on simulated data, in the presence or absence of a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
-    The threshold of 0.01 is represented by the red dashed line.
-    Only one iteration was used for Monocle due to its long running time.
+    The threshold of 0.01 is represented by the red line.
+    Only one iteration was used for Monocle and GLMMs due to their long running times.
 }
 \label{fig:platefail}
 \end{figure}
@@ -535,7 +542,7 @@ The number of DE genes detected with both counts is also shown.
 \end{center}
 \caption{
     Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
-    Each proportions represents a type I error rate as the null hypothesis is true for each gene.
+    Each proportion represents a type I error rate as the null hypothesis is true for each gene.
 }
 \label{fig:realswap}
 \end{figure}
