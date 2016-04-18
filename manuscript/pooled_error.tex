@@ -46,7 +46,7 @@ In this article, we demonstrate that failing to consider plate effects in the st
 A solution is proposed whereby counts are summed from all cells in each plate and the count sums for all plates are used in the DE analysis.
 This restores type I error control in the presence of plate effects without compromising detection power in simulated data.
 Summation is also robust to varying numbers and library sizes of cells on each plate.
-Similar results are observed in DE analyses of real data where the use of count sums instead of single-cell counts leads to a different number and ranking of DE genes.
+Similar results are observed in DE analyses of real data where the use of count sums instead of single-cell counts \revised{improves specificity and the ranking of relevant genes}.
 This suggests that summation can assist in maintaining statistical rigour in DE analyses of scRNA-seq data with plate effects.
 }
 {Single-cell RNA sequencing; Differential expression; Plate effects; Summation.}
@@ -91,11 +91,11 @@ If replicate populations are present in a group, a separate plate is typically u
 
 The experimental design described above is motivated largely by practicality.
 It is logistically simpler to track and process cells when each plate corresponds to one population of one group, compared to partitioning the plate into different groups.
-For example, FACS is typically performed such that all cells on a plate are obtained with the same gates, i.e., from the same subpopulation.
+For example, FACS is typically performed such that all cells on a plate are obtained \revised{by gating on a single} subpopulation.
 In the C1, cells are captured randomly in reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
 Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
-However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect for all cells on each plate but a variable effect across different plates. 
-These variables can be technical in origin, such as differences in library preparation or sequencing efficiency between plates; 
+However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect \revised{on observed expression} for all cells on each plate but a variable effect across different plates. 
+These variables can be technical in origin, such as differences in library preparation or sequencing between plates; 
     or biological, due to inherent variability in gene expression across replicate populations on different plates.
 
 % Yeah, yeah, indexed FACS, I know. But there's a lot of experimental designs that don't use that.
@@ -129,9 +129,9 @@ This strategy \revised{is} not statistically rigorous as the variability \revise
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
 In a simple simulation, all analyses that ignored the plate effects failed to control the type I error rate.
 This was caused by dependencies between cells on the same plate which compromised inferences from the fitted model.
-To avoid detection of spurious DE, a summation approach is proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
+To avoid detection of spurious DE, a summation approach \revised{was} proposed whereby counts for all cells on each plate were summed prior to the DE analysis.
 This restored control of type I error across a range of simulation scenarios without compromising DE detection power.
-Similar effects were observed in real data where summation resulted in substantial changes in the number and ranking of DE genes.
+Similar effects were observed in real data where summation \revised{improved detection specificity and the ranking of relevant genes}.
 
 \section{Plate effects result in false positives in a DE analysis}
 
