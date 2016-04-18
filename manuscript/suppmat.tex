@@ -159,7 +159,7 @@ We tested different scenarios by repeating the simulation with modified paramete
 To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$ prior to sampling $\delta_{ik}$.
 Similarly, we set $\sigma^2=0$ to generate data where the plate effect was completely absent.
 We increased the variability in the number of cells per plate, by sampling the number per plate from a Uniform$(20, 100)$ distribution.
-We also increased the variability in the size factors, by multiplying each size factor by $2^{S_j}$ where $S_j \sim \mbox{Normal}(0, 0.25)$.
+We also increased the variability in the size factors, by multiplying each size factor by $2^{V_j}$ where $V_j \sim \mbox{Normal}(0, 0.25)$.
 We replaced the NB distribution with a ZINB distribution (with parameters estimated from real data, as previously described) for count sampling.
 Finally, we increased the size of the data set by using six plates per group.
 
@@ -225,7 +225,7 @@ This is possible due to the presence of balanced DE, as previously described.
 For real single-cell data, size factors were computed with the deconvolution method.
 To mitigate any DE, cells were clustered into relevant clusters (e.g., by culture type in the mESC data set) prior to normalization.
 For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
-In each scenario, size factors were either used directly (e.g., DESeq2), or converted into effective library sizes to compute offsets or CPM values.
+In each scenario, size factors were either used directly (e.g., in the DESeq2 analysis) or converted into effective library sizes to compute offsets or CPM values.
 The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
 This preserves the relative normalization between cells while recovering the scale of the original library sizes.
 
@@ -303,47 +303,47 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
 \section{Summation and plate-specific mean variance relationships}
 \revised{Data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 This means that the count sum for each plate will not be identically distributed.
-The most obvious difference is observed in the magnitude of the count sum between different plates with different numbers of cells or library sizes per cell.
-This leads to a consistent fold-difference in the expression of all genes on one plate relative to another, and can be simply resolved by normalizing on the total library size for each plate (i.e., the sum of count sums across genes).
+The most obvious difference is observed in the magnitude of the count sum between plates with different numbers of cells or library sizes per cell.
+This leads to a consistent fold-difference in the expression of all genes on one plate relative to another, which can be resolved by normalizing on the total library size for each plate (i.e., the sum of count sums across genes) or with related methods.
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
 Briefly, the variance of a random variable can be expressed as a function of its mean.
 Most parametric models assume that this function is the same for all observations of a given gene.
 For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
-However, if the count sum for each plate has a different relationship, the accuracy of these methods may be compromised.}
+However, if the count sum for each plate has a different relationship, the accuracy of the models may be compromised.}
 
 \revised{In practice, differences in library sizes across cells and/or numbers of cells across plates do not seem to negatively affect the performance of methods on summed counts.
 Power and error control are maintained in our simulations with variable library sizes and cell numbers.}
 The robustness of summation can be explained by examining the mean-variance relationship of the simulated data.
-Assume that the cells on plate $k$ can be partitioned into $L_k$ subpopulations.
-Each subpopulation $l$ contains $N_l$ cells and differs from the other subpopulations by the library size modifier $\theta_l$.
-Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of subpopulation $l$.
+\revised{For simplicity, partition the cells on plate $k$ into $L_k$ bins where all cells in bin $l$ are assigned the same cell-specific bias $\theta_l$.
+(This does not affect generality, as any number of arbitrary bins can be defined.)}
+Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of \revised{bin} $l$.
 The count for each cell is independently sampled from a NB distribution with mean $\lambda_{il}$ and dispersion $\varphi_i$, as described in the simulation design.
-The conditional variance of the count sum $s_{ik}$ for plate $k$ is then
+The conditional variance of the count sum $S_{ik}$ for plate $k$ is then
 \[
-    \mbox{var}(s_{ik} | \delta_{ik}) = \sum_{l} N_l \lambda_{il}  + \varphi_{i} \sum_{l} N_l \lambda_{il}^2 \;.
+    \mbox{var}(S_{ik} | \delta_{ik}) = \sum_{l} N_l \lambda_{il}  + \varphi_{i} \sum_{l} N_l \lambda_{il}^2 \;.
 \]
-Given that $E(s_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}$, the variance of the count sum can be decomposed to
+Given that $E(S_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
-    \mbox{var}(s_{ik}) 
-    &= \mbox{var}\{E(s_{ik} | \delta_{ik} ) \} + E\{ \mbox{var}(s_{ik} | \delta_{ik}) \}\\
+    \mbox{var}(S_{ik}) 
+    &= \mbox{var}\{E(S_{ik} | \delta_{ik} ) \} + E\{ \mbox{var}(S_{ik} | \delta_{ik}) \}\\
     &= \mbox{var}\left(\delta_{ik}\sum_l N_l \theta_{l}\mu_{ig}\right) + E\left(\delta_{ik}\sum_l  N_l\theta_l\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_l  N_l\theta_l^2\mu_{ig}^2\right)\\
     &= \left(\sum_l N_l \theta_{l}\mu_{ig} \right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_l N_l \theta_{l}\mu_{ig}\right) + \left( \varphi_i \sum_l  N_l\theta_l^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
-    &= E(s_{ik})^2 \mbox{var}(\delta_{ik}) + E(s_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2}  \right\} E(s_{ik})^2 E(\delta_{ik}^2) \;. 
+    &= E(S_{ik})^2 \mbox{var}(\delta_{ik}) + E(S_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2}  \right\} E(S_{ik})^2 E(\delta_{ik}^2) \;. 
 \end{align*}
-Recall that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
-This means that only the third term is involved in defining the plate-specific aspect of the mean-variance relationship.
+\revised{Note} that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
+This means that\revised{, in the above expression,} only the third term defines the plate-specific aspect of the mean-variance relationship.
 Now, consider the behaviour of this term as the number of cells increases.
-If $N_l$ increases in each of $s$ subpopulations, the limit becomes
+If $N_l$ increases in each of $b$ \revised{bins}, the limit becomes
 \[
-    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_s} \to \infty}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
-    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_s} \to \infty}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
 = 0
 \]
 for positive values of $\theta_j$ and $\mu_{ig}$.
 This means that, for any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion \revised{or subpopulation-specific values for the mean count.
-Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$, or $\mu_{ig}$ with some subpopulation-specific expression $\mu_{il}$, will have little effect as the plate-specific term approaches zero.}
+Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$, or $\mu_{ig}$ with some subpopulation-specific expression $\mu_{il}$, will also have little effect as the plate-specific term approaches zero.}
 
 %While this result is described for discrete subpopulations of cells with the same $\theta_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\theta_l$) by considering an arbitrarily large $L_k$ on the plate.
 
