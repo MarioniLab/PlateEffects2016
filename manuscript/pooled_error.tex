@@ -312,13 +312,13 @@ This indicates that detection power at any given false positive rate is not comp
 In fact, at low false positive rates, a modest increase was observed in the true positive rate of each analysis with summed counts compared to its single-cell counterpart.
 Similar results were observed in additional simulation scenarios involving no plate effect, stronger DE fold changes and more DE genes (Supplementary Figure~\supppowerroc{}).
 Moreover, the observed FDR was only controlled below the nominal 5\% threshold when summation was used (Supplementary Figure~\supppowerfdr{}).
-This is consistent with the loss of error control when the plate effect is ignored.
+This is consistent with the loss of error control when plate effects are ignored.
 
 The comparable performance of analyses with and without summation is driven by several factors. 
 Firstly, as previously discussed, the (expected) DE log-fold change is the same regardless of whether the average expression in each group is computed over cells or over plates. 
 Secondly, summation reduces the conditional variance of the count sum relative to its size.
 This is most obvious with voom where expression is quantified as a (log-)CPM value.
-The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to the true value for a large number of conditionally independent cells.
+The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to its expectation for a large number of conditionally independent cells.
 Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
 This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
 (See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in conditional variance also improves model accuracy.)
@@ -542,7 +542,7 @@ The number of DE genes detected with both counts is also shown.
 \end{center}
 \caption{
     Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
-    Each proportions represents a type I error rate as the null hypothesis is true for each gene.
+    Each proportion represents a type I error rate as the null hypothesis is true for each gene.
 }
 \label{fig:realswap}
 \end{figure}
