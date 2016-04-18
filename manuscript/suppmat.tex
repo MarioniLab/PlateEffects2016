@@ -79,7 +79,7 @@ All counts are assumed to be conditionally independent.
 We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
 This parametrization means that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
 Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) and is independent of $\delta_{ik}$.
-Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary, but simply ensures that the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with the above definition of $\mu_{ig}$.
+Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary, but simply ensures that the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with its definition as an expectation.
 
 \subsection{Parameter estimation from real data}
 We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
@@ -130,9 +130,9 @@ To estimate the variability of the plate effect, we fitted a GLMM to the counts 
 We set the culture type and batch as fixed effects, the plate of origin as a random effect, and log-size factor as the offset for each cell.
 The distribution family was set to a NB distribution, where the ``theta'' parameter was defined as $\varphi_i^{-1}$ for gene $i$.
 After fitting, the estimated variance of the random effect was obtained with the VarCorr function (Figure~\ref{subfig:realplate}).
-As the NB model uses a log link function, the estimate represents the variance of the log-transformed plate effect and can then be used as $\sigma^2$ in our simulation.
-However, the gene-specific estimate is not stable with small numbers of plates.
-We improve precision by using the average estimate across all genes as $\sigma^2$.
+As the NB GLMM uses a log link function, this estimate represents the variance of the log-transformed plate effect and thus can be used as $\sigma^2$ in our simulation.
+However, each gene-specific estimate will be unstable with small numbers of plates.
+We improved precision by using the average estimate across all genes as $\sigma^2$.
 Note that the large number of zeroes in Figure~\ref{subfig:realplate} is likely caused by applying non-negativity constraints to unstable estimates, and does not indicate that the true variance of the plate effect is zero for those genes. 
 
 As an alternative to the NB model, we fitted a zero-inflated NB (ZINB) distribution to the counts for each gene.
@@ -156,11 +156,12 @@ This, along with the mean and dispersion of the chosen gene, was used to define 
 We repeated this process for each plate to obtain counts for all genes in all cells.
 
 We tested different scenarios by repeating the simulation with modified parameters.
-To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$. 
-Similarly, we set $\sigma^2=0$ to eliminate the plate effect altogether.
+To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$ prior to sampling $\delta_{ik}$.
+Similarly, we set $\sigma^2=0$ to generate data where the plate effect was completely absent.
 We increased the variability in the number of cells per plate, by sampling the number per plate from a Uniform$(20, 100)$ distribution.
 We also increased the variability in the size factors, by multiplying each size factor by $2^{S_j}$ where $S_j \sim \mbox{Normal}(0, 0.25)$.
-Finally, we replaced the NB distribution with a ZINB distribution for count sampling, where parameters for the latter were estimated from real data.
+We replaced the NB distribution with a ZINB distribution (with parameters estimated from real data, as previously described) for count sampling.
+Finally, we increased the size of the data set by using six plates per group.
 
 To evaluate power and FDR control, we repeated the simulation with incorporation of DE genes.
 We chose a random subset of $G$ genes for which DE was to be introduced.
@@ -172,9 +173,10 @@ We performed these simulations with $\psi_0 =3$ and $G=2000$ by default.
 However, we also tested additional scenarios, such as setting $\sigma^2=0$ to eliminate the plate effect; increasing $\psi_0$ to 6 to obtain stronger DE fold changes; or increasing $G$ to 4000 to obtain more DE genes.
 
 In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation) to avoid introducing composition bias \citep{robinson2010scaling}.
-This means that library size normalization can be used in all analyses of the simulated data.
-Thus, any difference in performance cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
-This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data that contain many zero counts \citep{lun2016pooling}.
+This simplifies the downstream analyses as it means that library size normalization can be used with all methods.
+Thus, any difference in performance between analyses cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
+This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data with many zero counts \citep{lun2016pooling}.
+If these methods are used, they may contribute to the loss of error control.
 \end{color}
 
 \section{Detailed description of the DE analysis}
