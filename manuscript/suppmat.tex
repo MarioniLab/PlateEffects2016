@@ -365,17 +365,17 @@ In contrast, cells are not expected to be similar due to biological heterogeneit
 Large cell-to-cell variability has no bearing on the reliability of DE between populations when many cells are present.
 For example, if the subpopulation structure is the same in each replicate plate, one would have a situation with large variability between cells in different subpopulations but reproducible count sums across plates.
 
-\revised{On a related note, the subpopulation structure can also affect the independence of the count sums.}
-If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be \revised{correctly modelled as independent values} in a one-way layout.
-This is because the count sum for each plate in a given group will have the same expectation \revised{after adjusting for total library size of each plate}.
-Each count sum can be considered to be independently sampled from a distribution with this \revised{expectation}, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
-However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
-In such cases, the mean for each count sum will vary for each plate in a gene-specific manner that cannot be resolved by scaling normalization.
-Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
-This situation is arguably pathological as plates with \revised{systematic differences in the subpopulation structure} should not be \revised{treated as} replicates.
+%\revised{On a related note, the subpopulation structure can also affect the independence of the count sums.}
+%If the proportion of cells in each subpopulation is the same across replicate plates, the count sums for these plates will be \revised{correctly modelled as independent values} in a one-way layout.
+%This is because the count sum for each plate in a given group will have the same expectation \revised{after adjusting for total library size of each plate}.
+%Each count sum can be considered to be independently sampled from a distribution with this \revised{expectation}, due to the independence of $\delta_{ik}$ and conditional independence of the counts.
+%However, this will not be true if the proportion of cells in each subpopulation is different across replicate plates.
+%In such cases, the mean for each count sum will vary for each plate in a gene-specific manner that cannot be resolved by scaling normalization.
+%Attempting to model the count sums with a group-specific mean will lead to hidden dependencies between plates, akin to those between cells when plate effects are ignored.
+%This situation is arguably pathological as plates with \revised{systematic differences in the subpopulation structure} should not be \revised{treated as} replicates.
 
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
-% Don't worry about plate-specific library size differences, as it affects all genes and differences in the mean can be normalized out of the count sum.
+% We also assume that the cell-specific bias is a random variable, which also goes away upon taking the expectation.
 
 \begin{figure}[p]
 \begin{center}
