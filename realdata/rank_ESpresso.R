@@ -58,11 +58,15 @@ rect(-100, -100, 500, 100, col="grey90", border=NA)
 box()
 
 points(x3, y3, pch=16, col=contrasted["3"])
-text(x3, y3, of.interest, col=contrasted["3"], pos=4, cex=0.8)
+pos <- rep(4, length(x4))
+pos[of.interest %in% c("Utf1", "Dnmt3l")] <- 3
+text(x3, y3, of.interest, col=contrasted["3"], pos=pos, cex=0.8)
 
 points(x4, y4, pch=16, col=contrasted["4"])
-chosen <- of.interest %in% c("Tfcp2l1", "Nr0b1", "Klf2", "Nanog", "Pfkp")
-text(x4, y4, of.interest, col=contrasted["4"], pos=ifelse(chosen, 3, 4), cex=0.8)
+pos <- rep(4, length(x4))
+pos[of.interest %in% c("Nanog")] <- 1
+pos[of.interest %in% c("Tfcp2l1")] <- 3
+text(x4, y4, of.interest, col=contrasted["4"], pos=pos, cex=0.8)
 
 legend("topleft", legend=c("2i vs. serum", "a2i vs. serum"), pch=16, col=contrasted)
 dev.off()

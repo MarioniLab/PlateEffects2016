@@ -382,12 +382,12 @@ For example, if the subpopulation structure is the same in each replicate plate,
     \includegraphics[width=0.6\textwidth]{../realdata/ESpresso/real_ranks.pdf}
 \end{center}
 \caption{
-    Difference in ranks between single-cell and summed analyses, for key pluripotency factors listed in Figure S5 of \cite{kolod2015single}.
-    For each comparison between culture types, the rank for each gene was obtained from the DE list of QL edgeR using either summed or single-cell counts.
-    A positive difference in ranks means that the gene is lower ranked (i.e., further down the DE list) in the single-cell analysis compared to the summed analysis.
+    Difference in ranks between DE analyses on single-cell and summed counts, for key pluripotency factors listed in Figure S5 of \cite{kolod2015single}.
+    For each comparison between culture types, the rank for each gene was obtained from the DE lists of QL edgeR using either summed or single-cell counts.
+    A positive difference in ranks means that the gene is lower ranked (i.e., further down the list) in the single-cell analysis compared to the summed analysis.
     The minimum rank is the smaller rank from either analysis, and represents the ``best'' position of each gene.
     The grey bar marks a difference in ranks of $\pm100$.
-    The difference in the enrichment of factors in the top set of 250 genes between summed and single-cell analyses was tested using Fisher's exact test, yielding a $p$-value of 0.030 (using the total numbers across both comparisons). 
+    The difference in the enrichment of factors in the top 250 genes between summed and single-cell analyses was tested using Fisher's exact test, yielding a $p$-value of $1.9 \times 10^{-4}$ (using total numbers of genes across both comparisons). 
 }
 \end{figure}
 
