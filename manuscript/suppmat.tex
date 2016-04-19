@@ -397,10 +397,9 @@ For example, if the subpopulation structure is the same in each replicate plate,
         \includegraphics[width=\textwidth]{../realdata/ESpresso/top_edgeR_4_sum.pdf}
     \end{center}
 \caption{
-    Expression profiles of DE genes between 2i and serum (top) or between a2i and serum conditions (bottom) in the mESC data set, for the top genes detected by QL edgeR on summed counts only.
-    Each plot contains the expression profile for a gene, where the $y$-axis represents the log-CPMs and each point represents a cell in the serum (black) or a2i/2i conditions (grey).
+    Expression profiles of DE genes between 2i and serum (top) or between a2i and serum (bottom) in the mESC data set, for the top genes detected by QL edgeR on summed counts.
+    Each plot contains the expression profile for a gene \revised{in terms of log-CPMs}, where each point represents a cell in the serum (black) or a2i/2i \revised{groups} (grey).
     A prior of 0.25 was added to each count to avoid undefined log-CPMs from zeroes.
-    For simplicity, only cells in one batch are shown for both contrasts.
 }
 \label{fig:realdata}
 \end{figure}
