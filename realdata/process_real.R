@@ -54,48 +54,48 @@ for (curdir in c("ESpresso")) {
     }
 }
 
-#######################################################
-# Comparing to bulk, for the datasets that have them.
-
-getstat <- function(bulk, other, threshold=0.05) {
-    both.okay <- !is.na(bulk) & !is.na(other)
-    bulksig <- bulk <= threshold 
-    othersig <- other <= threshold 
-    sum(bulksig & othersig & both.okay)/sum((othersig | bulksig) & both.okay)
-}
-
-log.file <- file.path(curdir, "results_bulk.txt")
-if (file.exists(log.file)) { unlink(log.file) }
-
-for (curdir in c("ESpresso")) {
-     if (curdir == "ESpresso") {
-        coefs <- c("3", "4")
-    }
-
-    for (con in coefs) {
-        v.sum  <- read.table(file.path(curdir, paste0("voom_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
-        v.cell <- read.table(file.path(curdir, paste0("voom_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
-        v.bulk <- read.table(file.path(curdir, paste0("voom_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
-        stat.vc <- getstat(v.bulk$adj.P.Val, v.cell$adj.P.Val)
-        stat.vs <- getstat(v.bulk$adj.P.Val, v.sum$adj.P.Val)
-
-        d.sum  <- read.table(file.path(curdir, paste0("DESeq2_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
-        d.cell <- read.table(file.path(curdir, paste0("DESeq2_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
-        d.bulk <- read.table(file.path(curdir, paste0("DESeq2_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
-        stat.dc <- getstat(d.bulk$padj, d.cell$padj)
-        stat.ds <- getstat(d.bulk$padj, d.sum$padj)
-
-        e.sum  <- read.table(file.path(curdir, paste0("edgeR_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
-        e.cell <- read.table(file.path(curdir, paste0("edgeR_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
-        e.bulk <- read.table(file.path(curdir, paste0("edgeR_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
-        stat.ec <- getstat(e.bulk$FDR, e.cell$FDR)
-        stat.es <- getstat(e.bulk$FDR, e.sum$FDR)
-        
-        write(sprintf("%% %s %s", curdir, con), file=log.file, append=TRUE)
-        write(sprintf("& %s & %.2f & %.2f & %.2f \\\\", c("Single-cell", "Summed"), c(stat.dc, stat.ds), c(stat.vc, stat.vs), c(stat.ec, stat.es)), file=log.file, append=TRUE)
-        write(file=log.file, "\\hline", append=TRUE)
-    } 
-}
+########################################################
+## Comparing to bulk, for the datasets that have them.
+#
+#getstat <- function(bulk, other, threshold=0.05) {
+#    both.okay <- !is.na(bulk) & !is.na(other)
+#    bulksig <- bulk <= threshold 
+#    othersig <- other <= threshold 
+#    sum(bulksig & othersig & both.okay)/sum((othersig | bulksig) & both.okay)
+#}
+#
+#log.file <- file.path(curdir, "results_bulk.txt")
+#if (file.exists(log.file)) { unlink(log.file) }
+#
+#for (curdir in c("ESpresso")) {
+#     if (curdir == "ESpresso") {
+#        coefs <- c("3", "4")
+#    }
+#
+#    for (con in coefs) {
+#        v.sum  <- read.table(file.path(curdir, paste0("voom_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
+#        v.cell <- read.table(file.path(curdir, paste0("voom_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
+#        v.bulk <- read.table(file.path(curdir, paste0("voom_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
+#        stat.vc <- getstat(v.bulk$adj.P.Val, v.cell$adj.P.Val)
+#        stat.vs <- getstat(v.bulk$adj.P.Val, v.sum$adj.P.Val)
+#
+#        d.sum  <- read.table(file.path(curdir, paste0("DESeq2_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
+#        d.cell <- read.table(file.path(curdir, paste0("DESeq2_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
+#        d.bulk <- read.table(file.path(curdir, paste0("DESeq2_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
+#        stat.dc <- getstat(d.bulk$padj, d.cell$padj)
+#        stat.ds <- getstat(d.bulk$padj, d.sum$padj)
+#
+#        e.sum  <- read.table(file.path(curdir, paste0("edgeR_", con, "_sum.tsv.gz")), header=TRUE, row.names=1)
+#        e.cell <- read.table(file.path(curdir, paste0("edgeR_", con, "_raw.tsv.gz")), header=TRUE, row.names=1)
+#        e.bulk <- read.table(file.path(curdir, paste0("edgeR_", con, "_bulk.tsv.gz")), header=TRUE, row.names=1)
+#        stat.ec <- getstat(e.bulk$FDR, e.cell$FDR)
+#        stat.es <- getstat(e.bulk$FDR, e.sum$FDR)
+#        
+#        write(sprintf("%% %s %s", curdir, con), file=log.file, append=TRUE)
+#        write(sprintf("& %s & %.2f & %.2f & %.2f \\\\", c("Single-cell", "Summed"), c(stat.dc, stat.ds), c(stat.vc, stat.vs), c(stat.ec, stat.es)), file=log.file, append=TRUE)
+#        write(file=log.file, "\\hline", append=TRUE)
+#    } 
+#}
 
 #######################################################
 # Generating a bar plot for the scrambled results.
