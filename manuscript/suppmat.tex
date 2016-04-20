@@ -398,8 +398,8 @@ For example, if the subpopulation structure is the same in each replicate plate,
     \end{center}
 \caption{
     Expression profiles of DE genes between 2i and serum (top) or between a2i and serum (bottom) in the mESC data set, for the top genes detected by QL edgeR on summed counts.
-    Each plot contains the expression profile for a gene \revised{in terms of log-CPMs}, where each point represents a cell in the serum (black) or a2i/2i \revised{groups} (grey).
-    A prior of 0.25 was added to each count to avoid undefined log-CPMs from zeroes.
+    \revised{Gene expression is quantified in terms of the log-CPM for each cell in the serum (black) or a2i/2i groups (grey), after removing the batch effect with the removeBatchEffect function in limma.
+    Log-CPMs for zero counts are not shown -- rather, the intensity of colour in the red bars is equal to the proportion of zeroes in each group.}
 }
 \label{fig:realdata}
 \end{figure}
