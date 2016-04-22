@@ -43,8 +43,8 @@ for (x in coefs) {
         nlif.prop.zero <- sum(is.zero[!is.lif])/sum(!is.lif)
         rect(-1, ybounds[1], -0.05, ybounds[1]-10, col=rgb(1, 0, 0, lif.prop.zero), border=NA)
         rect(0.05, ybounds[1], 1, ybounds[1]-10, col=rgb(1, 0, 0, nlif.prop.zero), border=NA)
-        box()
         points(jitter(ifelse(is.lif, -0.5, 0.5), amount=0.4), sum.values[i,], col=ifelse(is.lif, "black", "grey"), pch=16)
+        box()
     }
     dev.off()
 }
