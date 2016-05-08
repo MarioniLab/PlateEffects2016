@@ -51,9 +51,9 @@ for (mode in 1:4) {
         
         if (mode <= 2L && !zoom) {
             # Adding a legend.
-            all.names <- renamed[c(names(raw.roc), names(sum.roc))]
-            renames <- paste0(all.names, " (", rep(c("single", "sum"), c(length(raw.roc), length(sum.roc))), ")")
-            legend("bottomright", lwd=2, lty=rep(1:2, each=length(raw.roc)), legend=renames, col=colors[all.names], cex=1.2)
+            merged.names <- c(names(raw.roc), names(sum.roc))
+            renames <- paste0(renamed[merged.names], " (", rep(c("single", "sum"), c(length(raw.roc), length(sum.roc))), ")")
+            legend("bottomright", lwd=2, lty=rep(1:2, each=length(raw.roc)), legend=renames, col=colors[merged.names], cex=1.2)
         }
         dev.off()
     }
