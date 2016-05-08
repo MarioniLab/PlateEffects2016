@@ -42,7 +42,7 @@ One common analysis applied to scRNA-seq data involves detecting differentially 
 However, many experiments are designed such that the cells to be compared are processed in separate plates or chips, 
     meaning that the groupings are confounded with systematic plate effects.
 This confounding aspect is frequently ignored in DE analyses of scRNA-seq data.
-In this article, we demonstrate that failing to consider plate effects in the statistical model will result in loss of type I error control.
+In this article, we demonstrate that failing to consider plate effects in the statistical model results in loss of type I error control.
 A solution is proposed whereby counts are summed from all cells in each plate and the count sums for all plates are used in the DE analysis.
 This restores type I error control in the presence of plate effects without compromising detection power in simulated data.
 Summation is also robust to varying numbers and library sizes of cells on each plate.
@@ -77,7 +77,7 @@ The count data can then be analyzed to identify cell subtypes by clustering of t
     to identify highly variable genes contributing to cell-to-cell heterogeneity;
     and to identify differentially expressed (DE) genes between groups of cells.
 The ability to assay expression profiles for individual cells provides scRNA-seq studies with biological resolution that cannot be matched by bulk RNA-seq experiments on cell populations.
-However, this comes at the cost of high technical noise due to the difficulties in sequencing low input quantities of RNA from single cells.
+However, this comes at the cost of high technical noise due to difficulties in sequencing low input quantities of RNA from single cells.
 
 Most existing scRNA-seq protocols are based either on microwell plates \citep{picelli2014full} or microfluidics systems like the Fluidigm C1 \citep{pollen2014low}.
 In the former, cells are placed into individual wells, typically with automated approaches such as fluorescently activated cell sorting (FACS).
@@ -86,7 +86,7 @@ In the latter, individual cells are captured in separate reaction chambers withi
     (for simplicity, each chip will be treated as being equivalent to a plate in the following text).
 All cells on each chip are then simultaneously processed into libraries.
 Each plate or chip can only handle a limited number of cells, so data are usually generated for multiple plates across several biological groups. 
-All cells on each plate usually come from the same population (e.g., cell culture or animal) of a single biological group.
+All cells on each plate usually come from the same population (e.g., cell culture or animal) from a single biological group.
 If replicate populations are present in a group, a separate plate is typically used to process the cells from each population.
 
 The experimental design described above is motivated largely by practicality.
@@ -114,7 +114,7 @@ Obviously, such effects are undesirable as they arise via uncontrolled experimen
 This increases the estimated variance and reduces the power to detect DE genes.
 However, plate effects cannot be easily removed during statistical modelling since they are confounded with the groups of interest \citep{hicks2015widespread}.
 In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
-Changes in gene expression due to a plate effect will be indistinguishable from genuine DE between groups.
+Changes in gene expression due to plate effects will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
 This problem is still present in data sets with \revised{a few plates} (e.g., 2-3) in each group, 
     where stochastic plate-to-plate variability may explain some or all of the apparent DE between groups.
