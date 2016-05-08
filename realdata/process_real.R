@@ -138,8 +138,8 @@ postscript("all_scrambled.eps", width=width, height=7)
 layout(rbind(c(1,2)), width=c(width-2, 2))
 par(mar=c(6.2, 5.1, 2.1, 0.1))
 
-barplot(scrambled, names.arg=renamed, beside=TRUE, col=colors, ylab="Proportion of rejections", 
-        las=2, cex.lab=1.4, cex.axis=1.2, cex.names=1.2)
+barplot(scrambled, names.arg=renamed, beside=TRUE, col=colors, ylab="", las=2, cex.lab=1.4, cex.axis=1.2, cex.names=1.2)
+title(ylab="Proportion of genes with significant DE", cex.lab=1.4, line=4)
 abline(h=0.01, col="red", lwd=2, lty=2)
 
 par(mar=c(0.2, 0.1, 5.1, 0.1))
