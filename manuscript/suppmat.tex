@@ -334,15 +334,15 @@ Given that $E(S_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}
     &= \mbox{var}\{E(S_{ik} | \delta_{ik} ) \} + E\{ \mbox{var}(S_{ik} | \delta_{ik}) \}\\
     &= \mbox{var}\left(\delta_{ik}\sum_l N_l \theta_{l}\mu_{ig}\right) + E\left(\delta_{ik}\sum_l  N_l\theta_l\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_l  N_l\theta_l^2\mu_{ig}^2\right)\\
     &= \left(\sum_l N_l \theta_{l}\mu_{ig} \right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_l N_l \theta_{l}\mu_{ig}\right) + \left( \varphi_i \sum_l  N_l\theta_l^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
-    &= E(S_{ik})^2 \mbox{var}(\delta_{ik}) + E(S_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2}  \right\} E(S_{ik})^2 E(\delta_{ik}^2) \;. 
+    &= E(S_{ik})^2 \mbox{var}(\delta_{ik}) + E(S_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2}  \right\} E(S_{ik})^2 E(\delta_{ik}^2) \;. 
 \end{align*}
 \revised{Note} that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
 This means that\revised{, in the above expression,} only the third term defines the plate-specific aspect of the mean-variance relationship.
 Now, consider the behaviour of this term as the number of cells increases.
 If $N_l$ increases in each of $b$ \revised{bins}, the limit becomes
 \[
-    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{\sum_l N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
-    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{N_l \theta_j^2\mu_{ig}^2}{ (\sum_l N_l \theta_j\mu_{ig})^2} 
+    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{\sum_l N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2} 
+    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2} 
 = 0
 \]
 for positive values of $\theta_j$ and $\mu_{ig}$.
