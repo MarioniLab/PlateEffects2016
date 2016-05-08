@@ -70,16 +70,19 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 
 \subsection{Overview}
 We simulate from a NB-log-normal mixture, where the counts are conditionally NB-distributed and the plate effect is log-normally distributed.
-For count $Y_{ij}$ of gene $i$ in cell $j$ in plate $k$ of group $g$, we assume that
+We define $Y_{ijkg}$ as the random variable for the count of gene $i$ in cell $j$ in plate $k$ of group $g$.
+We further define $\theta_j$ as the random variable for the bias in cell $j$, and $\delta_{ik}$ as the random variable for the gene-/plate-specific effect in gene $i$ and plate $k$.
+$Y_{ijkg}$ is conditionally distributed as
 \[
-    Y_{ij} | \delta_{ik}, \theta_j \sim \mbox{NB}(\delta_{ik}\theta_j\mu_{ig}, \varphi_i)
+    Y_{ijkg} | \delta_{ik}, \theta_j \sim \mbox{NB}(\delta_{ik}\theta_j\mu_{ig}, \varphi_i)
 \]
-where $\theta_j$ is the cell-specific bias, $\delta_{ik}$ is the plate effect, $\mu_{ig}$ is the expected read count for this gene in group $g$, and $\varphi_i$ is the NB dispersion for this gene.
-All counts are assumed to be conditionally independent.
-We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$.
-This parametrization means that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
-Similarly, $\theta_j$ is sampled from some distribution with a mean of unity (i.e., the bias averages out across many cells) and is independent of $\delta_{ik}$.
-Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary, but simply ensures that the mean count across all cells and plates in group $g$ will be $\mu_{ig}$, consistent with its definition as an expectation.
+where $\mu_{ig}$ is the expected read count of gene $i$ in group $g$ and $\varphi_i$ is the NB dispersion for gene $i$.
+All counts are assumed to be independently sampled, conditional on the realized values of $\theta_j$ and $\delta_{ik}$.
+
+We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$, such that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
+Similarly, $\theta_j$ is sampled from some (empirically defined, see below) distribution with a mean of unity, i.e., the bias averages out across many cells.
+We also assume that $\theta_j$ and $\delta_{ik}$ are independent of each other.
+Having means of unity for both $\theta_j$ and $\delta_{ik}$ is not strictly necessary but simply ensures that $E(Y_{ijkg})=\mu_{ig}$, consistent with its definition.
 
 \subsection{Parameter estimation from real data}
 We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
@@ -142,38 +145,40 @@ Offsets were defined as log-transformed size factors.
 For the NB component, the mean count was computed for each plate and the grand mean $\mu_{i0}'$ across plates was computed for each gene.
 The NB dispersion $\varphi_i'$ and the probability $p'_i$ of belonging to the zero component were also estimated for each gene.
 These values were used to redefine the sampling distribution of $Y_{ij}$ as a ZINB distribution.
-Specifically, the mean of the NB component was set to $\delta_k\theta_j\mu_{i0}'$, the dispersion was set to $\varphi_i'$ and the zero probability was set to $p'_i$.
+Specifically, the mean of the NB component was set to $\delta_{ik}\theta_j\mu_{i0}'$, the dispersion was set to $\varphi_i'$ and the zero probability was set to $p'_i$.
 (For simplicity, we do not consider DE when simulating ZINB counts.)
 
 \subsection{Defining simulation scenarios}
 We simulated data for a scRNA-seq experiment with two groups of three plates.
 The number of cells on each plate was sampled from a Uniform$(50, 100)$ distribution.
-The bias $\theta_j$ for each cell was similarly sampled from the set of size factor estimates.
+The bias $\theta_j$ for each cell was sampled with replacement from the set of size factor estimates obtained from the mESC data set.
 We then randomly selected 10000 genes from the mESC data set.
 (For assessing type I error control, all genes are non-DE such that the null hypothesis is true for each gene.)
-For each chosen gene, the plate effect $\delta_{ik}$ in plate $k$ was sampled from a log-normal distribution.
-This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ij}$ for each cell on the plate.
+For each chosen gene, the plate effect $\delta_{ik}$ in plate $k$ was sampled from a log-normal distribution with parameters defined from the mESC data set.
+This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ijkg}$ for each cell on the plate.
 We repeated this process for each plate to obtain counts for all genes in all cells.
 
 We tested different scenarios by repeating the simulation with modified parameters.
 To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$ prior to sampling $\delta_{ik}$.
 Similarly, we set $\sigma^2=0$ to generate data where the plate effect was completely absent.
 We increased the variability in the number of cells per plate, by sampling the number per plate from a Uniform$(20, 100)$ distribution.
-We also increased the variability in the size factors, by multiplying each size factor by $2^{V_j}$ where $V_j \sim \mbox{Normal}(0, 0.25)$.
-We replaced the NB distribution with a ZINB distribution (with parameters estimated from real data, as previously described) for count sampling.
+We also increased the variability in the size factors, by multiplying the size factor for cell $j$ by $2^{V_j}$ where $V_j$ is a $\log_2$-normally distributed random variable with variance 0.25.
+This effectively increases the variance of the log-size factors across cells by 0.25, from the current variance of around 0.5 in Figure~\ref{subfig:realsize}.
+Next, we replaced the NB distribution with a ZINB distribution (with parameters estimated from real data, as previously described) for count sampling.
 Finally, we increased the size of the data set by using six plates per group.
 
-To evaluate power and FDR control, we repeated the simulation with incorporation of DE genes.
-We chose a random subset of $G$ genes for which DE was to be introduced.
-This was then partitioned into two further subsets of equal size.
-The first subset was upregulated in the first group such that $\psi_{i1} = \sqrt{\psi_0} = \psi_{i2}^{-1}$ for each gene $i$ in this subset.
-The $\psi_0$ term represents the overall fold change between groups and is set to some value greater than unity.
-By comparison, the second subset of genes was downregulated such that $\psi_{i2} = \sqrt{\psi_0} = \psi_{i1}^{-1}$ for each gene.
-We performed these simulations with $\psi_0 =3$ and $G=2000$ by default.
-However, we also tested additional scenarios, such as setting $\sigma^2=0$ to eliminate the plate effect; increasing $\psi_0$ to 6 to obtain stronger DE fold changes; or increasing $G$ to 4000 to obtain more DE genes.
+To evaluate power and FDR control, we incorporated DE genes into the simulation.
+We chose a random set of $G$ genes, which was partitioned into two further subsets of equal size.
+One subset of genes was upregulated in the first group of plates, whereas the other subset was upregulated in the second group.
+Recall that, for a DE gene $i$, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some group-/gene-specific fold change $\psi_{ig}$.
+Let the constant $\psi_0$ represent the overall DE fold change between groups.
+For all genes in the first subset, we define $\psi_{i1} = \sqrt{\psi_0}$ and $\psi_{i2} = 1/\sqrt{\psi_0}$ to introduce upregulation in the first group.
+Similarly, for genes in the second subset, we define $\psi_{i2} = \sqrt{\psi_0} = \psi_{i1}^{-1}$ to introduce upregulation in the second group.
+We performed these simulations with $\psi_0=3$ and $G=2000$ by default.
+However, we also tested scenarios with $\sigma^2$ set to 0, to eliminate the plate effect; $\psi_0$ set to 6, to obtain stronger DE fold changes; or $G$ set to 4000, to obtain more DE genes.
 
-In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation) to avoid introducing composition bias \citep{robinson2010scaling}.
-This simplifies the downstream analyses as it means that library size normalization can be used with all methods.
+In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation per group) to avoid introducing composition bias \citep{robinson2010scaling}.
+This simplifies the downstream analyses since library size normalization can be used with all methods.
 Thus, any difference in performance between analyses cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
 This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data with many zero counts \citep{lun2016pooling}.
 If these methods are used, they may contribute to the loss of error control.
@@ -185,7 +190,7 @@ If these methods are used, they may contribute to the loss of error control.
 For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, and the trended NB dispersion was used to fit a \revised{GLM} for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting}.
-DE testing between groups was performed using the QL F-test \revised{with the shrunken dispersions}.
+DE testing between groups was performed using the QL F-test \revised{with shrunken dispersions}.
 In the second analysis, the NB dispersion was estimated for each gene individually.
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
@@ -222,17 +227,18 @@ A LRT was then performed using the full and null model fits.}
 For any given set of counts, the same normalization procedure was used for all analyses.
 For simulated data, size factors were defined as mean-adjusted library sizes.
 This is possible due to the presence of balanced DE, as previously described.
-For real single-cell data, size factors were computed with the deconvolution method.
-To mitigate any DE, cells were clustered into relevant clusters (e.g., by culture type in the mESC data set) prior to normalization.
+For real single-cell data, size factors were computed with the deconvolution method \citep{lun2016pooling}.
+To mitigate any DE, cells were clustered (e.g., by culture type in the mESC data set) prior to normalization.
 For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
 In each scenario, size factors were either used directly (e.g., in the DESeq2 analysis) or converted into effective library sizes to compute offsets or CPM values.
 The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
 This preserves the relative normalization between cells while recovering the scale of the original library sizes.
 
-It is worth elaborating on what normalization actually does to the count sums.
-For each plate, the bias in the count sum is equal to the sum of the cell-specific biases across all cells on the plate.
-This is based on the pooling normalization framework in \cite{lun2016pooling}, after a slight modification by setting $t_j$ to 1 for each cell $j$.
-Normalization on the count sums will subsequently eliminate this plate-specific bias, such that there will be no systematic differences in the count sums of non-DE genes between plates.
+Normalization on the count sums is necessary as it eliminates plate-specific biases.
+These biases are driven by different numbers of cells per plate, different library sizes of those cells, as well as composition biases caused by DE between cells.
+In fact, the plate-specific bias is equal to the sum of the cell-specific biases across all cells on the plate.
+(This reasoning is based on the pooling normalization framework in \cite{lun2016pooling}, after setting $t_j=1$ for each cell $j$.)
+The bias will systematically alter the mean count for all genes on the plate, requiring normalization to avoid detection of spurious differences between plates.
 \end{color}
 
 \begin{color}{red}
@@ -245,7 +251,7 @@ Normalization on the count sums will subsequently eliminate this plate-specific 
         Error rates are shown on a log scale and represent the average across 10 simulation iterations.
         Each error bar represents the standard error of the log-average rate.
         The threshold of 0.01 is represented by the red line.
-        Only one iteration was used for Monocle and GLMMs due to their long running times.
+        Only one iteration was used for Monocle and GLMMs due to their long run times.
     }
     \label{fig:extrafail}
 \end{figure}
