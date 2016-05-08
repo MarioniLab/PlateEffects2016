@@ -189,15 +189,15 @@ Counts for each cell were conditionally NB-distributed and the plate effect was 
 Parameters of both distributions were estimated from real data -- see Supplementary Figure~\suppparamsim{}, Section~\suppsimulation{} of the Supplementary Materials for details.
 
 DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep{love2014moderated}, voom \citep{law2014voom}, Monocle, MAST \citep{finak2015mast} and generalized linear mixed models (GLMMs) from the lme4 package \citep{bates2015fitting}.
-edgeR, DESeq2 and voom are methods designed for analyses of bulk RNA-seq data.
+edgeR, DESeq2 and voom were originally designed for analyzing bulk RNA-seq data.
 edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts for each gene}, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
 (In particular, Monocle was designed to detect DE across a pseudotemporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
 The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
 \end{color}
 
-Each method was applied on the simulated data to test for DE between groups. 
-In all methods, the experimental design was parametrized as a one-way layout with two groups.
+Each method was applied to the simulated data to test for DE between groups. 
+For all methods, the experimental design was parametrized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
     or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
@@ -249,9 +249,9 @@ This is no longer justifiable if only four d.f.\ are available.
 The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal.
-This is attributable to the difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in typical data sets with small numbers of replicate plates.
-In particular, underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
-For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value -- however, this will introduce biases when the true correlation varies between genes.
+This is attributable to difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in data sets with small numbers of replicate plates.
+Underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
+For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value of the correlation -- however, this leads to biases when the true correlation varies between genes.
 
 % See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
 % However, voom doesn't improve with more plates in \suppfailsim{}.
@@ -259,8 +259,8 @@ For voom, the effect of imprecise estimation with few plates is mitigated by sha
 % In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
 % Note that discreteness is secondary, as voom itself does fine without a plate effect.
 
-We also tested the performance of each method in a variety of simulation scenarios.
-This involved repeating the simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
+We also tested the performance of each method with other simulation settings.
+To this end, we repeated the above simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
 In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
 This suggests that our results are generally applicable to different scRNA-seq data sets.
 \end{color}
@@ -303,7 +303,7 @@ This is achieved through the appropriate consideration of the model uncertainty 
 
 \subsection{Summation does not compromise DE detection power}
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
-In a DE analysis, the average expression of each gene is computed for each group and then compared between two or more groups.
+In a DE analysis, the average expression of a gene is computed for each group and then compared between two or more groups.
 This is true regardless of whether those groups contain replicate cells or replicate plates. 
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
@@ -341,7 +341,7 @@ Such averages could be obtained directly with bulk sequencing of the groups, rat
 
 The resolution of this contradiction is based on the ability of single-cell approaches to characterize and define the groups prior to the DE analysis.
 Purified populations of rare cells can be profiled by scRNA-seq if they cannot be obtained in sufficient numbers for bulk sequencing.
-Low quality libraries or contaminating cells can be identified and removed from each group to avoid interfering expression patterns.
+Low quality libraries or contaminating cells can be identified and removed from each group to avoid \revised{distorting downstream inferences}.
 Groups can also be empirically identified based on gene expression patterns, though this requires some care to avoid circularity in the subsequent DE analysis.
 Obviously, it is not mandatory to use the summed counts exclusively. 
 The single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
@@ -478,7 +478,7 @@ JCM was also supported by core funding from EMBL.}
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
     The threshold of 0.01 is represented by the red line.
-    Only one iteration was used for Monocle and GLMMs due to their long running times.
+    Only one iteration was used for Monocle and GLMMs due to their long run times.
 }
 \label{fig:platefail}
 \end{figure}
