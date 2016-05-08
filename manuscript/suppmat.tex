@@ -320,38 +320,38 @@ However, if the count sum for each plate has a different relationship, the accur
 \revised{In practice, differences in library sizes across cells and/or numbers of cells across plates do not seem to negatively affect the performance of methods on summed counts.
 Power and error control are maintained in our simulations with variable library sizes and cell numbers.}
 The robustness of summation can be explained by examining the mean-variance relationship of the simulated data.
-\revised{For simplicity, partition the cells on plate $k$ into $L_k$ bins where all cells in bin $l$ are assigned the same cell-specific bias $\theta_l$.
+\revised{For simplicity, partition the cells on plate $k$ into $L_k$ bins where all cells in bin $l$ are assigned a constant cell-specific bias $\tau_l$.
 (This does not affect generality, as any number of arbitrary bins can be defined.)}
-Let $\lambda_{il} = \delta_{ik}\theta_{l}\mu_{ig}$ for gene $i$ in each cell of \revised{bin} $l$.
+Let $\lambda_{il} = \delta_{ik}\tau_{l}\mu_{ig}$ for gene $i$ in each cell of \revised{bin} $l$.
 The count for each cell is independently sampled from a NB distribution with mean $\lambda_{il}$ and dispersion $\varphi_i$, as described in the simulation design.
 The conditional variance of the count sum $S_{ik}$ for plate $k$ is then
 \[
     \mbox{var}(S_{ik} | \delta_{ik}) = \sum_{l} N_l \lambda_{il}  + \varphi_{i} \sum_{l} N_l \lambda_{il}^2 \;.
 \]
-Given that $E(S_{ik}) = E(\sum_l N_l\lambda_{il}) = \sum_l N_l \theta_l \mu_{ig}$, the variance of the count sum can be decomposed to
+Given that $E(S_{ik}) = \sum_l N_l\lambda_{il} = \sum_l N_l \tau_l \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(S_{ik}) 
     &= \mbox{var}\{E(S_{ik} | \delta_{ik} ) \} + E\{ \mbox{var}(S_{ik} | \delta_{ik}) \}\\
-    &= \mbox{var}\left(\delta_{ik}\sum_l N_l \theta_{l}\mu_{ig}\right) + E\left(\delta_{ik}\sum_l  N_l\theta_l\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_l  N_l\theta_l^2\mu_{ig}^2\right)\\
-    &= \left(\sum_l N_l \theta_{l}\mu_{ig} \right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_l N_l \theta_{l}\mu_{ig}\right) + \left( \varphi_i \sum_l  N_l\theta_l^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
-    &= E(S_{ik})^2 \mbox{var}(\delta_{ik}) + E(S_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2}  \right\} E(S_{ik})^2 E(\delta_{ik}^2) \;. 
+    &= \mbox{var}\left(\delta_{ik}\sum_l N_l \tau_{l}\mu_{ig}\right) + E\left(\delta_{ik}\sum_l  N_l\tau_l\mu_{ig}  + \varphi_{i} \delta_{ik}^2 \sum_l  N_l\tau_l^2\mu_{ig}^2\right)\\
+    &= \left(\sum_l N_l \tau_{l}\mu_{ig} \right)^2 \mbox{var}(\delta_{ik}) + \left(\sum_l N_l \tau_{l}\mu_{ig}\right) + \left( \varphi_i \sum_l  N_l\tau_l^2\mu_{ig}^2 \right) E(\delta_{ik}^2) \\
+    &= E(S_{ik})^2 \mbox{var}(\delta_{ik}) + E(S_{ik}) + \left\{ \varphi_i \frac{\sum_l N_l \tau_l^2\mu_{ig}^2}{ (\sum_l N_l \tau_l\mu_{ig})^2}  \right\} E(S_{ik})^2 E(\delta_{ik}^2) \;. 
 \end{align*}
 \revised{Note} that $E(\delta_{ik}^2)$ and $\mbox{var}(\delta_{ik})$ are constant for all plates.
 This means that\revised{, in the above expression,} only the third term defines the plate-specific aspect of the mean-variance relationship.
 Now, consider the behaviour of this term as the number of cells increases.
 If $N_l$ increases in each of $b$ \revised{bins}, the limit becomes
 \[
-    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{\sum_l N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2} 
-    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{N_l \theta_l^2\mu_{ig}^2}{ (\sum_l N_l \theta_l\mu_{ig})^2} 
+    \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{\sum_l N_l \tau_l^2\mu_{ig}^2}{ (\sum_l N_l \tau_l\mu_{ig})^2} 
+    = \sum_l \lim_{\substack{N_{l_1} \to \infty \\ \dots \\ N_{l_b} \to \infty}} \frac{N_l \tau_l^2\mu_{ig}^2}{ (\sum_l N_l \tau_l\mu_{ig})^2} 
 = 0
 \]
-for positive values of $\theta_j$ and $\mu_{ig}$.
+for positive values of $\tau_j$ and $\mu_{ig}$.
 This means that, for any non-zero value of $\mbox{var}(\delta_{ik})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
 Summation will be similarly robust to plate-specific values for the NB dispersion \revised{or subpopulation-specific values for the mean count.
 Replacing $\varphi_i$ with some arbitrary $\varphi_{ik}$, or $\mu_{ig}$ with some subpopulation-specific expression $\mu_{il}$, will also have little effect as the plate-specific term approaches zero.}
 
-%While this result is described for discrete subpopulations of cells with the same $\theta_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\theta_l$) by considering an arbitrarily large $L_k$ on the plate.
+%While this result is described for discrete subpopulations of cells with the same $\tau_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\tau_l$) by considering an arbitrarily large $L_k$ on the plate.
 
 % If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
 % Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
