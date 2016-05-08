@@ -143,28 +143,31 @@ Further assume that a plate effect exists in the data set, whereby the expressio
 Gene specificity is motivated by biological variability between replicate populations\revised{, where uncontrolled differences in cell culturing or animal treatment can affect expression in a gene-dependent manner.}
 
 \begin{color}{red}
-Denote the read count for gene $i$ in cell $j$ in plate $k$ of group $g$ as $Y_{ij}$.
-Define $\delta_{ik}$ as the plate-specific effect for gene $i$; $\theta_j$ as the cell-specific bias; and $\mu_{ig}$ as the expected read count in group $g$.
-Assume that $\delta_{ik}$ for each plate is independently sampled from some distribution of positive values with non-zero variance.
+Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in cell $j$ in plate $k$ of group $g$.
+Define $\delta_{ik}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$.
+Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
-Similarly, $Y_{ij}$ is sampled independently for each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_j$.
-In the following text, we refer to $\mbox{var}(Y_{ij}|\delta_{ik},\theta_j)$ as the conditional variance, while the conditional expectation is defined as
+Further define $\theta_j$ as a random variable representing the bias in cell $j$.
+This is independent of $\delta_{ik}$ as it represents cell-specific bias (e.g., library size, composition bias) rather than plate-specific effects.
+$Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_j$.
+In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_j)$ as the conditional variance, while the conditional expectation is defined as
 \[
-    E(Y_{ij}|\delta_{ik},\theta_j) = \delta_{ik}\theta_j\mu_{ig} \;.
+    E(Y_{ij}|\delta_{ik},\theta_j) = \delta_{ik}\theta_j\mu_{ig} 
 \]
-This expression represents the impact of plate effects on the data.
-For each gene, the mean for all cells is scaled by a plate-dependent value of $\delta_{ik}$, leading to systematic differences between plates.
+where $\mu_{ig}$ as the expected read count for gene $i$ in group $g$.
+This captures the impact of plate effects on the data.
+For each gene, the mean for all cells on a given plate is scaled by the same value, $\delta_{ik}$, which introduces systematic differences between plates.
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
-This is because normalization computes a single scaling factor for each cell to adjust for variable $\theta_j$.
-In contrast, the plate effect varies across genes and cannot be removed by a single factor.
+This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_j$.
+In contrast, the plate effect varies across genes and cannot be removed by a single factor for each cell.
 \end{color}
 
 % Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
 % Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
 
 One aim of the data analysis for this experiment is to identify DE genes between groups.
-However, this is complicated by the presence of \revised{plate effects that are confounded by the biological groups.
-Consider an experimental design involving one plate in each of two groups.
+However, this is complicated by the presence of \revised{plate effects confounded with the biological groups of interest.
+Consider an experimental design with one plate from each of two groups.
 A fold-increase in $\delta_{ik}$ between the two plates cannot be distinguished from a matching increase in $\mu_{ig}$ between the two groups.}
 Any attempt to remove the former will affect detection of genuine DE in the latter.
 Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
