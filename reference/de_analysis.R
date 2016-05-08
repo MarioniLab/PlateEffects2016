@@ -167,6 +167,7 @@ if ("glmer" %in% methods.to.use) {
             null.fit <- glmer.nb(null.form, data=my.data)
             tested <- anova(full.fit, null.fit, test = "Chisq")
             # see ?glmer, http://glmm.wikidot.com/faq; best option other than bootstrapping (which would be bothersome for so many genes).
+            # also see http://lme4.r-forge.r-project.org/slides/2010-09-23-Rahway/7GLMM.pdf.
             pvalues[g] <- tested$Pr[2] 
         }, silent=TRUE)
     }
