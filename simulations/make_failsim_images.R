@@ -77,8 +77,8 @@ for (mode in 1:4) {
 
         all.means <- rbind(sum1$mean, raw1$mean, sum3$mean)
         all.se <- rbind(sum1$se, raw1$se, sum3$se)
-        pch <- c(21, 21, 21)
-        inner.color <- c("black", "grey80", "white")
+        pch <- c(21, 23, 21)
+        inner.color <- c("black", "grey60", "white")
 
         modes <- c("Plate effect", "Unsummed", "No plate effect")
         out.pic <- file.path(out.dir, "main_sum.eps")
