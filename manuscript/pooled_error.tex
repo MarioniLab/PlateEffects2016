@@ -197,7 +197,7 @@ The GLMM approach is more general, and uses NB distributions to model the counts
 \end{color}
 
 Each method was applied to the simulated data to test for DE between groups. 
-For all methods, the experimental design was parametrized as a one-way layout with two groups.
+For all methods, the experimental design was parameterized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
 edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
     or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
@@ -361,7 +361,7 @@ This data set contains multiple C1 chips across several batches for each culture
 Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-srv/espresso}.
 To simplify the analysis, counts were only used from cells in the two batches where all three culture types were represented.
 \revised{This resulted in 60-90 cells from each of six plates (three culture types in each of two batches)}.
-To account for the batch effect, the experimental design was parametrized as an additive model with culture-specific expression terms and batch-specific blocking factors.
+To account for the batch effect, the experimental design was parameterized as an additive model with culture-specific expression terms and batch-specific blocking factors.
 
 % Note that Kim used ComBat to remove batch effects, not plate effects.
 % Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
