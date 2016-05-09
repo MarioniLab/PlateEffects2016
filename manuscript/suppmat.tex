@@ -70,19 +70,20 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 
 \subsection{Overview}
 We simulate from a NB-log-normal mixture, where the counts are conditionally NB-distributed and the plate effect is log-normally distributed.
-We define $Y_{ijkg}$ as the random variable for the count of gene $i$ in cell $j$ in plate $k$ of group $g$.
-We further define $\theta_{jgk}$ as the random variable for the bias in cell $j$, and $\delta_{ik}$ as the random variable for the gene-/plate-specific effect in gene $i$ and plate $k$.
+Define $Y_{ijkg}$ as the random variable for the count of gene $i$ in cell $j$ in plate $k$ of group $g$, 
+    $\theta_{jkg}$ as the random variable for the bias in cell $j$ in plate $k$ of group $g$,
+    and $\delta_{ik}$ as the random variable for the gene-/plate-specific effect in gene $i$ and plate $k$.
 $Y_{ijkg}$ is conditionally distributed as
 \[
-    Y_{ijkg} | \delta_{ik}, \theta_{jgk} \sim \mbox{NB}(\delta_{ik}\theta_{jgk}\mu_{ig}, \varphi_i)
+    Y_{ijkg} | \delta_{ik}, \theta_{jkg} \sim \mbox{NB}(\delta_{ik}\theta_{jkg}\mu_{ig}, \varphi_i)
 \]
 where $\mu_{ig}$ is the expected read count of gene $i$ in group $g$ and $\varphi_i$ is the NB dispersion for gene $i$.
-All counts are assumed to be independently sampled, conditional on the realized values of $\theta_{jgk}$ and $\delta_{ik}$.
+All counts are assumed to be independently sampled, conditional on the realized values of $\theta_{jkg}$ and $\delta_{ik}$.
 
 We assume that $\log(\delta_{ik})$ is normally distributed with variance $\sigma^2$ and mean $-\sigma^2/2$, such that $E(\delta_{ik}) = 1$, i.e., the plate effect for each gene averages out across many plates.
-Similarly, $\theta_{jgk}$ is sampled from some (empirically defined, see below) distribution with a mean of unity, i.e., the bias averages out across many cells.
-We also assume that $\theta_{jgk}$ and $\delta_{ik}$ are independent of each other.
-Having means of unity for both $\theta_{jgk}$ and $\delta_{ik}$ is not strictly necessary but simply ensures that $E(Y_{ijkg})=\mu_{ig}$, consistent with its definition.
+Similarly, $\theta_{jkg}$ is sampled from some (empirically defined, see below) distribution with a mean of unity, i.e., the bias averages out across many cells.
+We also assume that $\theta_{jkg}$ and $\delta_{ik}$ are independent of each other.
+Having means of unity for both $\theta_{jkg}$ and $\delta_{ik}$ is not strictly necessary but simply ensures that $E(Y_{ijkg})=\mu_{ig}$, consistent with its definition.
 
 \subsection{Parameter estimation from real data}
 We designed our simulation to mimic the characteristics of the mESC data set \citep{kolod2015single}.
