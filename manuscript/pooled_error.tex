@@ -147,18 +147,18 @@ Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in 
 Define $\delta_{ik}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$.
 Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
-Further define $\theta_j$ as a random variable representing the bias in cell $j$.
+Further define $\theta_{jgk}$ as a random variable representing the bias in cell $j$.
 This is independent of $\delta_{ik}$ as it represents cell-specific bias (e.g., library size, composition bias) rather than plate-specific effects.
-$Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_j$.
-In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_j)$ as the conditional variance, while the conditional expectation is defined as
+$Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_{jgk}$.
+In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_{jgk})$ as the conditional variance, while the conditional expectation is defined as
 \[
-    E(Y_{ij}|\delta_{ik},\theta_j) = \delta_{ik}\theta_j\mu_{ig} 
+    E(Y_{ij}|\delta_{ik},\theta_{jgk}) = \delta_{ik}\theta_{jgk}\mu_{ig} 
 \]
 where $\mu_{ig}$ as the expected read count for gene $i$ in group $g$.
 This captures the impact of plate effects on the data.
 For each gene, the mean for all cells on a given plate is scaled by the same value, $\delta_{ik}$, which introduces systematic differences between plates.
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
-This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_j$.
+This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_{jgk}$.
 In contrast, the plate effect varies across genes and cannot be removed by a single factor for each cell.
 \end{color}
 
