@@ -242,6 +242,17 @@ In fact, the plate-specific bias is equal to the sum of the cell-specific biases
 The bias will systematically alter the mean count for all genes on the plate, requiring normalization to avoid detection of spurious differences between plates.
 \end{color}
 
+\subsection{Using plates as fixed effects is not appropriate}
+\begin{color}{red}
+One strategy to account for plate effects in the DE analysis is to treat the plate factor as a fixed effect.
+This means that each plate has an explicit term representing their average expression in the linear model, which absorbs any plate-specific effect for each gene.
+DE analyses between plates in different groups could then be performed by computing the average of the terms within each group, and comparing those averages between groups.
+However, the variance/dispersion estimate will be conditional on the fitted values of the plate-specific terms.
+This means that the plate-to-plate variability in the plate effect will not be modelled.
+Thus, the inferences from this analysis cannot be generalized to a repeated experiment with a new set of plates (and a different set of plate effects).
+This is unsatisfactory as the DE results will not be replicable.
+\end{color}
+
 \begin{color}{red}
 \begin{figure}[p]
     \begin{center}
