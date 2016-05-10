@@ -248,10 +248,11 @@ This is no longer justifiable if only four d.f.\ are available.
 \begin{color}{red}
 The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
-Nonetheless, both methods are still liberal.
+Nonetheless, both methods are still liberal, with observed type I error rates that are approximately three-fold higher than the specified threshold.
 This is attributable to difficulties in estimating the variance of the random effect (for the GLMM approach) or the correlation (for voom) in data sets with small numbers of replicate plates.
 Underestimation will result in loss of type I error control as the dependencies will not be fully modelled.
 For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value of the correlation -- however, this leads to biases when the true correlation varies between genes.
+GLMMs are also prohibitively slow to fit, taking several hours to run for a single simulation iteration.
 
 % See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
 % However, voom doesn't improve with more plates in \suppfailsim{}.
