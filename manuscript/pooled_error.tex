@@ -145,10 +145,10 @@ Gene specificity is motivated by biological variability between replicate popula
 \begin{color}{red}
 Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in cell $j$ in plate $k$ of group $g$.
 Define $\delta_{ik}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$.
-Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with non-zero variance.
+Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with a mean of unity and non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
-Further define $\theta_{jkg}$ as a random variable representing the bias in cell $j$ in plate $k$ of group $k$, also sampled from a distribution of positive values with non-zero variance.
-This is independent of $\delta_{ik}$ as it represents cell-specific bias (e.g., library size, composition bias) rather than plate-specific effects.
+Further define $\theta_{jkg}$ as a random variable representing the bias in cell $j$ in plate $k$ of group $k$, also sampled from a distribution of positive values with a mean of unity and non-zero variance.
+This is independent of $\delta_{ik}$ as it represents the cell-specific bias (e.g., library size, composition bias) within each plate, which is separate from the gene-specific plate effects.
 $Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_{jkg}$.
 In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_{jkg})$ as the conditional variance, while the conditional expectation is defined as
 \[
