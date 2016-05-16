@@ -345,7 +345,7 @@ The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ i
 \[
     \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}  + \varphi_{i} \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}^2 \;.
 \]
-In the following text, all sums with an index of $b$ are calculated across all $B_{kg}$ bins on plate $k$ of group $g$.
+In the following text, all summations with an index of $b$ are calculated across all $B_{kg}$ bins on plate $k$ of group $g$.
 As $E(S_{ikg}) = \sum_{b} N_{bkg}\lambda_{ibkg} = \sum_{b} N_{bkg} t_{bkg} \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(S_{ikg}) 
@@ -368,13 +368,30 @@ For any non-zero value of $\mbox{var}(\delta_{ikg})$, the relative contribution 
 Thus, the mean-variance relationship of the count sum will be similar between plates with many cells, regardless of the number of cells or their library sizes.
 \end{color}
 
-%While this result is described for discrete subpopulations of cells with the same $\tau_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\tau_l$) by considering an arbitrarily large $L_k$ on the plate.
-
-% If you take the simulation mean of exp(5), that gives us a dispersion around 1.2. Summing across 10 cells brings this down to 0.12.
-% Now, the variance of the plate effect is around 0.6 (not 0.5, as that's the log-plate effect), so you can see that it dominates the relationship.
-
 % Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
 % be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.
+%
+% # To check that it's being done right:
+% n <- c(10, 20, 5)
+% b <- c(0.5, 1, 1.5)
+% all.vars <- all.means <- list()
+% counter <- 1L
+% disp <- 0.1
+% for (mu in c(20, 40, 60, 80, 100)) {
+%     collected <- list()
+%     for (plate in 1:10000) { 
+%         plate.effect <- exp(rnorm(1, -0.25, sd=sqrt(0.5)))
+%         counts <- rnbinom(sum(n), mu=plate.effect * rep(b, n) * mu, size=1/disp)
+%         collected[[plate]] <- sum(counts)
+%     }
+%     all.vars[[counter]] <- var(unlist(collected))
+%     all.means[[counter]] <- mean(unlist(collected))
+%     counter <- counter + 1L
+% }
+% plot(unlist(all.means), unlist(all.vars))
+% effect.dist <- exp(rnorm(1e6, -0.25, sd=sqrt(0.5)))
+% curve(col="red", add=TRUE,
+% x^2*var(effect.dist) + x + x^2*mean(effect.dist^2)*(disp*sum(n*b^2)/sum(n*b)^2))
 
 \section{Benefits of hiding the variability between cells}
 If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
