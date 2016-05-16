@@ -345,12 +345,13 @@ The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ i
 \[
     \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}  + \varphi_{i} \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}^2 \;.
 \]
+In the following text, all sums with an index of $b$ are calculated across all $B_{kg}$ bins on plate $k$ of group $g$.
 As $E(S_{ikg}) = \sum_{b} N_{bkg}\lambda_{ibkg} = \sum_{b} N_{bkg} t_{bkg} \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(S_{ikg}) 
     &= \mbox{var}\{E(S_{ikg} | \delta_{ikg} ) \} + E\{ \mbox{var}(S_{ikg} | \delta_{ikg}) \}\\
     &= \mbox{var}\left(\delta_{ikg}\sum_{b} N_{bkg} t_{bkg}\mu_{ig}\right) + E\left(\delta_{ikg}\sum_{b}  N_{bkg}t_{bkg}\mu_{ig}  + \varphi_{i} \delta_{ikg}^2 \sum_{b}  N_{bkg}t_{bkg}^2\mu_{ig}^2\right)\\
-    &= \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig} \right)^2 \mbox{var}(\delta_{ikg}) + \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig}\right) + \left( \varphi_i \sum_{b}  N_{bkg}t_{bkg}^2\mu_{ig}^2 \right) E(\delta_{ikg}^2) \\
+    &= \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig} \right)^2 \mbox{var}(\delta_{ikg}) + \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig}\right) + \left( \varphi_i\mu_{ig}^2 \sum_{b}  N_{bkg}t_{bkg}^2 \right) E(\delta_{ikg}^2) \\
     &= E(S_{ikg})^2 \mbox{var}(\delta_{ikg}) + E(S_{ikg}) + \left\{ \varphi_i \frac{\sum_{b} N_{bkg} t_{bkg}^2}{ (\sum_{b} N_{bkg} t_{bkg})^2}  \right\} E(S_{ikg})^2 E(\delta_{ikg}^2) \;. 
 \end{align*}
 \revised{Note} that $E(\delta_{ikg}^2)$ and $\mbox{var}(\delta_{ikg})$ are constant for all plates.
@@ -364,7 +365,7 @@ If $N_{bkg}$ increases in each of $n$ bins, the limit becomes
 \]
 for positive $t_{bkg}$.
 For any non-zero value of $\mbox{var}(\delta_{ikg})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
-Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
+Thus, the mean-variance relationship of the count sum will be similar between plates with many cells, regardless of the number of cells or their library sizes.
 \end{color}
 
 %While this result is described for discrete subpopulations of cells with the same $\tau_l$, it can also be generalized to a more continuous distribution of cells (and specifically, of $\tau_l$) by considering an arbitrarily large $L_k$ on the plate.
