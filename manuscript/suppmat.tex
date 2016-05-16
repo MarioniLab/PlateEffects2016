@@ -328,12 +328,12 @@ This means that the count sum for each plate will not be identically distributed
 The most obvious difference is observed in the magnitude of the count sum between plates with different numbers of cells or library sizes per cell.
 This leads to a consistent fold-difference in the expression of all genes on one plate relative to another, which can be resolved by normalizing on the total library size for each plate (i.e., the sum of count sums across genes) or with related methods.
 The greater problem is that the count sum for each plate will not have the same mean-variance relationship.
-Briefly, the variance of a random variable can be expressed as a function of its mean.
+Briefly, the variance of common count distributions can be expressed as a function of the mean.
 Most parametric models assume that this function is the same for all observations of a given gene.
-For example, standard edgeR and DESeq2 analyses use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
+For example, edgeR and DESeq2 use a single NB dispersion estimate for each gene, which defines an identical mean-variance relationship for all counts of that gene.
 However, if the count sum for each plate has a different relationship, the accuracy of the models may be compromised.
 
-In practice, differences in library sizes and/or numbers of cells across plates do not seem to compromise performance on summed counts.
+In practice, differences in library sizes and/or numbers of cells across plates do not seem to negatively affect performance on summed counts.
 Power and error control are maintained in our simulations with variable library sizes and cell numbers.
 The robustness of summation can be explained by examining the mean-variance relationship of the simulated data.
 For simplicity, partition the cells on plate $k$ of group $g$ into $B_{kg}$ bins.
@@ -341,7 +341,7 @@ For simplicity, partition the cells on plate $k$ of group $g$ into $B_{kg}$ bins
 Each bin $b$ contains $N_{bkg}$ cells, all of which have a constant bin-specific bias $t_{bkg}$ that scales the mean count for all genes.
 Specifically, let $\lambda_{ibkg} = \delta_{ikg}t_{bkg}\mu_{ig}$ for gene $i$ in each cell of bin $b$ in plate $k$ in group $g$.
 The count for each cell is independently sampled from a NB distribution with mean $\lambda_{ibkg}$ and dispersion $\varphi_i$, as described in the simulation design.
-The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ is then
+The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ is 
 \[
     \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}  + \varphi_{i} \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}^2 \;.
 \]
