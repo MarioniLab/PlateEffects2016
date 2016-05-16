@@ -132,7 +132,7 @@ The ``tagwise'' dispersion estimate was used as $\varphi_i$ for each gene (Figur
 
 To estimate the variability of the plate effect, we fitted a GLMM to the counts for each gene using the glmer function in the lme4 package \citep{bates2015fitting}.
 We set the culture type and batch as fixed effects, the plate of origin as a random effect, and log-size factor as the offset for each cell.
-The distribution family was set to a NB distribution, where the ``theta'' parameter was defined as $\varphi_i^{-1}$ for gene $i$.
+The distribution family was set to a NB distribution with a size (i.e., ``theta'') parameter of $\varphi_i^{-1}$ for gene $i$.
 After fitting, the estimated variance of the random effect was obtained with the VarCorr function (Figure~\ref{subfig:realplate}).
 As the NB GLMM uses a log link function, this estimate represents the variance of the log-transformed plate effect and thus can be used as $\sigma^2$ in our simulation.
 However, each gene-specific estimate will be unstable with small numbers of plates.
@@ -151,7 +151,7 @@ Specifically, the mean of the NB component was set to $\delta_{ik}\theta_{jgk}\m
 
 \subsection{Defining simulation scenarios}
 We simulated data for a scRNA-seq experiment with two groups of three plates.
-The number of cells on each plate was sampled from a Uniform$(50, 100)$ distribution.
+The number of cells on each plate was sampled from a discrete uniform distribution on $[50, 100]$.
 The bias $\theta_{jgk}$ for each cell was sampled with replacement from the set of size factor estimates obtained from the mESC data set.
 We then randomly selected 10000 genes from the mESC data set.
 (For assessing type I error control, all genes are non-DE such that the null hypothesis is true for each gene.)
@@ -163,7 +163,7 @@ We tested different scenarios by repeating the simulation with modified paramete
 To reduce the variability of the plate effect, we halved the estimate of $\sigma^2$ prior to sampling $\delta_{ik}$.
 Similarly, we set $\sigma^2=0$ to generate data where the plate effect was completely absent.
 We increased the variability in the number of cells per plate, by sampling the number per plate from a Uniform$(20, 100)$ distribution.
-We also increased the variability in the size factors, by multiplying the size factor for cell $j$ by $2^{V_j}$ where $V_j$ is a $\log_2$-normally distributed random variable with variance 0.25.
+We also increased the variability in the size factors, by multiplying the size factor for cell $j$ by $2^{V_j}$ where $\log_2(V_j)$ is a normally distributed random variable with variance 0.25.
 This effectively increases the variance of the log-size factors across cells by 0.25, from the current variance of around 0.5 in Figure~\ref{subfig:realsize}.
 Next, we replaced the NB distribution with a ZINB distribution (with parameters estimated from real data, as previously described) for count sampling.
 Finally, we increased the size of the data set by using six plates per group.
@@ -180,6 +180,8 @@ However, we also tested scenarios with $\sigma^2$ set to 0, to eliminate the pla
 
 In all scenarios, we added balanced DE (i.e., an equal amount of up-/downregulation per group) to avoid introducing composition bias \citep{robinson2010scaling}.
 This simplifies the downstream analyses since library size normalization can be used with all methods.
+(The library size for a cell is defined as the sum of its counts across all genes.
+Library size normalization involves dividing counts by the library size, to correct for differences in sequencing depth between cells.)
 Thus, any difference in performance between analyses cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
 This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data with many zero counts \citep{lun2016pooling}.
 If these methods are used, they may contribute to the loss of error control.
@@ -226,14 +228,15 @@ A LRT was then performed using the full and null model fits.}
 \subsection{Explanation of the normalization strategy}
 \begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
-For simulated data, size factors were defined as mean-adjusted library sizes.
-This is possible due to the presence of balanced DE, as previously described.
+For simulated data, size factors were defined as the mean-adjusted library sizes, i.e., after dividing all library sizes by the mean library size.
+This represents library size normalization which is possible due to the presence of balanced DE, as previously described.
+The mean adjustment ensures that the size factors are centred around unity, which is required for DESeq2 to yield sensible normalized counts.
 For real single-cell data, size factors were computed with the deconvolution method \citep{lun2016pooling}.
-To mitigate any DE, cells were clustered (e.g., by culture type in the mESC data set) prior to normalization.
-For real summed or bulk data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
+To mitigate any DE, cells were clustered by culture type in the mESC data set prior to normalization.
+For real summed data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
 In each scenario, size factors were either used directly (e.g., in the DESeq2 analysis) or converted into effective library sizes to compute offsets or CPM values.
-The conversion was performed by scaling each size factor by the average of the original sizes across all cells.
-This preserves the relative normalization between cells while recovering the scale of the original library sizes.
+The conversion was performed by scaling each size factor by the mean of the original library sizes across all cells, to recover the scale of the original library sizes.
+Note that, in all cases, scaling all of the size factors by a constant is permissable as it does not affect the relative normalization between cells.
 
 Normalization on the count sums is necessary as it eliminates plate-specific biases.
 These biases are driven by different numbers of cells per plate, different library sizes of those cells, as well as composition biases caused by DE between cells.
