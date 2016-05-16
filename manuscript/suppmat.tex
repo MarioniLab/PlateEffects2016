@@ -228,15 +228,15 @@ A LRT was then performed using the full and null model fits.}
 \subsection{Explanation of the normalization strategy}
 \begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
-For simulated data, size factors were defined as the mean-adjusted library sizes, i.e., after dividing all library sizes by the mean library size.
+For simulated data, size factors were defined as the mean-adjusted library sizes, calculated by dividing all library sizes by the mean library size across all cells.
 This represents library size normalization which is possible due to the presence of balanced DE, as previously described.
 The mean adjustment ensures that the size factors are centred around unity, which is required for DESeq2 to yield sensible normalized counts.
+(Scaling all of the size factors by a constant is permissable as it does not affect the relative normalization between cells.)
 For real single-cell data, size factors were computed with the deconvolution method \citep{lun2016pooling}.
 To mitigate any DE, cells were clustered by culture type in the mESC data set prior to normalization.
 For real summed data, size factors were defined using the DESeq normalization method \citep{anders2010differential}.
 In each scenario, size factors were either used directly (e.g., in the DESeq2 analysis) or converted into effective library sizes to compute offsets or CPM values.
-The conversion was performed by scaling each size factor by the mean of the original library sizes across all cells, to recover the scale of the original library sizes.
-Note that, in all cases, scaling all of the size factors by a constant is permissable as it does not affect the relative normalization between cells.
+The conversion was performed by scaling each size factor by the mean of the original library sizes across all cells/plates, to recover the scale of the original sizes.
 
 Normalization on the count sums is necessary as it eliminates plate-specific biases.
 These biases are driven by different numbers of cells per plate, different library sizes of those cells, as well as composition biases caused by DE between cells.
