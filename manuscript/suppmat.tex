@@ -336,33 +336,33 @@ However, if the count sum for each plate has a different relationship, the accur
 In practice, differences in library sizes and/or numbers of cells across plates do not seem to compromise performance on summed counts.
 Power and error control are maintained in our simulations with variable library sizes and cell numbers.
 The robustness of summation can be explained by examining the mean-variance relationship of the simulated data.
-For simplicity, partition the cells on plate $k$ of group $g$ into $L_{kg}$ bins.
+For simplicity, partition the cells on plate $k$ of group $g$ into $B_{kg}$ bins.
 (This does not affect generality, as any number of arbitrary bins can be defined.)
-Each bin $l$ contains $N_{klg}$ cells, all of which have a constant bin-specific bias $t_{klg}$ that scales the mean count for all genes.
-Specifically, let $\lambda_{iklg} = \delta_{ikg}t_{klg}\mu_{ig}$ for gene $i$ in each cell of \revised{bin} $l$ in plate $k$ in group $g$.
-The count for each cell is independently sampled from a NB distribution with mean $\lambda_{iklg}$ and dispersion $\varphi_i$, as described in the simulation design.
+Each bin $b$ contains $N_{bkg}$ cells, all of which have a constant bin-specific bias $t_{bkg}$ that scales the mean count for all genes.
+Specifically, let $\lambda_{ibkg} = \delta_{ikg}t_{bkg}\mu_{ig}$ for gene $i$ in each cell of bin $b$ in plate $k$ in group $g$.
+The count for each cell is independently sampled from a NB distribution with mean $\lambda_{ibkg}$ and dispersion $\varphi_i$, as described in the simulation design.
 The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ is then
 \[
-    \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{l=1}^{L_{kg}} N_{klg} \lambda_{iklg}  + \varphi_{i} \sum_{l=1}^{L_{kg}} N_{klg} \lambda_{iklg}^2 \;.
+    \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}  + \varphi_{i} \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}^2 \;.
 \]
-As $E(S_{ikg}) = \sum_{l} N_{klg}\lambda_{iklg} = \sum_{l} N_{klg} t_{klg} \mu_{ig}$, the variance of the count sum can be decomposed to
+As $E(S_{ikg}) = \sum_{b} N_{bkg}\lambda_{ibkg} = \sum_{b} N_{bkg} t_{bkg} \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(S_{ikg}) 
     &= \mbox{var}\{E(S_{ikg} | \delta_{ikg} ) \} + E\{ \mbox{var}(S_{ikg} | \delta_{ikg}) \}\\
-    &= \mbox{var}\left(\delta_{ikg}\sum_{l} N_{klg} t_{klg}\mu_{ig}\right) + E\left(\delta_{ikg}\sum_{l}  N_{klg}t_{klg}\mu_{ig}  + \varphi_{i} \delta_{ikg}^2 \sum_{l}  N_{klg}t_{klg}^2\mu_{ig}^2\right)\\
-    &= \left(\sum_{l} N_{klg} t_{klg}\mu_{ig} \right)^2 \mbox{var}(\delta_{ikg}) + \left(\sum_{l} N_{klg} t_{klg}\mu_{ig}\right) + \left( \varphi_i \sum_{l}  N_{klg}t_{klg}^2\mu_{ig}^2 \right) E(\delta_{ikg}^2) \\
-    &= E(S_{ikg})^2 \mbox{var}(\delta_{ikg}) + E(S_{ikg}) + \left\{ \varphi_i \frac{\sum_{l} N_{klg} t_{klg}^2}{ (\sum_{l} N_{klg} t_{klg})^2}  \right\} E(S_{ikg})^2 E(\delta_{ikg}^2) \;. 
+    &= \mbox{var}\left(\delta_{ikg}\sum_{b} N_{bkg} t_{bkg}\mu_{ig}\right) + E\left(\delta_{ikg}\sum_{b}  N_{bkg}t_{bkg}\mu_{ig}  + \varphi_{i} \delta_{ikg}^2 \sum_{b}  N_{bkg}t_{bkg}^2\mu_{ig}^2\right)\\
+    &= \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig} \right)^2 \mbox{var}(\delta_{ikg}) + \left(\sum_{b} N_{bkg} t_{bkg}\mu_{ig}\right) + \left( \varphi_i \sum_{b}  N_{bkg}t_{bkg}^2\mu_{ig}^2 \right) E(\delta_{ikg}^2) \\
+    &= E(S_{ikg})^2 \mbox{var}(\delta_{ikg}) + E(S_{ikg}) + \left\{ \varphi_i \frac{\sum_{b} N_{bkg} t_{bkg}^2}{ (\sum_{b} N_{bkg} t_{bkg})^2}  \right\} E(S_{ikg})^2 E(\delta_{ikg}^2) \;. 
 \end{align*}
 \revised{Note} that $E(\delta_{ikg}^2)$ and $\mbox{var}(\delta_{ikg})$ are constant for all plates.
 This means that\revised{, in the above expression,} only the third term defines the plate-specific aspect of the mean-variance relationship.
 Now, consider the behaviour of this term as the number of cells increases.
-If $N_{klg}$ increases in each of $b$ \revised{bins}, the limit becomes
+If $N_{bkg}$ increases in each of $n$ bins, the limit becomes
 \[
-    \lim_{\substack{N_{kl_1g} \to \infty \\ \dots \\ N_{kl_bg} \to \infty}} \frac{\sum_{l} N_{klg} t_{klg}^2}{ (\sum_{l} N_{klg} t_{klg})^2} 
-    = \sum_{l} \lim_{\substack{N_{kl_1g} \to \infty \\ \dots \\ N_{kl_bg} \to \infty}} \frac{N_{klg} t_{klg}^2}{ (\sum_{l} N_{klg} t_{klg})^2} 
+    \lim_{\substack{N_{b_1kg} \to \infty \\ \dots \\ N_{b_nkg} \to \infty}} \frac{\sum_{b} N_{bkg} t_{bkg}^2}{ (\sum_{b} N_{bkg} t_{bkg})^2} 
+    = \sum_{b} \lim_{\substack{N_{b_1kg} \to \infty \\ \dots \\ N_{b_nkg} \to \infty}} \frac{N_{bkg} t_{bkg}^2}{ (\sum_{b} N_{bkg} t_{bkg})^2} 
 = 0
 \]
-for positive $t_{klg}$.
+for positive $t_{bkg}$.
 For any non-zero value of $\mbox{var}(\delta_{ikg})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar across plates with many cells, regardless of the number or library sizes of those cells.
 \end{color}
