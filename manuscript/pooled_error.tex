@@ -105,7 +105,7 @@ This does not strictly require single-cell resolution, and is more conventionall
 Nonetheless, there are some benefits to using single-cell data in this context.
 Rare cells are more easily sequenced with single-cell protocols, and irrelevant cells from contaminating populations can be screened out before analysis.
 It is also more practical to use existing scRNA-seq data compared to generating bulk data exclusively for a DE analysis.
-The analysis itself is typically performed using methods like edgeR \citep{robinson2010edgeR} and DESeq \citep{anders2010differential}, which were originally designed for bulk data;
+The analysis itself is typically performed using methods like edgeR \citep{robinson2010edgeR} and DESeq2 \citep{love2014moderated}, which were originally designed for bulk data;
     or with methods such as Monocle \citep{trapnell2014dynamics} and SCDE \citep{kharchenko2014bayesian}, which were designed explicitly for single-cell data.
 Putative DE genes are defined as those that exhibit significant differences in the average counts between two or more groups of interest.
 
@@ -147,7 +147,7 @@ Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in 
 Define $\delta_{ik}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$.
 Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with a mean of unity and non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
-Further define $\theta_{jkg}$ as a random variable representing the bias in cell $j$ in plate $k$ of group $k$, also sampled from a distribution of positive values with a mean of unity and non-zero variance.
+Further define $\theta_{jkg}$ as a random variable representing the bias in cell $j$ in plate $k$ of group $g$, also sampled from a distribution of positive values with a mean of unity and non-zero variance.
 This is independent of $\delta_{ik}$ as it represents the cell-specific bias (e.g., library size, composition bias) within each plate, which is separate from the gene-specific plate effects.
 $Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_{jkg}$.
 In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_{jkg})$ as the conditional variance, while the conditional expectation is defined as
@@ -210,7 +210,7 @@ For a specified type I error rate $\alpha = 0.01$, the observed error rate was d
 This was averaged across 10 simulation iterations to obtain a stable estimate of the observed type I error rate for each method. 
 A method was considered to be liberal if its observed error rate in the simulation was above the specified $\alpha$.
 Note that this evaluation is only possible for methods that compute $p$-values for each gene -- 
-    Bayesian methods \citep{kharchenko2014bayesian} are not directly comparable as they generate posterior probabilities, and so are not tested here.
+    Bayesian methods \citep{vallejos2016beyond,kharchenko2014bayesian} are not directly comparable and so are not tested here.
 
 % BASiCS requires spike-ins, that the other methods don't use, so it's not entirely comparable.
 % Kharchenko's method generates z-scores and MLEs, but no p-values.
@@ -320,12 +320,12 @@ This is consistent with the loss of error control when plate effects are ignored
 
 The comparable performance of analyses with and without summation is driven by several factors. 
 Firstly, as previously discussed, the (expected) DE log-fold change is the same regardless of whether the average expression in each group is computed over cells or over plates. 
-Secondly, summation reduces the conditional variance of the count sum relative to its size.
-This is most obvious with voom where expression is quantified as a (log-)CPM value.
-The CPM corresponding to a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to its expectation for a large number of conditionally independent cells.
+Secondly, the count sum per plate is less variable than the count per cell.
+This is most obvious in voom where expression is quantified as a (log-)CPM value.
+The CPM of a count sum effectively represents an estimate of the conditional mean across all cells on a plate -- by the law of large numbers, this should converge to its expectation for a large number of conditionally independent cells.
 Similar behaviour is observed in NB models where the variance of the sum of identical and independently NB-distributed random variables approaches that of a Poisson distribution.
-This decrease in variability offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
-(See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in conditional variance also improves model accuracy.)
+In both cases, the decrease in the conditional variance relative to the mean offsets the loss of power from the decrease in the number of samples when plates are considered instead of cells.
+(See also Section~\suppmeanvar{} of the Supplementary Materials for a discussion on how the relative decrease in the conditional variance also improves model accuracy.)
 Thirdly, methods like edgeR, DESeq2 and voom/limma share information between genes to estimate the dispersion or variance. 
 This mitigates the effect of reduced residual d.f. for count sums.
 Finally, the increase in power at low false positive rates may be due to the greater suitability of statistical models for count sums.
