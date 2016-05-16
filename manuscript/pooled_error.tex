@@ -144,19 +144,19 @@ Gene specificity is motivated by biological variability between replicate popula
 
 \begin{color}{red}
 Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in cell $j$ in plate $k$ of group $g$.
-Define $\delta_{ik}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$.
-Assume that $\delta_{ik}$ for each plate is independently sampled from a distribution of positive values with a mean of unity and non-zero variance.
+Define $\delta_{ikg}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$ of group $g$.
+Assume that $\delta_{ikg}$ for each plate is independently sampled from a distribution of positive values with a mean of unity and non-zero variance.
 This is reasonable as each plate contains cells from an independent population and is processed independently.
 Further define $\theta_{jkg}$ as a random variable representing the bias in cell $j$ in plate $k$ of group $g$, also sampled from a distribution of positive values with a mean of unity and non-zero variance.
-This is independent of $\delta_{ik}$ as it represents the cell-specific bias (e.g., library size, composition bias) within each plate, which is separate from the gene-specific plate effects.
-$Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ik}$ and $\theta_{jkg}$.
-In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ik},\theta_{jkg})$ as the conditional variance, while the conditional expectation is defined as
+This is independent of $\delta_{ikg}$ as it represents the cell-specific bias (e.g., library size, composition bias) within each plate, which is separate from the gene-specific plate effects.
+$Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ikg}$ and $\theta_{jkg}$.
+In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ikg},\theta_{jkg})$ as the conditional variance, while the conditional expectation is defined as
 \[
-    E(Y_{ij}|\delta_{ik},\theta_{jkg}) = \delta_{ik}\theta_{jkg}\mu_{ig} 
+    E(Y_{ij}|\delta_{ikg},\theta_{jkg}) = \delta_{ikg}\theta_{jkg}\mu_{ig} 
 \]
 where $\mu_{ig}$ as the expected read count for gene $i$ in group $g$.
 This captures the impact of plate effects on the data.
-For each gene, the mean for all cells on a given plate is scaled by the same value, $\delta_{ik}$, which introduces systematic differences between plates.
+For each gene, the mean for all cells on a given plate is scaled by the same value, $\delta_{ikg}$, which introduces systematic differences between plates.
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
 This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_{jkg}$.
 In contrast, the plate effect varies across genes and cannot be removed by a single factor for each cell.
@@ -168,9 +168,9 @@ In contrast, the plate effect varies across genes and cannot be removed by a sin
 One aim of the data analysis for this experiment is to identify DE genes between groups.
 However, this is complicated by the presence of \revised{plate effects confounded with the biological groups of interest.
 Consider an experimental design with one plate from each of two groups.
-A fold-increase in $\delta_{ik}$ between the two plates cannot be distinguished from a matching increase in $\mu_{ig}$ between the two groups.}
+A fold-increase in $\delta_{ikg}$ between the two plates cannot be distinguished from a matching increase in $\mu_{ig}$ between the two groups.}
 Any attempt to remove the former will affect detection of genuine DE in the latter.
-Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ik}$ for all plates in a group can explain part or all of the observed DE between groups.
+Even with multiple plates per group, this problem is still present as stochastic increases in $\delta_{ikg}$ for all plates in a group can explain part or all of the observed DE between groups.
 
 A common strategy is to ignore the plate effects and treat cells from different plates in the same group as replicates.
 This is most obviously applied in a one-way layout with clearly defined groups.
@@ -297,10 +297,10 @@ The other methods are not used here, for various reasons -- voom with correlatio
     Monocle and MAST are designed for per-cell rather than summed per-plate counts;
     and for edgeR without EB shrinkage, there are insufficient residual d.f.\ to stably estimate the dispersion.
 
-Summation will not explicitly protect against pathological situations where, e.g., $\delta_{ik} > 1$ for all plates in one group and $\delta_{ik} < 1$ for all plates in the other groups.
+Summation will not explicitly protect against pathological situations where, e.g., $\delta_{ikg} > 1$ for all plates in one group and $\delta_{ikg} < 1$ for all plates in the other groups.
 Such genes are more likely than others to be type I errors, regardless of whether single-cell or summed counts are used in the DE analysis.
 However, the benefit of summation is that it provides more accurate control of these errors.
-This is achieved through the appropriate consideration of the model uncertainty via low residual d.f., which reduces the significance of spurious DE caused by variable $\delta_{ik}$.
+This is achieved through the appropriate consideration of the model uncertainty via low residual d.f., which reduces the significance of spurious DE caused by variable $\delta_{ikg}$.
 
 \subsection{Summation does not compromise DE detection power}
 It should be stressed that summation of counts does not change the nature of the underlying changes in expression.
