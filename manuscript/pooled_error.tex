@@ -94,7 +94,7 @@ It is logistically simpler to track and process cells when each plate correspond
 For example, FACS is typically performed such that all cells on a plate are obtained \revised{by gating on a single} subpopulation.
 In the C1, cells are captured randomly in reaction chambers such that the identity of the cell in each chamber cannot be pre-specified.
 Ambiguity in determining the group for each cell is avoided by only using cells from the same group on each chip.
-However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect \revised{on observed expression} for all cells on each plate but a variable effect across different plates. 
+However, this design can result in a ``plate effect'' where uncontrollable experimental variables have a consistent effect \revised{on the observed counts} for all cells on each plate but a variable effect across different plates. 
 These variables can be technical in origin, such as differences in library preparation or sequencing between plates; 
     or biological, due to inherent variability in gene expression across replicate populations on different plates.
 
@@ -152,7 +152,7 @@ This is independent of $\delta_{ikg}$ as it represents the cell-specific bias (e
 $Y_{ijkg}$ is sampled independently for each gene in each cell, conditional on the observed values of $\delta_{ikg}$ and $\theta_{jkg}$.
 In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ikg},\theta_{jkg})$ as the conditional variance, while the conditional expectation is defined as
 \[
-    E(Y_{ij}|\delta_{ikg},\theta_{jkg}) = \delta_{ikg}\theta_{jkg}\mu_{ig} 
+    E(Y_{ijkg}|\delta_{ikg},\theta_{jkg}) = \delta_{ikg}\theta_{jkg}\mu_{ig} 
 \]
 where $\mu_{ig}$ as the expected read count for gene $i$ in group $g$.
 This captures the impact of plate effects on the data.
@@ -165,8 +165,8 @@ In contrast, the plate effect varies across genes and cannot be removed by a sin
 % Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
 % Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
 
-One aim of the data analysis for this experiment is to identify DE genes between groups.
-However, this is complicated by the presence of \revised{plate effects confounded with the biological groups of interest.
+One \revised{common} aim of the data analysis for this experiment is to identify DE genes between \revised{the biological groups of interest}.
+However, this is complicated by the presence of \revised{confounding plate effects.
 Consider an experimental design with one plate from each of two groups.
 A fold-increase in $\delta_{ikg}$ between the two plates cannot be distinguished from a matching increase in $\mu_{ig}$ between the two groups.}
 Any attempt to remove the former will affect detection of genuine DE in the latter.
@@ -179,7 +179,7 @@ DE genes can then be detected using software designed for bulk data (e.g., DESeq
 \revised{Alternatively, a more sophisticated but lesser-used approach involves fitting a mixed model to the counts for each gene.
 The plate of origin is treated as a random effect while the groups are treated as fixed effects.
 This accounts for plate-to-plate variability while still allowing detection of DE between groups.
-However, the performance of either strategy has yet to be rigorously assessed on scRNA-seq data sets that contain plate effects.}
+However, the performance of these strategies has yet to be rigorously assessed on scRNA-seq data sets that contain plate effects.}
 
 \begin{color}{red}
 \subsection{Testing DE analysis methods on simulated scRNA-seq data}
@@ -192,7 +192,7 @@ DE analyses of the simulated data were then performed using edgeR, DESeq2 \citep
 edgeR, DESeq2 and voom were originally designed for analyzing bulk RNA-seq data.
 edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts for each gene}, while voom uses a normal distribution to model log-counts per million (log-CPMs) with precision weights.
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
-(In particular, Monocle was designed to detect DE across a pseudotemporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
+(In particular, Monocle was designed to detect DE across a pseudo-temporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
 The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
 \end{color}
 
@@ -351,7 +351,7 @@ All of these advantages are lost when RNA sequencing is performed at the populat
 Note that summation across cells in scRNA-seq data is not without precedent.
 \cite{jaitin2014massively} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering.
 \cite{klein2015droplet} also pool single-cell counts within each group prior to performing a DE analysis between groups,
-    which increases the count size and avoids unstable estimates of the DE fold change.
+    which increases the count size and stabilizes the estimates of the DE fold change.
 However, the use of summation to restore type I error control in the presence of plate effects has not yet been addressed in the literature.
 
 \section{Summation results in reduced DE detection in real data}
