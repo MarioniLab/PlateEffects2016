@@ -46,13 +46,14 @@ Overcoming confounding plate effects in differential expression analyses of sing
 by
 
 \vspace{0.75cm}
-Aaron T. L. Lun$^{1}$ and John C. Marioni$^{1,2}$
+Aaron T. L. Lun$^{1}$ and John C. Marioni$^{1,2,3}$
 
 \vspace{1cm}
 \begin{minipage}{0.9\textwidth}
 \begin{flushleft} 
 $^1$Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom \\[6pt]
 $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom \\[6pt]
+$^3$Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom \\[6pt]
 \end{flushleft}
 \end{minipage}
 
@@ -72,7 +73,7 @@ $^2$EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cam
 We simulate from a NB-log-normal mixture, where the counts are conditionally NB-distributed and the plate effect is log-normally distributed.
 Define $Y_{ijkg}$ as the random variable for the count of gene $i$ in cell $j$ in plate $k$ of group $g$, 
     $\theta_{jkg}$ as the random variable for the bias in cell $j$ in plate $k$ of group $g$,
-    and $\delta_{ikg}$ as the random variable for the gene-/plate-specific effect in gene $i$ and plate $k$ of $g$.
+    and $\delta_{ikg}$ as the random variable for the gene/plate effect in gene $i$ and plate $k$ of group $g$.
 $Y_{ijkg}$ is conditionally distributed as
 \[
     Y_{ijkg} | \delta_{ikg}, \theta_{jkg} \sim \mbox{NB}(\delta_{ikg}\theta_{jkg}\mu_{ig}, \varphi_i)
@@ -93,8 +94,8 @@ Also, cells were only used if they belonged to a batch that contained all three 
 
 We then estimated the simulation parameters from the data.
 For the cell-specific biases, we applied the deconvolution method \citep{lun2016pooling} where all cells corresponding to each culture type were defined as a cluster.
-This yielded size factors centered around unity (Figure~\ref{subfig:realsize}), which can be treated as estimates of $\theta_{jgk}$ for all cells.
-To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centered log-size factors as offsets.
+This yielded size factors centred around unity (Figure~\ref{subfig:realsize}), which can be treated as estimates of $\theta_{jgk}$ for all cells.
+To estimate the mean count of each gene, we fitted an intercept-only GLM to the counts from all cells, using the mglmOneGroup function in edgeR with mean-centred log-size factors as offsets.
 The resulting coefficient was used to define $\mu_{i0}$, i.e., the expected count of gene $i$ (Figure~\ref{subfig:realmean}).
 For non-DE genes, $\mu_{ig}$ was set to $\mu_{i0}$ for all groups, whereas for DE genes, $\mu_{ig} = \psi_{ig}\mu_{i0}$ for some fold change $\psi_{ig}$.
 Finally, we used the estimateDisp function in edgeR to estimate the NB dispersion.
@@ -153,9 +154,9 @@ Specifically, the mean of the NB component was set to $\delta_{ikg}\theta_{jgk}\
 We simulated data for a scRNA-seq experiment with two groups of three plates.
 The number of cells on each plate was sampled from a discrete uniform distribution on $[50, 100]$.
 The bias $\theta_{jgk}$ for each cell was sampled with replacement from the set of size factor estimates obtained from the mESC data set.
-We then randomly selected 10000 genes from the mESC data set.
+We then randomly selected 10000 genes from the mESC data.
 (For assessing type I error control, all genes are non-DE such that the null hypothesis is true for each gene.)
-For each chosen gene, the plate effect $\delta_{ikg}$ in plate $k$ was sampled from a log-normal distribution with parameters defined from the mESC data set.
+For each chosen gene, the plate effect $\delta_{ikg}$ in plate $k$ of group $g$ was sampled from a log-normal distribution with parameters defined from the mESC data.
 This, along with the mean and dispersion of the chosen gene, was used to define the sampling distribution of $Y_{ijkg}$ for each cell on the plate.
 We repeated this process for each plate to obtain counts for all genes in all cells.
 
@@ -228,9 +229,9 @@ A LRT was then performed using the full and null model fits.}
 \subsection{Explanation of the normalization strategy}
 \begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
-For simulated data, size factors were defined as the mean-adjusted library sizes, calculated by dividing all library sizes by the mean library size across all cells.
-This represents library size normalization which is possible due to the presence of balanced DE, as previously described.
-The mean adjustment ensures that the size factors are centred around unity, which is required for DESeq2 to yield sensible normalized counts.
+For simulated data, size factors were defined as the mean-centred library sizes, calculated by dividing all library sizes by the mean library size across all cells.
+This represents library size normalization, which is appropriate due to the presence of balanced DE as previously described.
+The mean centering ensures that the size factors are centred around unity, which is required for DESeq2 to yield sensible normalized counts.
 (Scaling all of the size factors by a constant is permissable as it does not affect the relative normalization between cells.)
 For real single-cell data, size factors were computed with the deconvolution method \citep{lun2016pooling}.
 To mitigate any DE, cells were clustered by culture type in the mESC data set prior to normalization.
@@ -345,7 +346,7 @@ The conditional variance of the count sum $S_{ikg}$ for plate $k$ in group $g$ i
 \[
     \mbox{var}(S_{ikg} | \delta_{ikg}) = \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}  + \varphi_{i} \sum_{b=1}^{B_{kg}} N_{bkg} \lambda_{ibkg}^2 \;.
 \]
-In the following text, all summations with an index of $b$ are calculated across all $B_{kg}$ bins on plate $k$ of group $g$.
+In the following text, all summations with an index of $b$ are calculated across all $B_{kg}$ bins in plate $k$ of group $g$.
 As $E(S_{ikg}) = \sum_{b} N_{bkg}\lambda_{ibkg} = \sum_{b} N_{bkg} t_{bkg} \mu_{ig}$, the variance of the count sum can be decomposed to
 \begin{align*}
     \mbox{var}(S_{ikg}) 
