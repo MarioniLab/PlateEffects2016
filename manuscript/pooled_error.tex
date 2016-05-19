@@ -433,13 +433,13 @@ by decreasing the size of the DE lists and \revised{improving the ranking of rel
 \revised{We note that there are some situations where summation has fewer advantages.}
 For example, cells can be arranged onto plates such that each plate contains cells from multiple biological groups.
 \revised{DE comparisons can then be performed directly between cells on the same plate, avoiding problems from technical variability in processing between plates. 
-This mitigates the plate effect (though an equivalent ``population effect'' may be observed whereby expression is systematically different for all cells from the same replicate animal or cell culture) and reduces the need for summation.
+This mitigates the plate effect (though an equivalent ``population effect'' may be observed whereby dependencies are present between cells from the same replicate animal or cell culture) and reduces the need for summation.
 In experiments involving one plate in each group, summation will yield only one count sum per group.
 This cannot be easily analyzed by existing methods as the variance within each group cannot be modelled without replication.
 A direct analysis of single-cell counts is more straightforward as the variance can be estimated across cells.
 That said, the latter analysis is only valid under the assumption that no plate effect exists.
 This is because the variance estimate only accounts for variability within plates, not between plates.
-To verify this assumption, one would have to generate data from replicate plates such that summation would become applicable.}    
+To verify this assumption, one would have to generate data from replicate plates such that summation would be applicable.}    
 
 In general, experimental designs involving \revised{several plates nested in each group seem to provide the best compromise between statistical rigour and experimental practicality.
 This generates the necessary replication across populations (assuming that each plate corresponds to a replicate population) while being easier to set up than plates of mixed populations or groups.}
