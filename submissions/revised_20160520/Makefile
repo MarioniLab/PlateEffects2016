@@ -1,6 +1,6 @@
 all: pooled_error.dvi suppmat.pdf
 
-pooled_error.dvi: pooled_error.tex main_failsim.eps main_okaysim.eps main_power.eps main_power_zoom.eps main_swapped.eps references.bib
+pooled_error.dvi: pooled_error.tex main_failsim.eps main_okaysim.eps main_power_zoom.eps main_swapped.eps references.bib
 	latex pooled_error.tex
 	bibtex pooled_error
 	latex pooled_error.tex
@@ -25,8 +25,5 @@ main_power.eps: ../../simulations/ESpresso/results_power/ROC_1.eps
 	cp $< $@
 
 main_power_zoom.eps: ../../simulations/ESpresso/results_power/ROC_zoom_1.eps
-	cp $< $@
-
-main_swapped.eps: ../../realdata/all_scrambled.eps
 	cp $< $@
 

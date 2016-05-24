@@ -66,8 +66,9 @@ This suggests that summation can assist in maintaining statistical rigour in DE 
 \newcommand{\suppokaysim}{S3}
 \newcommand{\supppowerroc}{S4}
 \newcommand{\supppowerfdr}{S5}
-\newcommand{\supprealrank}{S6}
-\newcommand{\suppexpprof}{S7}
+\newcommand{\suppswapped}{S6}
+\newcommand{\supprealrank}{S7}
+\newcommand{\suppexpprof}{S8}
 
 \section{Introduction}
 Single-cell RNA sequencing (scRNA-seq) is increasingly being used to study molecular biology at the cellular level.
@@ -389,9 +390,9 @@ The set of DE genes detected at a FDR of 5\% was then reported for each method.}
 In all comparisons, the number of DE genes detected with summed counts was substantially smaller than that detected with single-cell counts (Table~\ref{tab:realnum}).
 In fact, the DE list from the former was generally a subset of that from the latter.
 However, this does not mean that DE analyses with single-cell counts provide more power.
-\revised{To assess specificity, we repeated each comparison after swapping the culture labels of the samples being compared in one batch.
+\revised{To assess specificity, we repeated each comparison after swapping the culture labels of the samples being compared in one of the batches.
 Each group now contains one sample from each culture type, such that no DE genes should be present between groups.
-We observed that only the methods using summation were able to control the type I error rate below the specified threshold (Figure~\ref{fig:realswap}).
+Only the methods using summation were able to control the type I error rate below the specified threshold (Supplementary Figure~\suppswapped{}).
 (Some conservativeness is expected as genuine DE between culture types inflates the variances upon swapping.)
 In contrast, the single-cell analyses are liberal to a degree that is consistent with the simulations.
 This suggests that the increased numbers in Table~\ref{tab:realnum} correspond to detection of false positives rather than genuine DE genes.
@@ -540,17 +541,6 @@ The number of DE genes detected with both counts is also shown.
 \end{tabular}
 \end{center}
 \end{table}
-
-\begin{figure}[!p]
-\begin{center}
-    \includegraphics[width=0.8\textwidth]{main_swapped.eps}
-\end{center}
-\caption{
-    Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
-    Each proportion represents a type I error rate as the null hypothesis is true for each gene.
-}
-\label{fig:realswap}
-\end{figure}
 
 \begin{table}[!p]
 \caption{Proportion of the top-ranking DE genes shared between analyses using the single-cell or summed counts.
