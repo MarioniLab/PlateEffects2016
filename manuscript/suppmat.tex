@@ -418,6 +418,17 @@ For example, if the subpopulation structure is the same in each replicate plate,
 % It's independent because information about subpopulation-specific expression is absorbed into the mean of the count sum already. 
 % We also assume that the cell-specific bias is a random variable, which also goes away upon taking the expectation.
 
+\begin{figure}[!p]
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{main_swapped.pdf}
+\end{center}
+\caption{
+    Proportion of genes with $p$-values below the nominal threshold of 0.01 (red) for the 2i vs.\ serum and a2i vs.\ serum comparisons, upon applying each method with and without summation to label-swapped data.
+    Each proportion represents a type I error rate as the null hypothesis is true for each gene.
+}
+\label{fig:realswap}
+\end{figure}
+
 \begin{figure}[p]
 \begin{center}
     \includegraphics[width=0.6\textwidth]{../realdata/ESpresso/real_ranks.pdf}
