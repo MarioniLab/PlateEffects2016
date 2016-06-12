@@ -4,7 +4,7 @@ To run the simulation and analysis code:
 
 1. Download the count table from http://www.ebi.ac.uk/teichmann-srv/espresso, and store it in `reference/ESpresso`.
 2. Run `reference/submitter.sh` to construct the simulation function based on real data.
-3. Run `simulations/submitter.sh` to perform the simulations. 
+3. Run `simulations/submitter.sh` to perform the simulations for type I error control and power.
 This assumes you have an LSF system, otherwise remove the `bsub` preamble in front of each job. 
 The `make_*_images.R` scripts are used to make plots of the simulation results.
 4. Run `realdata/submitter.sh` to analyze the mESC data. 
