@@ -1,6 +1,6 @@
 
-R version 3.2.2 (2015-08-14) -- "Fire Safety"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 3.3.1 Patched (2016-08-05 r71041) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,6 +17,10 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> # This script checks how the duplicateCorrelation function behaves
+> # with respect to increasing numbers of plates or cells,
+> # and with respect to larger batch effects.
+> 
 > set.seed(0)
 > require(limma)
 Loading required package: limma
@@ -53,7 +57,7 @@ Loading required package: limma
 +         fit <- eBayes(fit, robust=TRUE)
 +         res <- topTable(fit, coef=ncol(design), sort.by="none", n=Inf)
 + 
-+         # Using the true value (unless there is none).
++         # Using the true value (unless there is none, because it's variable across genes).
 +         if (x!=4) {
 +             alt.fit <- lmFit(dummy, design, block=batch, correlation=truth)
 +             alt.fit <- eBayes(alt.fit, robust=TRUE)
@@ -119,7 +123,11 @@ Consensus is 0.87939, truth is 0.85925
 Type I error at 1% for consensus is 0.02350 
 
 > 
+> # Thus, we conclude that - despite being able to share information across genes -
+> # there is still some inaccuracy with the estimate of the correlation at low 
+> # numbers of plates. This is also present if you have different true correlations
+> # across genes, such that the use of the consensus correlation is not accurate.
 > 
 > proc.time()
    user  system elapsed 
-332.456   0.103 332.688 
+310.913   0.271 312.290 

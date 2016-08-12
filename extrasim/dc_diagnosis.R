@@ -1,3 +1,7 @@
+# This script checks how the duplicateCorrelation function behaves
+# with respect to increasing numbers of plates or cells,
+# and with respect to larger batch effects.
+
 set.seed(0)
 require(limma)
 
@@ -33,7 +37,7 @@ for (x in 1:4) {
         fit <- eBayes(fit, robust=TRUE)
         res <- topTable(fit, coef=ncol(design), sort.by="none", n=Inf)
 
-        # Using the true value (unless there is none).
+        # Using the true value (unless there is none, because it's variable across genes).
         if (x!=4) {
             alt.fit <- lmFit(dummy, design, block=batch, correlation=truth)
             alt.fit <- eBayes(alt.fit, robust=TRUE)
@@ -50,3 +54,7 @@ for (x in 1:4) {
     cat("\n")
 }
 
+# Thus, we conclude that - despite being able to share information across genes -
+# there is still some inaccuracy with the estimate of the correlation at low 
+# numbers of plates. This is also present if you have different true correlations
+# across genes, such that the use of the consensus correlation is not accurate.
