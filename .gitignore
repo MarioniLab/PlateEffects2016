@@ -9,11 +9,8 @@ manuscript/suppmat.log
 manuscript/texput.log
 manuscript/*.pdf
 
-failsim/*.eps
-
-power/*.eps
-power/*.rds
-power/normality/*.eps
+extrasim/blocked.eps
+extrasim/oneway.eps
 
 quantile/sim_schematic.pdf
 quantile/*.eps
