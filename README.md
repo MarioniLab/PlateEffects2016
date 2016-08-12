@@ -13,5 +13,6 @@ Individual R scripts in `realdata` are also responsible for generating plots -- 
 The `manuscript` directory contains all the LaTeX source code for the manuscript.
 This can be compiled with `make`.
 
-The other directories contain older analysis code that was not used in the final manuscript.
-Nonetheless, some things may be interesting, e.g., `failsim/extra/dc_diagnosis.R` for a study of `duplicateCorrelation` behaviour, `variability` to examine how the results are affected by different types of variances.
+The `extrasim` directories contain other diagnostic scripts that were used to check the behaviour of certain methods.
+
+
