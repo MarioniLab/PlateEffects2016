@@ -98,17 +98,23 @@ for (pv in c(0, 0.5)) {
             total.collected[[indicator]] <- edgeR.collected
 
             # Printing out some output as a record.
-            cat(sprintf("Results for PV=%.1f, scenario=%s\n", pv, indicator))
+            cat(sprintf("Power for PV=%.1f, scenario=%s\n", pv, indicator))
             cat("\tedgeR raw\n")
-            print(summary(colMeans(do.call(rbind, edgeR.collected$raw))))
+            ave.roc <- colMeans(do.call(rbind, edgeR.collected$raw))
+            errs <- 10^-(4:1)
+            detected <- sapply(errs, function(x) max(which(ave.roc <= x)))/length(ave.roc) * 100
+            names(detected) <- errs
+            print(detected)
             cat("\tedgeR sum\n")
-            print(summary(colMeans(do.call(rbind, edgeR.collected$sum))))
+            ave.roc <- colMeans(do.call(rbind, edgeR.collected$sum))
+            detected <- sapply(errs, function(x) max(which(ave.roc <= x)))/length(ave.roc) * 100
+            names(detected) <- errs
+            print(detected)
             cat("\n")
         }
     }
             
     saveRDS(file=ifelse(pv<1e-8, "without.rds", "with.rds"), total.collected)
-
 }
 
 ##################################################

@@ -9,13 +9,10 @@ manuscript/suppmat.log
 manuscript/texput.log
 manuscript/*.pdf
 
-extrasim/blocked.eps
-extrasim/oneway.eps
-
-quantile/sim_schematic.pdf
-quantile/*.eps
-quantile/power/*.eps
-quantile/power/*.rds
+extrasim/misc/blocked.eps
+extrasim/misc/oneway.eps
+extrasim/quantile/sim_schematic.pdf
+extrasim/quantile/results.txt
 
 realdata/results/
 realdata/top_edgeR_ola1_sum.pdf

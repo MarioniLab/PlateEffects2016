@@ -1,6 +1,6 @@
 
-R version 3.2.2 (2015-08-14) -- "Fire Safety"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 3.3.1 Patched (2016-08-05 r71041) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -117,172 +117,179 @@ Type 'q()' to quit R.
 +             total.collected[[indicator]] <- edgeR.collected
 + 
 +             # Printing out some output as a record.
-+             cat(sprintf("Results for PV=%.1f, scenario=%s\n", pv, indicator))
++             cat(sprintf("Power for PV=%.1f, scenario=%s\n", pv, indicator))
 +             cat("\tedgeR raw\n")
-+             print(summary(colMeans(do.call(rbind, edgeR.collected$raw))))
++             ave.roc <- colMeans(do.call(rbind, edgeR.collected$raw))
++             errs <- 10^-(4:1)
++             detected <- sapply(errs, function(x) max(which(ave.roc <= x)))/length(ave.roc) * 100
++             names(detected) <- errs
++             print(detected)
 +             cat("\tedgeR sum\n")
-+             print(summary(colMeans(do.call(rbind, edgeR.collected$sum))))
++             ave.roc <- colMeans(do.call(rbind, edgeR.collected$sum))
++             detected <- sapply(errs, function(x) max(which(ave.roc <= x)))/length(ave.roc) * 100
++             names(detected) <- errs
++             print(detected)
 +             cat("\n")
 +         }
 +     }
 +             
 +     saveRDS(file=ifelse(pv<1e-8, "without.rds", "with.rds"), total.collected)
-+ 
 + }
-Results for PV=0.0, scenario=-1
+Power for PV=0.0, scenario=-1
 	edgeR raw
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000000 0.0007044 0.0000000 0.3811000 
+1e-04 0.001  0.01   0.1 
+91.85 96.40 98.95 99.85 
 	edgeR sum
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000000 0.0120000 0.0000125 0.9389000 
+1e-04 0.001  0.01   0.1 
+79.70 84.80 91.10 96.95 
 
-Results for PV=0.0, scenario=1
+Power for PV=0.0, scenario=1
 	edgeR raw
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.020400 0.001041 0.966800 
+1e-04 0.001  0.01   0.1 
+65.85 74.80 85.00 94.95 
 	edgeR sum
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000375 0.0185500 0.0018750 0.9691000 
+1e-04 0.001  0.01   0.1 
+61.00 70.60 84.30 94.55 
 
-Results for PV=0.0, scenario=-2
+Power for PV=0.0, scenario=-2
 	edgeR raw
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.001307 0.000000 0.686300 
+1e-04 0.001  0.01   0.1 
+90.40 95.30 98.45 99.70 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.00000 0.00000 0.00176 0.00000 0.75590 
+1e-04 0.001  0.01   0.1 
+91.65 95.65 98.40 99.55 
 
-Results for PV=0.0, scenario=2
+Power for PV=0.0, scenario=2
 	edgeR raw
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.001469 0.000000 0.486000 
+1e-04 0.001  0.01   0.1 
+87.95 94.05 98.10 99.65 
 	edgeR sum
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.001589 0.000000 0.645600 
+1e-04 0.001  0.01   0.1 
+91.80 95.45 98.15 99.60 
 
-Results for PV=0.0, scenario=-3
+Power for PV=0.0, scenario=-3
 	edgeR raw
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.000872 0.000000 0.429700 
+1e-04 0.001  0.01   0.1 
+90.65 95.55 98.60 99.85 
 	edgeR sum
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.004122 0.000000 0.762100 
+1e-04 0.001  0.01   0.1 
+86.75 91.50 96.05 98.90 
 
-Results for PV=0.0, scenario=3
+Power for PV=0.0, scenario=3
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.00000 0.00000 0.00134 0.00000 0.42260 
+1e-04 0.001  0.01   0.1 
+90.00 94.60 98.25 99.65 
 	edgeR sum
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.005254 0.000000 0.891900 
+1e-04 0.001  0.01   0.1 
+84.85 90.45 95.25 98.55 
 
-Results for PV=0.0, scenario=-4
+Power for PV=0.0, scenario=-4
 	edgeR raw
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000000 0.0009614 0.0000000 0.3122000 
+1e-04 0.001  0.01   0.1 
+91.15 95.40 98.45 99.75 
 	edgeR sum
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000125 0.0125500 0.0001875 0.9054000 
+1e-04 0.001  0.01   0.1 
+73.30 81.30 90.45 96.95 
 
-Results for PV=0.0, scenario=4
+Power for PV=0.0, scenario=4
 	edgeR raw
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000000 0.000000 0.000000 0.001094 0.000000 0.484700 
+1e-04 0.001  0.01   0.1 
+90.60 95.55 98.55 99.75 
 	edgeR sum
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000000 0.0000000 0.0000250 0.0147200 0.0005125 0.9049000 
+1e-04 0.001  0.01   0.1 
+63.55 77.90 88.05 95.90 
 
-Results for PV=0.5, scenario=-1
+Power for PV=0.5, scenario=-1
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0000  0.0725  0.2348  0.3213  0.5230  0.9992 
+1e-04 0.001  0.01   0.1 
+ 0.45  1.80  7.35 30.20 
 	edgeR sum
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000025 0.041140 0.165300 0.273200 0.441300 0.998800 
+1e-04 0.001  0.01   0.1 
+ 0.35  2.15 11.00 39.35 
 
-Results for PV=0.5, scenario=1
+Power for PV=0.5, scenario=1
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04876 0.17670 0.28180 0.45690 0.99810 
+1e-04 0.001  0.01   0.1 
+ 0.40  2.15  8.45 36.05 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0000  0.0420  0.1718  0.2771  0.4508  0.9988 
+1e-04 0.001  0.01   0.1 
+ 0.55  1.95 10.25 38.90 
 
-Results for PV=0.5, scenario=-2
+Power for PV=0.5, scenario=-2
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04564 0.17040 0.26900 0.42330 0.99800 
+1e-04 0.001  0.01   0.1 
+ 0.75  2.55 10.45 37.60 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.03916 0.15830 0.26590 0.42780 0.99920 
+1e-04 0.001  0.01   0.1 
+ 0.55  2.15 10.95 40.20 
 
-Results for PV=0.5, scenario=2
+Power for PV=0.5, scenario=2
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04562 0.16820 0.26960 0.42930 0.99900 
+1e-04 0.001  0.01   0.1 
+ 0.70  2.35 10.10 38.05 
 	edgeR sum
-    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
-0.000025 0.040070 0.156100 0.265600 0.424400 0.998800 
+1e-04 0.001  0.01   0.1 
+ 0.40  2.55 11.20 40.55 
 
-Results for PV=0.5, scenario=-3
+Power for PV=0.5, scenario=-3
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04327 0.16790 0.27020 0.43230 0.99840 
+1e-04 0.001  0.01   0.1 
+ 0.60  2.60 10.95 38.20 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04189 0.16210 0.27150 0.43860 0.99790 
+1e-04 0.001  0.01   0.1 
+ 0.55  2.45 10.80 39.60 
 
-Results for PV=0.5, scenario=3
+Power for PV=0.5, scenario=3
 	edgeR raw
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000125 0.0430600 0.1699000 0.2700000 0.4320000 0.9980000 
+1e-04 0.001  0.01   0.1 
+ 0.65  2.50 10.35 38.10 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04058 0.16120 0.27060 0.43830 0.99820 
+1e-04 0.001  0.01   0.1 
+ 0.55  2.45 11.10 40.15 
 
-Results for PV=0.5, scenario=-4
+Power for PV=0.5, scenario=-4
 	edgeR raw
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.00000 0.04329 0.16700 0.26950 0.42980 0.99930 
+1e-04 0.001  0.01   0.1 
+ 0.35  2.65 11.00 38.30 
 	edgeR sum
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000125 0.0448200 0.1711000 0.2786000 0.4547000 0.9994000 
+1e-04 0.001  0.01   0.1 
+ 0.55  2.00 10.20 38.50 
 
-Results for PV=0.5, scenario=4
+Power for PV=0.5, scenario=4
 	edgeR raw
-     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-0.0000125 0.0436200 0.1701000 0.2705000 0.4334000 0.9981000 
+1e-04 0.001  0.01   0.1 
+ 0.55  2.80 11.10 37.95 
 	edgeR sum
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0000  0.0457  0.1746  0.2800  0.4510  0.9989 
+1e-04 0.001  0.01   0.1 
+ 0.35  2.65 10.45 38.00 
 
 > 
 > ##################################################
 > # End.
 > 
 > sessionInfo()
-R version 3.2.2 (2015-08-14)
+R version 3.3.1 Patched (2016-08-05 r71041)
 Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 14.04.5 LTS
 
 locale:
- [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
- [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
- [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
- [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
-[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] edgeR_3.12.0 limma_3.26.3
+[1] edgeR_3.14.0  limma_3.28.17
 
 loaded via a namespace (and not attached):
-[1] splines_3.2.2   grid_3.2.2      locfit_1.5-9.1  statmod_1.4.22 
+[1] splines_3.3.1   grid_3.3.1      locfit_1.5-9.1  statmod_1.4.25 
 [5] lattice_0.20-33
 > 
 > proc.time()
     user   system  elapsed 
-9931.373   21.727 9955.556 
+7060.676   13.137 7076.392 
