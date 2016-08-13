@@ -166,6 +166,9 @@ In contrast, the plate effect varies across genes and cannot be removed by a sin
 % Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
 % Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
 
+% Note that there's no requirement for the batch effect variable to be identically distributed across genes.
+% It's just simulated that way for simplicity; I've actually adapted some of the simulations to have variable batch effects, and it works fine.
+
 One \revised{common} aim of the data analysis for this experiment is to identify DE genes between \revised{the biological groups of interest}.
 However, this is complicated by the presence of \revised{confounding plate effects.
 Consider an experimental design with one plate from each of two groups.

@@ -15,8 +15,11 @@ bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail3.err" -o "ESpresso/log_fai
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail4.err" -o "ESpresso/log_fail4.out" R CMD BATCH --no-save "--args scenario=4 $failargs" failsim.R ESpresso/failsim_4.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail5.err" -o "ESpresso/log_fail5.out" R CMD BATCH --no-save "--args scenario=5 $failargs" failsim.R ESpresso/failsim_5.Rout
 bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail6.err" -o "ESpresso/log_fail6.out" R CMD BATCH --no-save "--args scenario=6 $failargs" failsim.R ESpresso/failsim_6.Rout
+bsub -R "rusage[mem=5000]" -n 6 -e "ESpresso/log_fail8.err" -o "ESpresso/log_fail8.out" R CMD BATCH --no-save "--args scenario=8 $failargs" failsim.R ESpresso/failsim_8.Rout
 
+###########################
 # This scenario takes intolerably long on a single run, so I'm going to split it up across many cores.
+
 tmpdir=ESpresso/tmp7
 mkdir -p $tmpdir
 for logfile in $(find $tmpdir -regex .*/log_fail.*\.)
@@ -78,6 +81,8 @@ bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow1.err" -o "ESpresso/log_pow1
 bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow2.err" -o "ESpresso/log_pow2.out" R CMD BATCH --no-save "--args scenario=2 $powargs" power.R ESpresso/power_2.Rout
 bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow3.err" -o "ESpresso/log_pow3.out" R CMD BATCH --no-save "--args scenario=3 $powargs" power.R ESpresso/power_3.Rout
 bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow4.err" -o "ESpresso/log_pow4.out" R CMD BATCH --no-save "--args scenario=4 $powargs" power.R ESpresso/power_4.Rout
+bsub -R "rusage[mem=5000]" -n 1 -e "ESpresso/log_pow5.err" -o "ESpresso/log_pow5.out" R CMD BATCH --no-save "--args scenario=5 $powargs" power.R ESpresso/power_5.Rout
+bsub -R "rusage[mem=10000]" -n 6 -e "ESpresso/log_pow6.err" -o "ESpresso/log_pow6.out" R CMD BATCH --no-save "--args scenario=6 $powargs" power.R ESpresso/power_6.Rout
 
 # Results aren't under version control, so they need to be pulled down manually:
 # rsync -azv cruk:lustre/PlateEffects/simulations/ESpresso/ ESpresso/

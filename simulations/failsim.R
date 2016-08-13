@@ -63,6 +63,8 @@ if (scenario==2L) {
     zinb <- TRUE # zero-inflated NB simulation.
 } else if (scenario==7) {
     conditions <- rep(c("A", "B"), each=6)
+} else if (scenario==8) {
+    mod.shape <- rchisq(ngenes, df=5)/5 # Heteroscedastic plate effects across genes.
 }
 
 nplates <- length(conditions)
