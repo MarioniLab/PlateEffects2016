@@ -6,7 +6,7 @@ renamed <- c(DESeq2="DESeq2", QLedgeR="QL edgeR", voom="voom")
 # First, making the ROC plots.
 
 colors <- c(QLedgeR="red", DESeq2="black", voom="grey")
-for (mode in 1:4) {
+for (mode in 1:5) {
     cur.roc <- readRDS(file.path(out.dir, paste0("roc_", mode, ".rds")))
     raw.roc <- sum.roc <- list()
     for (method in names(cur.roc)) {
@@ -58,6 +58,25 @@ for (mode in 1:4) {
         dev.off()
     }
 }
+
+# Additional plot for the other methods.
+
+colors <- c(glmer="darkgreen", voomcor="orange", monocle="purple", MAST="pink")
+cur.roc <- readRDS(file.path(out.dir, "roc_6.rds"))
+raw.roc <- list()
+for (method in names(cur.roc)) {
+    raw.roc[[method]] <- colMeans(do.call(rbind, cur.roc[[method]]$raw))
+}
+
+pdf(file.path(out.dir, paste0("ROC_", mode, ".pdf")))
+par(mar=c(6.1, 5.1, 2.1, 1.1))
+plot(0,0, type="n", xlab="False positive rate", ylab="True positive rate", cex.axis=1.2, cex.lab=1.4, xlim=c(0, 1), ylim=c(0, 1))
+for (method in names(raw.roc)) { 
+    current <- raw.roc[[method]]
+    lines(current, seq_along(current)/length(current), col=colors[method], lwd=2)
+}
+legend("bottomright", lwd=2, legend=names(colors), col=colors, cex=1.2)
+dev.off()
 
 #########################################################################################
 # Now making the FDR plot (basically ripped out of failsim image maker).

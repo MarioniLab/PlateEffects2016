@@ -52,6 +52,7 @@ mod.shape <- 1 # Defaults.
 de.fc <- 3
 nde <- 2000
 ncell.range <- c(50, 100)
+do.special <- FALSE
 
 if (scenario==2L) {
     mod.shape <- 1e6 # No plate effect.
@@ -59,12 +60,20 @@ if (scenario==2L) {
     de.fc <- 6 # larger fold change.
 } else if (scenario==4L) {
     nde <- 4000 # More DE genes.
+} else if (scenario==5L) {
+    mod.shape <- rchisq(ngenes, 5)/5 # Heteroscedastic plate effect (less shrinkage allowed).
+} else if (scenario==6L) {
+    do.special <- TRUE
 }
 
 ##################################################
 # Actually running it.
 
-methods.to.use <- c("voom", "QLedgeR", "DESeq2")
+if (do.special) {
+    methods.to.use <- c("glmer", "voomcor", "MAST", "monocle")
+} else {
+    methods.to.use <- c("voom", "QLedgeR", "DESeq2")
+}
 collected <- list()
 for (method in methods.to.use) { 
     collected[[method]] <- list(raw=list(), sum=list())
@@ -108,7 +117,10 @@ for (it in 1:10) {
             write.table(data.frame(method, scenario, compute.fdr(my.env$obtained[[method]], true.de)),
                         file=log.file, sep="\t", append=TRUE, col.names=FALSE, row.names=FALSE, quote=FALSE)
         }
+
+        if (do.special) { break } # No point summing for specialized single-cell methods.
     }
+    if (do.special) { break } # One round is enough.
 }
 
 # Writing the ROC stats to file.
