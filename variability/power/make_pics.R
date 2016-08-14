@@ -1,1 +1,0 @@
-../../power/make_pics.R
