@@ -68,7 +68,7 @@ for (method in names(cur.roc)) {
     raw.roc[[method]] <- colMeans(do.call(rbind, cur.roc[[method]]$raw))
 }
 
-pdf(file.path(out.dir, paste0("ROC_", mode, ".pdf")))
+pdf(file.path(out.dir, "ROC_other.pdf"))
 par(mar=c(6.1, 5.1, 2.1, 1.1))
 plot(0,0, type="n", xlab="False positive rate", ylab="True positive rate", cex.axis=1.2, cex.lab=1.4, xlim=c(0, 1), ylim=c(0, 1))
 for (method in names(raw.roc)) { 
