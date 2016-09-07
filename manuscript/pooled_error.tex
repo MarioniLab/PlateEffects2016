@@ -141,7 +141,7 @@ Consider an experimental design consisting of multiple biological groups of inte
 Each group consists of cells sorted onto multiple plates, where all cells on each plate come from an independent population of a single group.
 As previously mentioned, this is not an uncommon setup due to the logistics of the experimental protocol, e.g., cell sorting onto a plate with FACS, cell capture with the C1.
 Further assume that a plate effect exists in the data set, whereby the expression of each gene in all cells of a given plate is modified in a gene- and plate-specific manner.
-Gene specificity is motivated by biological variability between replicate populations\revised{, where uncontrolled differences in cell culturing or animal treatment can affect expression in a gene-dependent manner.}
+The use of gene-specific effects is motivated by the presence of biological variability between replicate populations\revised{, where uncontrolled differences in cell culturing or animal treatment can affect expression in a gene-dependent manner.}
 
 \begin{color}{red}
 Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in cell $j$ in plate $k$ of group $g$.
@@ -156,7 +156,7 @@ In the following text, we refer to $\mbox{var}(Y_{ijkg}|\delta_{ikg},\theta_{jkg
     E(Y_{ijkg}|\delta_{ikg},\theta_{jkg}) = \delta_{ikg}\theta_{jkg}\mu_{ig} 
 \]
 where $\mu_{ig}$ as the expected read count for gene $i$ in group $g$.
-This captures the impact of plate effects on the data.
+This represents the impact of plate effects on the data.
 For each gene, the mean for all cells on a given plate is scaled by the same value, $\delta_{ikg}$, which introduces systematic differences between plates.
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
 This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_{jkg}$.
@@ -229,12 +229,12 @@ Loss of type I error control will result in an unacceptable number of false posi
 %This is equally applicable to the false discovery rate (FDR), given that control of the FDR depends on proper control of the type I error when the null hypothesis is true.
 
 Loss of error control is caused by plate-induced dependencies in the statistical model.
-In the one-way layout, the count of each gene in each cell is modelled by a distribution with a group-specific mean.
-Most DE analysis methods assume that the counts for all cells are independently sampled from these distributions.
-However, this is not the case when a plate effect is present.
-The true mean of the sampling distribution for each cell is scaled by a plate-specific factor, 
-    such that the counts for cells on the same plate are more similar than expected under independence.
-(Conditional independence is irrelevant here, as the plate of origin is not used in the model parametrization.)
+In the one-way layout, the count of each gene in each cell is modelled by a distribution with a mean equal to the product of a gene- and group-specific expression term (the estimate of $\mu_{ig}$) and a cell-specific scaling factor ($\theta_{jkg}$).
+Most DE analysis methods assume that, for any given gene, the counts for all cells are independently sampled from these distributions.
+However, this is clearly not the case when a plate effect is present.
+For each gene, the true mean of the sampling distribution for each cell is scaled by a plate-specific factor $\delta_{ikg}$, 
+    such that the residuals of the fitted model for cells on the same plate are more similar than expected under independence.
+(Conditional independence between cells is irrelevant here, as the plate of origin is not used in the model parametrization.)
 This reduces the amount of information in the data set as cells on the same plate are effectively redundant.
 Methods that assume independence will overstate the information available to estimate model parameters such as the group-specific means, the variance or the NB dispersion.
 This results in overconfident inferences and liberalness during hypothesis testing.
