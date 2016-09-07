@@ -113,7 +113,7 @@ Putative DE genes are defined as those that exhibit significant differences in t
 The presence of plate effects complicates the parametrization of the experimental design in the DE analysis.
 Obviously, such effects are undesirable as they arise via uncontrolled experimental variability.
 This increases the estimated variance and reduces the power to detect DE genes.
-However, plate effects cannot be easily removed during statistical modelling since they are confounded with the groups of interest \citep{hicks2015widespread}.
+However, plate effects cannot be easily removed during statistical modelling since they are confounded with the groups of interest \citep{hicks2015widespread,tung2016batch}.
 In the most extreme case, consider a data set with multiple groups where each group is comprised of cells from a single plate.
 Changes in gene expression due to plate effects will be indistinguishable from genuine DE between groups.
 Any attempt to remove the former will compromise the detection of the latter.
@@ -180,7 +180,7 @@ A common strategy is to ignore the plate effects and treat cells from different 
 This is most obviously applied in a one-way layout with clearly defined groups.
 It is also relevant to multi-factor designs with more plates than model coefficients, as these designs will contain some level of replication between plates and thus between their constituent cells.
 DE genes can then be detected using software designed for bulk data (e.g., DESeq) or with dedicated single-cell methods (e.g., Monocle).
-\revised{Alternatively, a more sophisticated but lesser-used approach involves fitting a mixed model to the counts for each gene.
+\revised{Alternatively, a more sophisticated but lesser-used approach involves fitting a mixed model to the counts for each gene \cite{tung2016batch}.
 The plate of origin is treated as a random effect while the groups are treated as fixed effects.
 This accounts for plate-to-plate variability while still allowing detection of DE between groups.
 However, the performance of these strategies has yet to be rigorously assessed on scRNA-seq data sets that contain plate effects.}
