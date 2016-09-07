@@ -203,8 +203,8 @@ The GLMM approach is more general, and uses NB distributions to model the counts
 Each method was applied to the simulated data to test for DE between groups. 
 For all methods, the experimental design was parameterized as a one-way layout with two groups.
 All cells within each group were treated as direct replicates -- the plate of origin within each group was ignored.
-edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} 
-    or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without empirical Bayes (EB) shrinkage of the NB dispersions.
+edgeR was run twice, using either the quasi-likelihood (QL) framework \citep{lund2012detecting} with robust empirical Bayes (EB) shrinkage \citep{phipson2016robust} of the QL dispersions,
+    or the likelihood ratio test (LRT) \citep{mccarthy2012differential} without any EB shrinkage of the NB dispersions.
 Similarly, the analysis with voom was repeated after estimating the correlation between cells on the same plate \citep{smyth2005use}.
 The implementation details for each method are described in Section~\suppimplementation{} of the Supplementary Materials.
 
