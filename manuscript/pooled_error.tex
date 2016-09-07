@@ -350,6 +350,7 @@ Low quality libraries or contaminating cells can be identified and removed from 
 Groups can also be empirically identified based on gene expression patterns, though this requires some care to avoid circularity in the subsequent DE analysis.
 Obviously, it is not mandatory to use the summed counts exclusively. 
 The single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
+Indeed, one can exploit the cellular resolution of scRNA-seq data to characterise the nature of a DE gene detected with the summation approach -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
