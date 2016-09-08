@@ -1,0 +1,117 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in,marginparwidth=2in]{geometry}
+
+% use Unicode characters - try changing the option if you run into troubles with special characters (e.g. umlauts)
+\usepackage[utf8]{inputenc}
+
+% clean citations
+\usepackage{cite}
+
+% hyperref makes references clicky. use \url{www.example.com} or \href{www.example.com}{description} to add a clicky url
+\usepackage{nameref,hyperref}
+
+% line numbers
+\usepackage[right]{lineno}
+
+% improves typesetting in LaTeX
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% text layout - change as needed
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in 
+\textheight 8.75in
+
+% Remove % for double line spacing
+%\usepackage{setspace} 
+%\doublespacing
+
+% use adjustwidth environment to exceed text width (see examples in text)
+\usepackage{changepage}
+
+% adjust caption style
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,singlelinecheck=off]{caption}
+
+% remove brackets from references
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+% headrule, footrule and page numbers
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+\pagestyle{myheadings}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+
+% use \textcolor{color}{text} for colored text (e.g. highlight to-do areas)
+\usepackage{color}
+
+% define custom colors (this one is for figure captions)
+\definecolor{Gray}{gray}{.25}
+
+% this is required to include graphics
+\usepackage{graphicx}
+
+% use if you want to put caption to the side of the figure - see example in text
+\usepackage{sidecap}
+
+% use for have text wrap around figures
+\usepackage{wrapfig}
+\usepackage[pscoord]{eso-pic}
+\usepackage[fulladjust]{marginnote}
+\reversemarginpar
+
+% Adding multirow.
+\usepackage{multirow}
+
+% document begins here
+\begin{document}
+\vspace*{0.35in}
+
+% title goes here:
+\begin{flushleft}
+{\Large
+\textbf\newline{Overcoming confounding plate effects in differential expression analyses of single-cell RNA-seq data}
+}
+\newline
+% authors go here:
+\\
+Aaron T. L. Lun\textsuperscript{1,*},
+John C. Marioni\textsuperscript{1,2,3}
+\\
+\bigskip
+\bf{1} Cancer Research UK Cambridge Institute, University of Cambridge, Li Ka Shing Centre, Robinson Way, Cambridge CB2 0RE, United Kingdom
+\\
+\bf{2} EMBL European Bioinformatics Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SD, United Kingdom
+\\
+\bf{3} Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge CB10 1SA, United Kingdom
+\\
+\bigskip
+* aaron.lun@cruk.cam.ac.uk
+
+\end{flushleft}
+
+\newcommand{\revised}[1]{#1}
+
+\section*{Abstract}
+An increasing number of studies are using single-cell RNA-sequencing (scRNA-seq) to characterize the gene expression profiles of individual cells.
+One common analysis applied to scRNA-seq data involves detecting differentially expressed (DE) genes between cells in different biological groups.
+However, many experiments are designed such that the cells to be compared are processed in separate plates or chips, 
+    meaning that the groupings are confounded with systematic plate effects.
+This confounding aspect is frequently ignored in DE analyses of scRNA-seq data.
+In this article, we demonstrate that failing to consider plate effects in the statistical model results in loss of type I error control.
+A solution is proposed whereby counts are summed from all cells in each plate and the count sums for all plates are used in the DE analysis.
+This restores type I error control in the presence of plate effects without compromising detection power in simulated data.
+Summation is also robust to varying numbers and library sizes of cells on each plate.
+Similar results are observed in DE analyses of real data where the use of count sums instead of single-cell counts \revised{improves specificity and the ranking of relevant genes}.
+This suggests that summation can assist in maintaining statistical rigour in DE analyses of scRNA-seq data with plate effects.
+
+% now start line numbers
+\linenumbers
+
