@@ -214,7 +214,7 @@ DE testing was performed between groups using the Wald test.
 For Monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
-For MAST v1.0.5, counts were converted into CPMs and log$_2$-transformed after adding a prior count of 1 to eac.
+For MAST v1.0.5, counts were converted into CPMs and log$_2$-transformed after adding a pseudo-count of 1.
 For each gene, a hurdle model was fitted to the log-CPMs across all cells \revised{using the zlm.SingleCellAssay function with default parameters.}
 \revised{In this model}, the group was \revised{set} as the factor of interest and the proportion of genes with non-zero counts in each library was used as an additional covariate \citep{finak2015mast}.
 Putative DE genes between groups were identified using the LRT \revised{implemented in the lrTest function.}
