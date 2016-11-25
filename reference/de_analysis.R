@@ -106,14 +106,14 @@ if ("MAST" %in% methods.to.use) {
     suppressPackageStartupMessages(library(MAST))
     oldseed <- .Random.seed
     suppressMessages({
-        lcpms <- log2(t(counts+1)/eff.lib*1e6)
-        sca <- FromMatrix('SingleCellAssay', lcpms, data.frame(wellKey=seq_len(nrow(sample.data))), data.frame(primerid=seq_len(nrow(counts))))
-        cData(sca) <- cbind(cData(sca), sample.data)
-        cData(sca)$cngeneson <- colMeans(counts>0)
+        lcpms <- log2(t(t(counts)/eff.lib)*1e6 + 1) # log(TPM+1), as described in the MAST documentation.
+        sca <- FromMatrix(lcpms, cData=data.frame(wellKey=seq_len(nrow(sample.data))), fData=data.frame(primerid=seq_len(nrow(counts))))
+        colData(sca) <- cbind(colData(sca), sample.data)
+        colData(sca)$cngeneson <- scale(colMeans(counts>0))
 
         new.formula <- paste(c(as.character(sample.formula), "+ cngeneson"), collapse=" ")
         new.formula <- as.formula(new.formula)
-        mfit <- zlm.SingleCellAssay(new.formula, sca, method="bayesglm", ebayes=TRUE, ebayesControl=list(method="MLE", model="H1"))
+        mfit <- zlm.SingleCellAssay(new.formula, sca)
         mlrt <- lrTest(mfit, Hypothesis(colnames(design)[drop.coefficient], colnames(coef(mfit, "D")))) # cngeneson is added at the end, so it shouldn't affect terms before it.
         obtained$MAST <- mlrt[, "hurdle", "Pr(>Chisq)"]
     })
@@ -129,7 +129,7 @@ if ("MAST" %in% methods.to.use) {
 
 if ("monocle" %in% methods.to.use) {
     suppressPackageStartupMessages(library(monocle))
-    cpms <- t(t(counts)/eff.lib * 1e6)
+    cpms <- t(t(counts)/eff.lib * 1e6) # Supplying CPMs to monocle.
 
     # Whole lot of effort to automatically construct a contrast.
     pdat <- AnnotatedDataFrame(as.data.frame(design))
