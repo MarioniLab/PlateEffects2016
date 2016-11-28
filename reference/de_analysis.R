@@ -141,8 +141,8 @@ if ("monocle" %in% methods.to.use) {
 
     HSMM <- newCellDataSet(cellData=cpms, phenoData=pdat)
     out <- differentialGeneTest(HSMM, cores=6, 
-        fullModelFormulaStr=paste0("expression~", paste(varLabels(pdat)[-intercept], collapse="+")),
-        reducedModelFormulaStr=paste0("expression~", ifelse(ncol(pdat)==2L, 1, 
+        fullModelFormulaStr=paste0("~", paste(varLabels(pdat)[-intercept], collapse="+")),
+        reducedModelFormulaStr=paste0("~", ifelse(ncol(pdat)==2L, 1, 
                                       paste(varLabels(pdat)[-c(intercept, drop.coefficient)], collapse="+"))))
     obtained$monocle <- out$pval
 }
