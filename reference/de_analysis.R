@@ -52,6 +52,8 @@ if (any(c("edgeR", "voom", "voomcor", "QLedgeR") %in% methods.to.use)) {
     }
 }
 
+gc()
+
 ####################################################################################
 # DESeq2:
 
@@ -67,6 +69,8 @@ if ("DESeq2" %in% methods.to.use)  {
     dres <- results(dds, convec)
     obtained$DESeq2 <- dres$pvalue
 }
+
+gc()
 
 ####################################################################################
 # voom with or without correlations
@@ -99,6 +103,8 @@ if (any(c("voom", "voomcor") %in% methods.to.use)) {
 #    vres2 <- topTable(vfit2, n=Inf, sort.by="none", coef=drop.coefficient)
 }
 
+gc()
+
 ####################################################################################
 # MAST:
 
@@ -119,6 +125,8 @@ if ("MAST" %in% methods.to.use) {
     })
     .Random.seed <- oldseed # Avoid getting different results because of MAST's randomization methods.
 }
+
+gc()
 
 ####################################################################################
 # SAMstrt doesn't report p-values, just "median FDR" estimates.
@@ -147,6 +155,8 @@ if ("monocle" %in% methods.to.use) {
     obtained$monocle <- out$pval
 }
 
+gc()
+
 ####################################################################################
 # Mixed modelling:
 
@@ -173,5 +183,7 @@ if ("glmer" %in% methods.to.use) {
     }
     obtained$glmer <- pvalues
 }
+
+gc()
 
 ####################################################################################
