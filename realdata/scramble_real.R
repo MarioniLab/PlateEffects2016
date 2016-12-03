@@ -9,6 +9,7 @@ if (dataset=="ESpresso") {
     source("ESpresso.R")
     coefs <- c(3, 4)
     sample.formula <- ~Batch + Serum
+    all.counts <- as.matrix(all.counts)
 }
 setwd(curdir)
 
