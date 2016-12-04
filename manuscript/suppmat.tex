@@ -191,7 +191,7 @@ If these methods are used, they may contribute to the loss of error control.
 \section{Detailed description of the DE analysis}
 
 \subsection{Implementation of the analysis methods}
-For edgeR v3.12.0, DE analyses were performed with and without EB shrinkage.
+For edgeR v3.16.4, DE analyses were performed with and without EB shrinkage.
 In the first analysis, an abundance-dependent trend was fitted to the NB dispersions, and the trended NB dispersion was used to fit a \revised{GLM} for each gene \citep{mccarthy2012differential}.
 The GLM deviance was used to estimate the QL dispersion for each gene, which was stabilized by robust EB shrinkage towards a mean-QL dispersion trend \citep{lund2012detecting,phipson2016robust}.
 DE testing between groups was performed using the QL F-test.
@@ -199,19 +199,19 @@ In the second analysis, the NB dispersion was estimated for each gene individual
 This was used directly to fit the GLM for each gene, and DE testing for each gene was performed using the LRT.
 
 For voom, counts were converted to log-CPM values and precision weights were computed from a fitted mean-variance trend.
-A linear model was fitted to the log-CPMs and weights for each gene using methods in the limma package v3.26.3.
+A linear model was fitted to the log-CPMs and weights for each gene using methods in the limma package v3.30.6.
 Sample variances were stabilized by robust EB shrinkage, and genes were tested for DE between groups using a moderated $t$-test.
 This analysis was also repeated after using the duplicateCorrelation function \citep{smyth2005use} to estimate the correlations introduced by the plate effects.
 For each gene, this correlation represents the strength of the association between the count for each cell and its plate of origin.
 The consensus correlation across all genes was estimated and used for generalized least squares fitting with a plate blocking factor.
 DE testing was then performed on this refitted model.
 
-For DESeq2 v1.10.1, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
+For DESeq2 v1.14.0, the NB dispersion was estimated for each gene and a mean-dispersion trend was fitted across genes.
 A normal prior was applied to the log-dispersions for all genes, and the maximum \textit{a posteriori} estimate of the NB disperison was obtained for each gene.
 The estimated dispersion was used to fit a GLM to the counts for each gene.
 DE testing was performed between groups using the Wald test.
 
-For Monocle v1.4.0, counts were transformed into CPM values that were considered to be roughly log-normal.
+For Monocle v2.2.0, counts were transformed into CPM values that were considered to be roughly log-normal.
 These were used for DE testing between groups with the LRT in the differentialGeneTest function.
 
 For MAST v1.0.5, counts were converted into CPMs and log$_2$-transformed after adding a pseudo-count of 1.
@@ -219,7 +219,7 @@ For each gene, a hurdle model was fitted to the log-CPMs across all cells \revis
 \revised{In this model}, the group was \revised{set} as the factor of interest and the proportion of genes with non-zero counts in each library was used as an additional covariate \citep{finak2015mast}.
 Putative DE genes between groups were identified using the LRT \revised{implemented in the lrTest function.}
 
-\revised{The glmer.nb function in the lme4 package v1.1-10 was used to fit a NB GLMM to the counts for each gene.
+\revised{The glmer.nb function in the lme4 package v1.1-12 was used to fit a NB GLMM to the counts for each gene.
 The group was set as a fixed effect while the plate of origin was set as a random effect.
 Offsets were defined as the log-transformed library sizes.
 To detect DE between groups, the GLMM was refitted using a null design without the group factor.
