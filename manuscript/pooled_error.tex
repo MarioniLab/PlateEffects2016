@@ -343,6 +343,7 @@ Why would one bother to sequence the transcriptome of individual cells, only to 
 The use of summed counts is equivalent to performing bulk sequencing on the pooled population, which would be technically easier to undertake and analyze.
 In fact, this apparent contradiction is relevant to all DE analyses of scRNA-seq data where average expression levels are compared between pre-defined groups of cells.
 Such averages could be obtained directly with bulk sequencing of the groups, rather than sequencing of the individual cells.
+Furthermore, detection of significant changes in the averages between groups only requires modelling of their variability across replicate populations -- knowledge of cell-to-cell variability is unnecessary. 
 
 The resolution of this contradiction is based on the ability of single-cell approaches to characterize and define the groups prior to the DE analysis.
 Purified populations of rare cells can be profiled by scRNA-seq if they cannot be obtained in sufficient numbers for bulk sequencing.
