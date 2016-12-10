@@ -10,7 +10,7 @@
 
 \renewcommand{\textfraction}{1.0}
 \renewcommand{\floatpagefraction}{.9}
-\newcommand\revised[1]{\textcolor{red}{#1}}
+\newcommand\revised[1]{#1} % \textcolor{red}{#1}}
 \renewcommand{\topfraction}{0.9}    % max fraction of floats at top
 \renewcommand{\bottomfraction}{0.8} % max fraction of floats at bottom
 \renewcommand{\textfraction}{0.07}  % allow minimal text w. figs
@@ -66,7 +66,7 @@ $^3$Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge 
 
 %\onehalfspacing
 
-\begin{color}{red}
+%\begin{color}{red}
 \section{Details on the simulation design}
 
 \subsection{Overview}
@@ -186,7 +186,7 @@ Library size normalization involves dividing counts by the library size, to corr
 Thus, any difference in performance between analyses cannot be attributed to a difference in normalization accuracy for single-cell or summed counts.
 This is an important subtlety, as bulk normalization methods fare poorly on scRNA-seq data with many zero counts \citep{lun2016pooling}.
 If these methods are used, they may contribute to the loss of error control.
-\end{color}
+%\end{color}
 
 \section{Detailed description of the DE analysis}
 
@@ -226,7 +226,7 @@ To detect DE between groups, the GLMM was refitted using a null design without t
 A LRT was then performed using the full and null model fits.}
 
 \subsection{Explanation of the normalization strategy}
-\begin{color}{red}
+%\begin{color}{red}
 For any given set of counts, the same normalization procedure was used for all analyses.
 For simulated data, size factors were defined as the mean-centred library sizes, calculated by dividing all library sizes by the mean library size across all cells.
 This represents library size normalization, which is appropriate due to the presence of balanced DE as previously described.
@@ -243,10 +243,10 @@ These biases are driven by different numbers of cells per plate, different libra
 In fact, the plate-specific bias is equal to the sum of the cell-specific biases across all cells on the plate.
 (This reasoning is based on the pooling normalization framework in \cite{lun2016pooling}, after setting $t_j=1$ for each cell $j$.)
 The bias will systematically alter the mean count for all genes on the plate, requiring normalization to avoid detection of spurious differences between plates.
-\end{color}
+%\end{color}
 
 \subsection{Using plates as fixed effects is not appropriate}
-\begin{color}{red}
+%\begin{color}{red}
 One strategy to account for plate effects in the DE analysis is to treat the plate factor as a fixed effect.
 This means that each plate has an explicit term representing their average expression in the linear model, which absorbs any plate-specific effect for each gene.
 DE analyses between plates in different groups could then be performed by computing the average of the terms within each group, and comparing those averages between groups.
@@ -254,9 +254,9 @@ However, the variance/dispersion estimate will be conditional on the fitted valu
 This means that the plate-to-plate variability in the plate effect will not be modelled.
 Thus, the inferences from this analysis cannot be generalized to a repeated experiment with a new set of plates (and a different set of plate effects).
 This is unsatisfactory as the DE results will not be replicable.
-\end{color}
+%\end{color}
 
-\begin{color}{red}
+%\begin{color}{red}
 \begin{figure}[p]
     \begin{center}
         \includegraphics[height=4in]{../simulations/ESpresso/results_failsim/supp_raw.pdf}
@@ -319,10 +319,10 @@ This is unsatisfactory as the DE results will not be replicable.
         All values represent the average of 10 simulation iterations, and error bars represent the standard error.
     }
 \end{figure}
-\end{color}
+%\end{color}
 
 \section{Summation and plate-specific mean variance relationships}
-\begin{color}{red}
+%\begin{color}{red}
 Data sets will contain different numbers of cells in each plate, as well as different library sizes across cells.
 This means that the count sum for each plate will not be identically distributed.
 The most obvious difference is observed in the magnitude of the count sum between plates with different numbers of cells or library sizes per cell.
@@ -366,7 +366,7 @@ If $N_{bkg}$ increases in each of $n$ bins, the limit becomes
 for positive $t_{bkg}$.
 For any non-zero value of $\mbox{var}(\delta_{ikg})$, the relative contribution of the plate-specific term will approach zero as the number of cells increases.
 Thus, the mean-variance relationship of the count sum will be similar between plates with many cells, regardless of the number of cells or their library sizes.
-\end{color}
+%\end{color}
 
 % Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
 % be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.

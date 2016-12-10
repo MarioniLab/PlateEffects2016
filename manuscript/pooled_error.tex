@@ -34,7 +34,7 @@ $^3$Wellcome Trust Sanger Institute, Wellcome Genome Campus, Hinxton, Cambridge 
 % identified in the author list
 \footnotetext{To whom correspondence should be addressed.}
 
-\newcommand\revised[1]{\textcolor{red}{#1}}
+\newcommand\revised[1]{#1}%\textcolor{red}{#1}}
 
 \begin{abstract}{
 An increasing number of studies are using single-cell RNA-sequencing (scRNA-seq) to characterize the gene expression profiles of individual cells.
@@ -143,7 +143,7 @@ As previously mentioned, this is not an uncommon setup due to the logistics of t
 Further assume that a plate effect exists in the data set, whereby the expression of each gene in all cells of a given plate is modified in a gene- and plate-specific manner.
 The use of gene-specific effects is motivated by the presence of biological variability between replicate populations\revised{, where uncontrolled differences in cell culturing or animal treatment can affect expression in a gene-dependent manner.}
 
-\begin{color}{red}
+%\begin{color}{red}
 Let $Y_{ijkg}$ be a random variable representing the read count for gene $i$ in cell $j$ in plate $k$ of group $g$.
 Define $\delta_{ikg}$ as a random variable representing the gene-/plate-specific effect for gene $i$ in plate $k$ of group $g$.
 Assume that $\delta_{ikg}$ for each plate is independently sampled from a distribution of positive values with a mean of unity and non-zero variance.
@@ -161,7 +161,7 @@ For each gene, the mean for all cells on a given plate is scaled by the same val
 Such differences cannot be removed by scaling normalization, e.g., based on library size or with more sophisticated methods \citep{anders2010differential,robinson2010scaling}.
 This is because these normalization methods compute a single scaling factor for each cell to adjust for the cell-specific $\theta_{jkg}$.
 In contrast, the plate effect varies across genes and cannot be removed by a single factor for each cell.
-\end{color}
+%\end{color}
 
 % Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
 % Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
@@ -185,7 +185,7 @@ The plate of origin is treated as a random effect while the groups are treated a
 This accounts for plate-to-plate variability while still allowing detection of DE between groups.
 However, the performance of these strategies has yet to be rigorously assessed on scRNA-seq data sets that contain plate effects.}
 
-\begin{color}{red}
+%\begin{color}{red}
 \subsection{Testing DE analysis methods on simulated scRNA-seq data}
 We designed simulations to mimic the characteristics of a real scRNA-seq data set \citep{kolod2015single}.
 We generated counts for 50-100 cells in each plate, for an experiment containing three plates in each of two groups.
@@ -198,7 +198,7 @@ edgeR and DESeq2 \revised{fit NB generalized linear models (GLMs) to the counts 
 Monocle and MAST were explicitly designed for analyzing scRNA-seq data, and operate on pre-processed expression values such as (log-)CPMs.
 (In particular, Monocle was designed to detect DE across a pseudo-temporal ordering of single cells, e.g., during differentiation, but the same statistical framework can be applied to arbitrary covariates.)
 The GLMM approach is more general, and uses NB distributions to model the counts with random plate effects and fixed group effects.
-\end{color}
+%\end{color}
 
 Each method was applied to the simulated data to test for DE between groups. 
 For all methods, the experimental design was parameterized as a one-way layout with two groups.
@@ -249,7 +249,7 @@ For example, the use of edgeR with the LRT assumes that sufficient residual d.f.
     without requiring EB shrinkage to share information between genes.
 This is no longer justifiable if only four d.f.\ are available.
 
-\begin{color}{red}
+%\begin{color}{red}
 The GLMM approach and voom with correlations exhibit the best performance of all tested methods in the presence of a plate effect (Figure~\ref{fig:platefail}).
 This is because they explicitly account for the dependencies between cells on the same plate during variance estimation.
 Nonetheless, both methods are still liberal, with observed type I error rates that are approximately three-fold higher than the specified threshold.
@@ -268,7 +268,7 @@ We also tested the performance of each method with other simulation settings.
 To this end, we repeated the above simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
 In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
 This suggests that our results are generally applicable to different scRNA-seq data sets.
-\end{color}
+%\end{color}
 
 \section{Improved performance with summation across cells in each plate}
 
@@ -312,7 +312,7 @@ In a DE analysis, the average expression of a gene is computed for each group an
 This is true regardless of whether those groups contain replicate cells or replicate plates. 
 In general, summation only affects the estimation of the variance rather than that of the effect size, i.e., the log-fold change.
 
-\begin{color}{red}
+%\begin{color}{red}
 To demonstrate, we repeated the simulations after introducing DE genes between groups.
 We used the various analysis methods with either the single-cell counts (i.e., ignoring the plate effect) or summed counts to detect known DE genes.
 For each method, the receiver-operating characteristic (ROC) curve for the analysis on summed counts was similar to that for the single-cell counts (Figure~\ref{fig:roc}).
@@ -334,7 +334,7 @@ Thirdly, methods like edgeR, DESeq2 and voom/limma share information between gen
 This mitigates the effect of reduced residual d.f. for count sums.
 Finally, the increase in power at low false positive rates may be due to the greater suitability of statistical models for count sums.
 For example, the log-normal model in voom is more accurate at larger counts where discreteness is less pronounced.
-\end{color}
+%\end{color}
 
 \subsection{Justifying summation in a single-cell study}
 Despite the obvious improvement in performance, the summation strategy may not have unqualified appeal.
@@ -351,7 +351,7 @@ Low quality libraries or contaminating cells can be identified and removed from 
 Groups can also be empirically identified based on gene expression patterns, though this requires some care to avoid circularity in the subsequent DE analysis.
 Obviously, it is not mandatory to use the summed counts exclusively. 
 The single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
-Indeed, one can exploit the cellular resolution of scRNA-seq data to characterise the nature of a DE gene detected with the summation approach -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
+Indeed, one can exploit the cellular resolution of scRNA-seq data to characterise the differences between conditions in more detail \cite{korthauer2016statistical} -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
