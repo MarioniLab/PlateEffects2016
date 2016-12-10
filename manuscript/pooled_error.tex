@@ -123,8 +123,8 @@ This problem is still present in data sets with \revised{a few plates} (e.g., 2-
 This strategy \revised{is} not statistically rigorous as the variability \revised{due to systematic differences between plates} will not be modelled properly.
 
 % Kolod...'s paper has multiple C1 chips for each serum condition, spread across batches.
-% Kowalczyk's paper has 192 cells for each condition, from 96-well plates of SMART-seq. Presumably we have two plates here, though it's unclear whether they contain cells from two replicate mice. They split the plate comparisons for the old mice, but they just do one comparison for the young mice, and presumably this involves cells from both plates being treated as replicates.
-% Kumar's paper just has two plates for the serum+LIF condition, so it's fair game (see description of Supplementary Table 9, looks like they used a t-test).
+% Kowalczyk's paper has 192 cells for each condition, from 96-well plates with SMARTer. Presumably we have two plates here, though it's unclear whether they contain cells from two replicate mice. They split the plate comparisons for the old mice, but they just do one comparison for the young mice, and presumably this involves cells from both plates being treated as replicates. Even with the split comparisons, you're not modelling the plate effect, and you're treating the cells directly as replicates, so it's fair game.
+% Kumar's paper just has two plates for the serum+LIF condition (see FBSLIF_Plate1 and mESC_Plate2 on GEO), so it's fair game (they used a t-test).
 % Monocle identifies DE across a pseudo-temporal ordering but cells are treated as replicates here, so again, fair game.
 
 This article demonstrates that plate effects must be handled appropriately to maintain the statistical validity of a DE analysis.
@@ -351,7 +351,7 @@ Low quality libraries or contaminating cells can be identified and removed from 
 Groups can also be empirically identified based on gene expression patterns, though this requires some care to avoid circularity in the subsequent DE analysis.
 Obviously, it is not mandatory to use the summed counts exclusively. 
 The single-cell counts can still be used for other aspects of the analysis, e.g., clustering, identifying highly variable genes.
-Indeed, after DE genes have been detected, one can exploit the cellular resolution of scRNA-seq data to characterize the differences between conditions in more detail \citep{korthauer2016statistical} -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
+Indeed, after DE genes have been detected, one can exploit the cellular resolution of scRNA-seq data to characterize the differences between groups in more detail \citep{korthauer2016statistical} -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
@@ -484,7 +484,7 @@ JCM was also supported by core funding from EMBL.}
     Observed type I error rates for each method on simulated data, in the presence or absence of a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
     Each error bar represents the standard error of the log-average rate.
-    The threshold of 0.01 is represented by the red line.
+    The threshold of 0.01 is represented by the dashed line.
     Only one iteration was used for Monocle and GLMMs due to their long run times.
 }
 \label{fig:platefail}
@@ -497,7 +497,7 @@ JCM was also supported by core funding from EMBL.}
 \caption{
     Observed type I error rate for each method after summation in simulations with \revised{and without} a plate effect.
     Error rates are shown on a log scale and represent the average across 10 simulation iterations.
-    Error bars represent standard errors, and the threshold of 0.01 is represented by the red dashed line.
+    Error bars represent standard errors, and the threshold of 0.01 is represented by the dashed line.
     \revised{The observed type I error rate for each method without summation is also shown for comparison.}
 }
 \label{fig:platesum}
@@ -510,7 +510,7 @@ JCM was also supported by core funding from EMBL.}
 \end{center}
 \caption{
     ROC curves for each analysis method on simulated data with a plate effect and genuine DE, for both single-cell (full) and summed counts (dashed).
-    Curves are shown for DESeq2 (black), voom (grey) and \revised{QL} edgeR (red).
+    Curves are shown for DESeq2, voom and \revised{QL} edgeR.
     Each curve represents the average result of 10 simulation iterations.
     The full curves are shown on the left, and an enlarged plot focusing on low false positive rates is shown on the right.
 }
