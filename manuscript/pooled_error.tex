@@ -263,6 +263,10 @@ GLMMs are also prohibitively slow to fit, taking several hours to run for a sing
 % I suspect it's a closely related reason; that voom needs to estimate a consensus correlation, and that's not appropriate in these simulations.
 % In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
 % Note that discreteness is secondary, as voom itself does fine without a plate effect.
+%
+% It's also worth noting that GLMMs and duplicateCorrelation assume a homogeneous (i.i.d.) effect for each block/plate.
+% This is the case for our framework, but it'll fall apart if you have systematic differences between plates that aren't modelled.
+% Summing doesn't really help either, as there's an equivalent assumption that summed observations are homogeneous.
 
 We also tested the performance of each method with other simulation settings.
 To this end, we repeated the above simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
