@@ -358,6 +358,11 @@ The single-cell counts can still be used for other aspects of the analysis, e.g.
 Indeed, after DE genes have been detected, one can exploit the cellular resolution of scRNA-seq data to characterize the differences between groups in more detail \citep{korthauer2016statistical} -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
+% Of course, you could directly try to characterise the subpopulations with clustering.
+% The benefit is that with a formal DE analysis, you get proper type I error rate control.
+% This provides statistical rigour that complements the interpretability of the clusters.
+% One approach would be to identify DE genes and cluster on them to determine what substructure is driving them. 
+
 Note that summation across cells in scRNA-seq data is not without precedent.
 \cite{jaitin2014massively} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering.
 \cite{klein2015droplet} also pool single-cell counts within each group prior to performing a DE analysis between groups,
