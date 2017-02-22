@@ -362,6 +362,11 @@ All of these advantages are lost when RNA sequencing is performed at the populat
 % The benefit is that with a formal DE analysis, you get proper type I error rate control.
 % This provides statistical rigour that complements the interpretability of the clusters.
 % One approach would be to identify DE genes and cluster on them to determine what substructure is driving them. 
+%
+% It could be argued that summation wouldn't work if you tried to use more gradated cluster identities (e.g., fractional membership or trajectories).
+% This is true but you'll be double-dipping to estimate the identities in the first place, so your statistics are probably broken to start with.
+% Of course, you could get independent covariates for each cell through indexed FACS.
+% However, this only seems to be relevant to experimental designs where you want to associate expression to some (protein) marker of interest.
 
 Note that summation across cells in scRNA-seq data is not without precedent.
 \cite{jaitin2014massively} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering.
