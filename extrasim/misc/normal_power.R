@@ -1,7 +1,7 @@
 # This checks the behaviour of limma, limma+cor and limma/sum on normally distributed data.
-# The idea is to show that we still get roughly the same performance, so the main cause of
-# the decrease in power is probably due to count discreteness. Similar behaviour is observed
-# in one-way layouts and with an additive model.
+# The idea is to show that we still get roughly the same ROC curve shapes (and thus performance).
+# This indicates that the main cause of the decrease in power is probably count discreteness. 
+# Similar behaviour is observed in one-way layouts and with an additive model.
 
 set.seed(0)
 

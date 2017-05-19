@@ -1,6 +1,6 @@
 
-R version 3.2.2 (2015-08-14) -- "Fire Safety"
-Copyright (C) 2015 The R Foundation for Statistical Computing
+R version 3.4.0 Patched (2017-04-24 r72623) -- "You Stupid Darkness"
+Copyright (C) 2017 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -18,9 +18,9 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > # This checks the behaviour of limma, limma+cor and limma/sum on normally distributed data.
-> # The idea is to show that we still get roughly the same performance, so the main cause of
-> # the decrease in power is probably due to count discreteness. Similar behaviour is observed
-> # in one-way layouts and with an additive model.
+> # The idea is to show that we still get roughly the same ROC curve shapes (and thus performance).
+> # This indicates that the main cause of the decrease in power is probably count discreteness. 
+> # Similar behaviour is observed in one-way layouts and with an additive model.
 > 
 > set.seed(0)
 > 
@@ -96,7 +96,7 @@ Type 'q()' to quit R.
 + # Making a plot.
 + 
 + setEPS()
-+ postscript(paste0("normal_", type, ".eps"), width=10, height=6)
++ postscript(paste0(type, ".eps"), width=10, height=6)
 + par(mfrow=c(1, 2))
 + plot(fp, tp, xlim=c(0, 1), ylim=c(0, 1), main=type)
 + points(fp2, tp2, col="grey50")
@@ -125,7 +125,7 @@ voom + correlations:
   Threshold    TP          FP
 1     0.005 0.430 0.009555556
 2     0.010 0.507 0.018222222
-3     0.050 0.747 0.072444444
+3     0.050 0.747 0.072555556
 voom on averaged arrays:
   Threshold    TP          FP
 1     0.005 0.329 0.004666667
@@ -153,9 +153,13 @@ voom on averaged arrays:
 > # Session information
 > 
 > sessionInfo()
-R version 3.2.2 (2015-08-14)
+R version 3.4.0 Patched (2017-04-24 r72623)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: Ubuntu 14.04.3 LTS
+Running under: Ubuntu 14.04.5 LTS
+
+Matrix products: default
+BLAS: /home/cri.camres.org/lun01/Software/R/R-3-4-branch_release/lib/libRblas.so
+LAPACK: /home/cri.camres.org/lun01/Software/R/R-3-4-branch_release/lib/libRlapack.so
 
 locale:
  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
@@ -169,11 +173,11 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] limma_3.26.3
+[1] limma_3.32.2
 
 loaded via a namespace (and not attached):
-[1] statmod_1.4.22
+[1] compiler_3.4.0 statmod_1.4.29
 > 
 > proc.time()
    user  system elapsed 
- 67.953   0.053  68.294 
+ 56.668   0.068  56.895 
