@@ -46,6 +46,8 @@ I guess this is somewhat pathological as your "replicate plates" should have fai
 
 # Interpreting DE genes from single-cell data
 
+## Handling population structure
+
 You could directly try to characterise the subpopulations with clustering on the DE genes.
 The benefit is that with a formal DE analysis, you get proper type I error rate control.
 This provides statistical rigour that complements the interpretability of the clusters.
@@ -54,6 +56,52 @@ One approach would be to identify DE genes and cluster on them to determine what
 Of course, one could argue that it would be better to split the subpopulations before the DE analysis.
 However, this depends on being able to correctly identify empirical subpopulations.
 This is not a trivial task (or, perhaps, even possible in any statistically rigorous manner).
+
+## Differences between DE and marker genes
+
+DE genes between subpopulations are not necessarily marker genes.
+The latter requires that the gene be consistently expressed (or not) in all cells of one subpopulation compared to the other.
+This means that the variance needs to be modelled across cells.
+For DE genes, any change will do, even if it only appears in a small percentage of cells of the subpopulation.
+This requires modelling of the variance across replicate instances of the entire subpopulation.
+
+That being said, testing for differential expression is not the best approach to identify marker genes.
+If the difference is strong enough, the null hypothesis will be rejected, regardless of how variable the expression values might be.
+One might expect that DE analyses would at least rank good markers more highly if they have, e.g., strong log-fold changes and low variability.
+This is true to some extent - however, the implicit balance between variability and log-fold change is not well defined.
+A DE analysis will happily favour low-variability genes with weak DE - usually high-abundance genes expressed in both groups - that wouldn't be good markers.
+Conversely, good candidates that are heavily affected by technical noise may be triaged out.
+
+```{r}
+set.seed(100)
+library(statmod)
+ngroup <- 50
+design <- model.matrix(~rep(LETTERS[1:2], each=ngroup))
+design0 <- cbind(rep(1, nrow(design)))
+
+# Scenario 1: strong difference, highly variable.
+# This is arguably a strong candidate for a marker gene.
+y1 <- c(integer(ngroup), rnbinom(ngroup, mu=100, size=1)) 
+sum(y1==0) - ngroup # only one cell in the second group is zero.
+LR1 <- glmnb.fit(design0, y1, dispersion=1, offset=0)$deviance - 
+       glmnb.fit(design, y1, dispersion=1, offset=0)$deviance
+
+# Scenario 2: weaker difference, lowly variable.
+# This is not a particularly good marker gene.
+y2 <- c(rnbinom(ngroup, mu=50, size=100), 
+        rnbinom(ngroup, mu=100, size=100)) 
+LR2 <- glmnb.fit(design0, y2, dispersion=0.01, offset=0)$deviance - 
+       glmnb.fit(design, y2, dispersion=0.01, offset=0)$deviance
+ 
+# Despite that, the second gene has a greater LR than the first.
+LR1
+LR2
+```
+
+A rigorous test for markers would need to consider the variability explicitly, e.g., set a maximum overlap between the group-specific expression distributions.
+This might be too conservative, though, due to high levels of technical noise.
+If one perseveres with DE analyses, the only way to prune out bad markers is to inspect the distributions.
+However, strong markers with large log-fold changes should appear at the top of the list, regardless of whether you do summation or model cell-to-cell variability.
 
 # What did Kim do with ComBat?
 
