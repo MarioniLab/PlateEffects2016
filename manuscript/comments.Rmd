@@ -1,0 +1,114 @@
+# Elaborating on gene- and population-specific batch effects
+
+Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
+Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
+
+Note that there's no requirement for the batch effect variable to be identically distributed across genes.
+It's just simulated that way for simplicity; I've actually adapted some of the simulations to have variable batch effects, and it works fine.
+
+# Why not Bayesian methods?
+
+BASiCS requires spike-ins, that the other methods don't use, so it's not entirely comparable.
+Kharchenko's method generates z-scores and MLEs, but no p-values.
+
+# Smacking down random effect models
+
+See `failsim/extra` for improvement of the consensus estimate with an increasing number of plates, and see Figure S2 for an improvement in GLMM performance with more plates.
+However, voom doesn't improve with more plates in Figure S2.
+I suspect it's a closely related reason; that voom needs to estimate a consensus correlation, and that's not appropriate in these simulations.
+In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
+Note that discreteness is secondary, as voom itself does fine without a plate effect.
+
+It's also worth noting that GLMMs and duplicateCorrelation assume a homogeneous (i.i.d.) effect for each block/plate.
+This is the case for our framework, but it'll fall apart if you have systematic differences between plates that aren't modelled.
+Summing doesn't really help either, as there's an equivalent assumption that summed observations are homogeneous.
+You would need to include additional factors to block on any systematic effects that might be present.
+
+# Independence of summed counts 
+
+## Justification
+
+You can model the count sum for each plate as being independently sampled from some NB-like distribution, conditional on the plate effect.
+No dependencies should be observed in sampling between plates as they are separate experimental units (i.e., no need to consider joint sampling from a multivariate distribution).
+The plate effect itself is also independent across plates - thus, the full count sum should also be independent between plates.
+
+The only possible dependencies in the count sums should be caused by unmodelled differences in the means between plates.
+Any differences in means due to library size/cell numbers can be normalized out as they apply for all genes.
+However, this does require that the population structure is the same across replicate plates.
+
+## Effect of population structure
+
+If the population structure is the same between plates, the expectation of the count sum will be equal to the true sum of expression across subpopulations for each plate.
+Then, the count sum for each plate will be (modelled as being) independently sampled from a distribution with an independent batch effect per plate.
+If the population structure changes between plates, then one could model it as part of the batch effect (if variation in composition should be random across plates).
+However, because the structure affects all genes, you'd get correlations between genes, which might lead to overestimation of the prior d.f. in edgeR.
+I guess this is somewhat pathological as your "replicate plates" should have fairly similar subpopulations.
+
+# Interpreting DE genes from single-cell data
+
+You could directly try to characterise the subpopulations with clustering on the DE genes.
+The benefit is that with a formal DE analysis, you get proper type I error rate control.
+This provides statistical rigour that complements the interpretability of the clusters.
+One approach would be to identify DE genes and cluster on them to determine what substructure is driving them. 
+
+Of course, one could argue that it would be better to split the subpopulations before the DE analysis.
+However, this depends on being able to correctly identify empirical subpopulations.
+This is not a trivial task (or, perhaps, even possible in any statistically rigorous manner).
+
+# What did Kim do with ComBat?
+
+Note that Kim used ComBat to remove batch effects, not plate effects.
+Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
+In any case, ComBat seems to just regress out the plate effect, so even if you gave an all-intercept matrix to get it to run, you'd lose all DE.
+
+# Summation in other contexts
+
+Summation wouldn't work if you tried to use more gradated cluster identities (e.g., fractional membership or trajectories).
+This is true but you'll be double-dipping to estimate the identities in the first place, so your statistics are probably broken to start with.
+Of course, you could get independent covariates for each cell through indexed FACS.
+However, this only seems to be relevant to experimental designs where you want to associate expression to some (protein) marker of interest.
+
+# Effect of summation on the variance
+
+## Outlier protection after summation
+
+Summation still protects against outliers as the variance of count sums driven from a single outlier observation is quite large.
+However, the number of outlier cells to which this applies depends on the plate effect.
+If the plate effect is large, then the impact of the conditional variance on the mean-var relationship is small.
+This reduces the protection against outliers and improves the ranking of outlier-driven DE genes.
+That being said, all DE will be less significant, so perhaps this is not a major concern.
+
+## Reducing the variance with summation
+
+Adding more i.i.d. NB variates together will generally lead to a lower dispersion.
+The simulation below just checks that the equations in the Supplmentary Section 3 are correct:
+
+```{r}
+# To check that it's being done right:
+n <- c(10, 20, 5)
+b <- c(0.5, 1, 1.5)
+all.vars <- all.means <- list()
+counter <- 1L
+disp <- 0.1
+for (mu in c(20, 40, 60, 80, 100)) {
+    collected <- list()
+    for (plate in 1:10000) { 
+        plate.effect <- exp(rnorm(1, -0.25, sd=sqrt(0.5)))
+        counts <- rnbinom(sum(n), mu=plate.effect * rep(b, n) * mu, size=1/disp)
+        collected[[plate]] <- sum(counts)
+    }
+    all.vars[[counter]] <- var(unlist(collected))
+    all.means[[counter]] <- mean(unlist(collected))
+    counter <- counter + 1L
+}
+plot(unlist(all.means), unlist(all.vars))
+effect.dist <- exp(rnorm(1e6, -0.25, sd=sqrt(0.5)))
+curve(col="red", add=TRUE,
+x^2*var(effect.dist) + x + x^2*mean(effect.dist^2)*(disp*sum(n*b^2)/sum(n*b)^2))
+```
+
+However, note that just adding more cells doesn't guarantee that the dispersion will drop to zero.
+This is because you could add a huge cell and the relationship would then be dominated by that cell in a plate-specific manner. 
+This is a bit pathological, true, but nonetheless, it's possible.
+
+

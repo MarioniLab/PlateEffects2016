@@ -163,12 +163,6 @@ This is because these normalization methods compute a single scaling factor for 
 In contrast, the plate effect varies across genes and cannot be removed by a single factor for each cell.
 %\end{color}
 
-% Obviously, you do get stochastic population-wide differences, e.g., due to culture conditions affecting all cells of a population in a gene-specific manner.
-% Otherwise, if you didn't, it would all cancel out for millions of cells and bulk RNA-seq would have Poisson-level variability.
-
-% Note that there's no requirement for the batch effect variable to be identically distributed across genes.
-% It's just simulated that way for simplicity; I've actually adapted some of the simulations to have variable batch effects, and it works fine.
-
 One \revised{common} aim of the data analysis for this experiment is to identify DE genes between \revised{the biological groups of interest}.
 However, this is complicated by the presence of \revised{confounding plate effects.
 Consider an experimental design with one plate from each of two groups.
@@ -216,9 +210,6 @@ A method was considered to be liberal if its observed error rate in the simulati
 Note that this evaluation is only possible for methods that compute $p$-values for each gene -- 
     Bayesian methods \citep{vallejos2016beyond,kharchenko2014bayesian} are not directly comparable and so are not tested here.
 
-% BASiCS requires spike-ins, that the other methods don't use, so it's not entirely comparable.
-% Kharchenko's method generates z-scores and MLEs, but no p-values.
-
 \subsection{Type I error control is lost by all methods}
 The observed type I error rate exceeds the specified threshold in all methods (Figure~\ref{fig:platefail}).
 \revised{For most methods}, the discrepancy between the observed and specified rates is greater than an order of magnitude.
@@ -258,16 +249,6 @@ Underestimation will result in loss of type I error control as the dependencies 
 For voom, the effect of imprecise estimation with few plates is mitigated by sharing information across genes to obtain a consensus value of the correlation -- however, this leads to biases when the true correlation varies between genes.
 GLMMs are also prohibitively slow to fit, taking several hours to run for a single simulation iteration.
 
-% See failsim/extra for improvement of the consensus estimate with an increasing number of plates, and see \suppfailsim{} for an improvement in GLMM performance with more plates.
-% However, voom doesn't improve with more plates in \suppfailsim{}.
-% I suspect it's a closely related reason; that voom needs to estimate a consensus correlation, and that's not appropriate in these simulations.
-% In particular, the plate effect variance is constant for each gene, but its value as a proportion of the total variance is not - see failsim/extra for an example.
-% Note that discreteness is secondary, as voom itself does fine without a plate effect.
-%
-% It's also worth noting that GLMMs and duplicateCorrelation assume a homogeneous (i.i.d.) effect for each block/plate.
-% This is the case for our framework, but it'll fall apart if you have systematic differences between plates that aren't modelled.
-% Summing doesn't really help either, as there's an equivalent assumption that summed observations are homogeneous.
-
 We also tested the performance of each method with other simulation settings.
 To this end, we repeated the above simulation after halving the magnitude of the plate effect; increasing the variability of library sizes across cells; increasing the variability in the number of cells per plate; increasing the number of plates in each group; or sampling counts from a zero-inflated negative binomial distribution, with parameters estimated from real data \citep{zeilis2008regression}.
 In all scenarios, type I error control was not maintained by any method (Supplementary Figure~\suppfailsim{}).
@@ -286,14 +267,6 @@ Similarly, the counts for cells within each plate are conditionally independent 
 Independence of the count sums fulfills the expectations of the analysis methods and ensures that the number of residual d.f.\ is not overestimated.
 Summation has the additional benefit of increasing the size and precision of the counts.
 This makes the data more amenable for analysis with existing methods designed for bulk data.
-
-% Every sampling step used to obtain each count for each cell is independent.
-% You could even think of the count sum as being independently sampled from some NB-like distribution, conditional on the plate effect.
-% If the plate effect itself is independent, then the entire process should be independent.
-% In fact, the only possible dependencies arise from having the same mean, but failing to realize that in the model.
-% Dependencies due to e.g. joint sampling of a multivariate distribution are not relevant here.
-% In the example above, everyone has the same mean - differences in means due to library size/cell numbers can be normalized out as they apply for all genes.
-% See the supplementaries for some thoughts about what to do for subpopulations with gene-specific expression profiles.
 
 Summation substantially reduces the liberalness of the DE analysis methods in the simulation (Figure~\ref{fig:platesum}).
 Overconfident estimation of model parameters is avoided due to the presence of independent count sums.
@@ -358,16 +331,6 @@ The single-cell counts can still be used for other aspects of the analysis, e.g.
 Indeed, after DE genes have been detected, one can exploit the cellular resolution of scRNA-seq data to characterize the differences between groups in more detail \citep{korthauer2016statistical} -- specifically, is the change in expression being driven by a particular subset of cells, or is it occurring consistently across the entire population?
 All of these advantages are lost when RNA sequencing is performed at the population level.
 
-% Of course, you could directly try to characterise the subpopulations with clustering.
-% The benefit is that with a formal DE analysis, you get proper type I error rate control.
-% This provides statistical rigour that complements the interpretability of the clusters.
-% One approach would be to identify DE genes and cluster on them to determine what substructure is driving them. 
-%
-% It could be argued that summation wouldn't work if you tried to use more gradated cluster identities (e.g., fractional membership or trajectories).
-% This is true but you'll be double-dipping to estimate the identities in the first place, so your statistics are probably broken to start with.
-% Of course, you could get independent covariates for each cell through indexed FACS.
-% However, this only seems to be relevant to experimental designs where you want to associate expression to some (protein) marker of interest.
-
 Note that summation across cells in scRNA-seq data is not without precedent.
 \cite{jaitin2014massively} pool single-cell expression profiles to obtain a combined vector of subpopulation-level counts for gene clustering.
 \cite{klein2015droplet} also pool single-cell counts within each group prior to performing a DE analysis between groups,
@@ -383,10 +346,6 @@ Count data for all genes were obtained from \url{http://www.ebi.ac.uk/teichmann-
 To simplify the analysis, counts were only used from cells in the two batches where all three culture types were represented.
 \revised{This resulted in 60-90 cells from each of six plates (three culture types in each of two batches)}.
 To account for the batch effect, the experimental design was parameterized as an additive model with culture-specific expression terms and batch-specific blocking factors.
-
-% Note that Kim used ComBat to remove batch effects, not plate effects.
-% Trying to do so won't work; ComBat will fail because it recognises (rightfully) that the plate effect is confounding with the groups in the design matrix.
-% In any case, ComBat seems to just regress out the plate effect, so even if you gave an all-intercept matrix to get it to run, you'd lose all DE.
 
 %The second study examines gastrulation in the early mouse embryo at various development stages \citep{scialdone2015single},
 %    where all cells on each plate originate from the same stage.
@@ -437,9 +396,6 @@ This is because the conditional variance of the count sum will be larger with fe
 This increases the total variance and decreases the relative significance of DE for outlier-driven genes.
 For genes with more contributing cells, cell-to-cell variability will be hidden but this is not undesirable 
     -- see Section~\supphiddenvar{} of the Supplementary Materials for details.
-
-% Number of outlier cells to which this applies depends on the plate effect.
-% If the plate effect is large, then impact of conditional variance on the mean-var relationship is small, so ranking of outliers will go up (but DE of everyone will go down).
 
 \section{Discussion}
 Confounding plate effects are often present in scRNA-seq data sets but are typically ignored during the DE analysis.

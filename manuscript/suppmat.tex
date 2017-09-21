@@ -368,31 +368,6 @@ For any non-zero value of $\mbox{var}(\delta_{ikg})$, the relative contribution 
 Thus, the mean-variance relationship of the count sum will be similar between plates with many cells, regardless of the number of cells or their library sizes.
 %\end{color}
 
-% Also note that just adding more cells doesn't guarantee that it'll drop to zero, because you could add a huge cell and the relationship would then 
-% be dominated by that cell in a plate-specific manner. This is a bit pathological, true, but nonetheless, it's possible.
-%
-% # To check that it's being done right:
-% n <- c(10, 20, 5)
-% b <- c(0.5, 1, 1.5)
-% all.vars <- all.means <- list()
-% counter <- 1L
-% disp <- 0.1
-% for (mu in c(20, 40, 60, 80, 100)) {
-%     collected <- list()
-%     for (plate in 1:10000) { 
-%         plate.effect <- exp(rnorm(1, -0.25, sd=sqrt(0.5)))
-%         counts <- rnbinom(sum(n), mu=plate.effect * rep(b, n) * mu, size=1/disp)
-%         collected[[plate]] <- sum(counts)
-%     }
-%     all.vars[[counter]] <- var(unlist(collected))
-%     all.means[[counter]] <- mean(unlist(collected))
-%     counter <- counter + 1L
-% }
-% plot(unlist(all.means), unlist(all.vars))
-% effect.dist <- exp(rnorm(1e6, -0.25, sd=sqrt(0.5)))
-% curve(col="red", add=TRUE,
-% x^2*var(effect.dist) + x + x^2*mean(effect.dist^2)*(disp*sum(n*b^2)/sum(n*b)^2))
-
 \section{Benefits of hiding the variability between cells}
 If more cells contribute to the sum, variability between cells will be hidden as it will no longer affect the total variance.
 However, this is not undesirable for single-cell analyses.
@@ -404,16 +379,6 @@ Genes with large differences between replicates are considered to be unreliable 
 In contrast, cells are not expected to be similar due to biological heterogeneity within populations.
 Large cell-to-cell variability has no bearing on the reliability of DE between populations when many cells are present.
 For example, if the subpopulation structure is the same in each replicate plate, one would have a situation with large variability between cells in different subpopulations but reproducible count sums across plates.
-
-% One could argue that it would be better to split the subpopulations before the DE analysis.
-% However, this depends on being able to correctly and rigorously identify empirical subpopulations, which is not a trivial task (or, perhaps, even possible).
-% 
-% If the population structure is the same between plates, the expectation of the count sum will be equal to the true sum of expression across subpopulations for each plate.
-% Then, the count sum for each plate will be (modelled as being) independently sampled from a distribution with an independent batch effect per plate.
-% All well and good - you can plug this into your DE analysis method as per usual.
-% If the population structure changes between plates, then one could model it as part of the batch effect (if variation in composition should be random across plates).
-% However, because the structure affects all genes, you'd get correlations between genes, which might lead to overestimation of the prior d.f. in edgeR.
-% I guess this is somewhat pathological as your "replicate plates" should have fairly similar subpopulations.
 
 \begin{figure}[!p]
 \begin{center}
