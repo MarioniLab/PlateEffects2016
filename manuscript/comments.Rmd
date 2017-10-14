@@ -118,6 +118,13 @@ However, this only seems to be relevant to experimental designs where you want t
 
 # Effect of summation on the variance
 
+## Simplifying model assumptions
+
+After summation, there's no need to worry about the nature of cell-to-cell variance across the population.
+This avoids the need for complicated models involving zero inflation or multiple mixture components.
+It's arguable that cells shouldn't be treated as replicates anyway in situations where there is strong substructure 
+(assuming such structure induces correlations and reduces the effective residual degrees of freedom).
+
 ## Outlier protection after summation
 
 Summation still protects against outliers as the variance of count sums driven from a single outlier observation is quite large.
