@@ -111,10 +111,26 @@ In any case, ComBat seems to just regress out the plate effect, so even if you g
 
 # Summation in other contexts
 
+## Without a grouping factor to sum over
+
 Summation wouldn't work if you tried to use more gradated cluster identities (e.g., fractional membership or trajectories).
 This is true but you'll be double-dipping to estimate the identities in the first place, so your statistics are probably broken to start with.
 Of course, you could get independent covariates for each cell through indexed FACS.
 However, this only seems to be relevant to experimental designs where you want to associate expression to some (protein) marker of interest.
+
+## Using empirically identified subpopulations
+
+There are two relevant points here:
+
+1. The empirical subpopulations must be identified in a manner that is blind to the sample labels.
+This also avoids systematic differences in clustering, caused by the differential presence of other subpopulations between conditions.
+One would do this anyway, as it's too hard to match up clusters afterwards.
+2. The genes involved in the identification must not be the ones that are tested.
+This avoids problems with double-dipping into the data, assuming that the clusters are precisely identified.
+(If not, you may get double-dipping due to correlations in the errors.)
+
+The subsequent within-sample clusters can be summed together to avoid within-sample correlations.
+This mitigates problems with Simpson's paradox while still handling the batch effect in a rigorous way.
 
 # Effect of summation on the variance
 
