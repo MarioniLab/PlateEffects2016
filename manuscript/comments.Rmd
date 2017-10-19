@@ -123,11 +123,17 @@ However, this only seems to be relevant to experimental designs where you want t
 There are two relevant points here:
 
 1. The empirical subpopulations must be identified in a manner that is blind to the sample labels.
-This also avoids systematic differences in clustering, caused by the differential presence of other subpopulations between conditions.
+This avoids systematic differences in clustering, caused by the differential presence of other subpopulations between conditions.
 One would do this anyway, as it's too hard to match up clusters afterwards.
-2. The genes involved in the identification must not be the ones that are tested.
+2. For contrasts _between_ subpopulations, the genes involved in the identification must not be the ones that are tested.
 This avoids problems with double-dipping into the data, assuming that the clusters are precisely identified.
-(If not, you may get double-dipping due to correlations in the errors.)
+If clustering is not precise, you may get double-dipping due to correlations in the errors.
+For example, you can get skewed axes from PCA that explain much more technical noise than expected by chance.
+Testing for DE against these PCs would probably result in rejections due to correlation with the errors.
+3. For contrasts _between_ conditions and _blocking_ on the cluster identities, you will be overly conservative if you test the genes involved in clustering.
+This is because, by definition, there will not be much difference in expression if the cells were put in the same cluster.
+It's less clear whether there is a problem for uninvolved genes -- probably not, as blind clustering provides no information about the conditions.
+The risk is that there is an artificial deflation of the variance, but this is should affect all conditions evenly (assuming similar numbers of cells).
 
 The subsequent within-sample clusters can be summed together to avoid within-sample correlations.
 This mitigates problems with Simpson's paradox while still handling the batch effect in a rigorous way.
