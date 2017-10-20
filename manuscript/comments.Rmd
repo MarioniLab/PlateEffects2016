@@ -120,16 +120,18 @@ However, this only seems to be relevant to experimental designs where you want t
 
 ## Using empirically identified subpopulations
 
-There are two relevant points here:
+There are several relevant points here for rigorous identification of DE genes after clutering into empirical subpopulations:
 
 1. The empirical subpopulations must be identified in a manner that is blind to the sample labels.
 This avoids systematic differences in clustering, caused by the differential presence of other subpopulations between conditions.
 One would do this anyway, as it's too hard to match up clusters afterwards.
-2. For contrasts _between_ subpopulations, the genes involved in the identification must not be the ones that are tested.
-This avoids problems with double-dipping into the data, assuming that the clusters are precisely identified.
-If clustering is not precise, you may get double-dipping due to correlations in the errors.
+However, this may require some careful gene selection to avoid obtaining useless clusters that are condition-specific (e.g., due to strong DE in a few genes).
+For example, you might cluster on pre-defined cell type markers to break up a heterogeneous population.
+2. For contrasts _between_ subpopulations (e.g., blocking on replicate sample), it is safest to avoid testing the genes involved in clustering.
+This avoids problems with double-dipping into the data, given that cells in different clusters will, by definition, differ in the genes used to cluster them.
+If clustering is not precise, you may still get double-dipping when testing uninvolved genes, due to correlations in the errors with involved counterparts.
 For example, you can get skewed axes from PCA that explain much more technical noise than expected by chance.
-Testing for DE against these PCs would probably result in rejections due to correlation with the errors.
+Testing for DE against these PCs would probably result in rejections purely due to correlation of errors.
 3. For contrasts _between_ conditions and _blocking_ on the cluster identities, you will be overly conservative if you test the genes involved in clustering.
 This is because, by definition, there will not be much difference in expression if the cells were put in the same cluster.
 It's less clear whether there is a problem for uninvolved genes -- probably not, as blind clustering provides no information about the conditions.
@@ -137,6 +139,11 @@ The risk is that there is an artificial deflation of the variance, but this is s
 
 The subsequent within-sample clusters can be summed together to avoid within-sample correlations.
 This mitigates problems with Simpson's paradox while still handling the batch effect in a rigorous way.
+Of course, it is not perfect, as you may still have problems with substructure within each cluster; but that's life.
+
+Loss of control due to double-dipping may not seem like a problem for the top set of DE genes with very low p-values.
+However, if the correlations are strong and the number of cells is high, there may be sufficient power to get very low p-values for true nulls.
+I suggest that p-values for involved genes in comparisons between subpopulations should be treated as advisory - moreso than usual.
 
 # Effect of summation on the variance
 
