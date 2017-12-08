@@ -44,6 +44,16 @@ If the population structure changes between plates, then one could model it as p
 However, because the structure affects all genes, you'd get correlations between genes, which might lead to overestimation of the prior d.f. in edgeR.
 I guess this is somewhat pathological as your "replicate plates" should have fairly similar subpopulations.
 
+# Normalization on the summed counts
+
+Consider a situation where you have cell types that differ quite dramatically in RNA content, and no library quantification is performed during scRNA-seq.
+Summing the libraries together will preserve these differences, much like in bulk RNA sequencing.
+On the other hand, normalizing on the single cells will usually remove differences in content.
+This can result in a change in the log-fold change between conditions when comparing DE analyses with and without summation.
+Unfortunately, there is no simple solution to this discrepancy that preserves the count-based nature of the data after summation.
+In fact, it's not clear which method produces the correct log-fold change in the cases where they disagree.
+(This should only occur when subsets of cells change in total RNA content, and only for genes that are already DE in those cells compared to others.)
+
 # Interpreting DE genes from single-cell data
 
 ## Handling population structure
